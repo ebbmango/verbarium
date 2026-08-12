@@ -1,6 +1,10 @@
 {
   "name": "verbarium",
   "private": true,
+  "packageManager": "pnpm@11.21.0",
+  "engines": {
+    "node": ">=24 <25"
+  },
   "scripts": {
     "dev": "pnpm --filter @verbarium/web dev",
     "build": "pnpm --filter @verbarium/web build",
