@@ -1,0 +1,161 @@
+:root {
+  color-scheme: light;
+  --paper: #f3e7d1;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  background: var(--paper);
+}
+
+body {
+  position: relative;
+}
+
+a,
+button {
+  color: inherit;
+  font: inherit;
+}
+
+body::before {
+  position: fixed;
+  z-index: 1;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)' opacity='.22'/%3E%3C/svg%3E");
+  content: "";
+  mix-blend-mode: multiply;
+  opacity: 0.025;
+  pointer-events: none;
+}
+
+.paper {
+  min-height: 100svh;
+  background:
+    radial-gradient(circle at 48% 30%, rgb(255 251 242 / 22%), transparent 58%),
+    linear-gradient(rgb(250 243 230 / 38%), rgb(246 234 214 / 34%)),
+    url("/paper-texture.png") center / cover fixed,
+    var(--paper);
+}
+
+.topbar {
+  display: grid;
+  position: relative;
+  z-index: 2;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  height: 4.5rem;
+  padding: 0 2rem;
+  border-bottom: 1px solid rgb(85 72 51 / 14%);
+  background: rgb(249 244 234 / 82%);
+  backdrop-filter: blur(10px);
+}
+
+.brand {
+  display: inline-flex;
+  justify-self: start;
+  align-items: center;
+  gap: 0.8rem;
+  text-decoration: none;
+}
+
+.brand-mark {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  background: #b64f3b;
+  color: #fff8eb;
+  font-family: "Songti TC", "Noto Serif CJK TC", Georgia, serif;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.brand-name {
+  color: #242822;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.primary-nav {
+  display: flex;
+  align-self: stretch;
+  align-items: center;
+  gap: 2.25rem;
+}
+
+.nav-tab {
+  display: flex;
+  position: relative;
+  align-items: center;
+  height: 100%;
+  color: #68706a;
+  text-decoration: none;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.nav-tab:hover {
+  color: #252b27;
+}
+
+.nav-tab-active {
+  color: #252b27;
+}
+
+.nav-tab-active::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: #4f806e;
+  content: "";
+}
+
+.profile-button {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  justify-self: end;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgb(85 72 51 / 17%);
+  border-radius: 50%;
+  background: rgb(255 252 244 / 72%);
+  color: #3e735f;
+  cursor: pointer;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.profile-button:hover {
+  background: rgb(255 252 244 / 96%);
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    grid-template-columns: auto 1fr;
+    padding: 0 1rem;
+  }
+
+  .primary-nav {
+    justify-self: end;
+    gap: 1rem;
+  }
+
+  .profile-button {
+    display: none;
+  }
+}

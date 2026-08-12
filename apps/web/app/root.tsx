@@ -9,6 +9,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import "./styles.css";
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
