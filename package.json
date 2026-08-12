@@ -1,0 +1,9 @@
+{
+  "name": "verbarium",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter @verbarium/web dev",
+    "build": "pnpm --filter @verbarium/web build",
+    "typecheck": "pnpm --filter @verbarium/web typecheck"
+  }
+}
