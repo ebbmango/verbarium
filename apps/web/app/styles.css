@@ -1,22 +1,31 @@
 :root {
   color-scheme: light;
   --paper: #f3e7d1;
+  --ink: #292a25;
+  --muted: #70736c;
+  --faint: #a5a69f;
+  --line: rgb(84 72 52 / 15%);
+  --red: #cf3f45;
+  --green: #4f806e;
 }
 
 * {
   box-sizing: border-box;
 }
 
-html,
-body {
+html {
   min-width: 320px;
   min-height: 100%;
-  margin: 0;
-  background: var(--paper);
+  scroll-behavior: smooth;
 }
 
 body {
   position: relative;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
 }
 
 a,
@@ -39,7 +48,7 @@ body::before {
 .paper {
   min-height: 100svh;
   background:
-    radial-gradient(circle at 48% 30%, rgb(255 251 242 / 22%), transparent 58%),
+    radial-gradient(circle at 48% 16%, rgb(255 251 242 / 30%), transparent 44%),
     linear-gradient(rgb(250 243 230 / 38%), rgb(246 234 214 / 34%)),
     url("/paper-texture.png") center / cover fixed,
     var(--paper);
@@ -53,7 +62,6 @@ body::before {
   align-items: center;
   height: 4.5rem;
   padding: 0 2rem;
-  border-bottom: 1px solid rgb(85 72 51 / 14%);
   background: rgb(249 244 234 / 82%);
   backdrop-filter: blur(10px);
 }
@@ -105,10 +113,7 @@ body::before {
   font-weight: 650;
 }
 
-.nav-tab:hover {
-  color: #252b27;
-}
-
+.nav-tab:hover,
 .nav-tab-active {
   color: #252b27;
 }
@@ -119,7 +124,7 @@ body::before {
   bottom: -1px;
   left: 0;
   height: 2px;
-  background: #4f806e;
+  background: var(--green);
   content: "";
 }
 
@@ -144,10 +149,414 @@ body::before {
   background: rgb(255 252 244 / 96%);
 }
 
+.lesson-shell {
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+  padding: 4.75rem 1.5rem 7rem;
+}
+
+.lesson {
+  width: min(100%, 38rem);
+  margin: 0 auto;
+  font-family: Georgia, "Times New Roman", serif;
+  text-align: center;
+}
+
+.lesson-heading {
+  position: relative;
+  margin-bottom: 8.25rem;
+  text-align: center;
+}
+
+.eyebrow,
+.study-label,
+.note-title,
+.quote-source,
+.character-forms figcaption span,
+.form-label {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.eyebrow,
+.study-label,
+.note-title {
+  margin: 0;
+  color: var(--red);
+  font-size: 0.68rem;
+}
+
+.lesson-heading h1 {
+  /* margin: 0.75rem 0 0.45rem; */
+  font-size: clamp(2rem, 5vw, 2.65rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.lesson-subtitle {
+  /* margin-top: 24px; */
+  color: var(--muted);
+  font-size: 0.98rem;
+  font-style: italic;
+}
+
+.lesson-progress {
+  display: grid;
+  grid-template-columns: auto 7rem auto;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 2.7rem;
+  color: var(--faint);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.progress-line {
+  height: 1px;
+  overflow: hidden;
+  background: rgb(68 68 60 / 14%);
+}
+
+.progress-line span {
+  display: block;
+  min-width: 0.56rem;
+  height: 100%;
+  background: var(--red);
+}
+
+.lesson-manuscript > p {
+  width: min(100%, 32rem);
+  margin: 1.4rem auto 0;
+  color: #565850;
+  font-size: 0.96rem;
+  line-height: 1.9;
+}
+
+.char-display {
+  position: relative;
+  margin: 8rem auto 2.8rem;
+  text-align: center;
+}
+
+.lesson-heading + .char-display,
+.category-break + .char-display,
+.lesson-note + .char-display {
+  margin-top: 0;
+}
+
+.section-marker {
+  position: absolute;
+  top: 2.7rem;
+  left: -3.4rem;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  background: var(--red);
+  color: #fffaf1;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.study-character,
+.form-glyph,
+.character-focus {
+  font-family: "Kaiti TC", "Kaiti SC", STKaiti, "Songti TC", "Noto Serif CJK TC",
+    serif;
+  font-weight: 400;
+}
+
+.study-character {
+  margin: 0.75rem 0 0;
+  font-size: clamp(5.4rem, 14vw, 7.35rem);
+  line-height: 1;
+}
+
+.lesson-quote {
+  position: relative;
+  width: min(100%, 34rem);
+  margin: 2.65rem auto;
+  padding: 1.8rem 2.4rem 1.75rem;
+  color: #555850;
+  text-align: center;
+}
+
+.lesson-quote p {
+  margin: 0.75rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+
+.lesson-quote p:first-child {
+  margin-top: 0;
+  color: var(--red);
+  font-family: "Kaiti TC", "Kaiti SC", STKaiti, "Songti TC", serif;
+  font-size: 1.16rem;
+  letter-spacing: 0.025em;
+  line-height: 1.65;
+}
+
+.quote-source {
+  margin-top: 1.15rem;
+  color: #85877f;
+  font-size: 0.54rem;
+  font-style: normal;
+}
+
+.quote-source::before {
+  content: "— ";
+}
+
+.quote-source-pending {
+  color: #a39b8d;
+}
+
+.category-break {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  width: min(100%, 32rem);
+  margin: 8rem auto 5rem;
+  color: #62645d;
+  text-align: center;
+}
+
+.category-break span {
+  color: var(--red);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.61rem;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.category-break p {
+  margin: 0;
+  font-size: 0.95rem;
+  font-style: italic;
+  line-height: 1.75;
+}
+
+.character-forms {
+  width: min(100%, 29rem);
+  margin: 2.65rem auto;
+}
+
+.character-forms figcaption {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  color: #74766f;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.character-forms figcaption span {
+  color: var(--red);
+  font-size: 0.54rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.form-card {
+  display: grid;
+  min-height: 8.75rem;
+  align-content: center;
+  justify-items: center;
+  gap: 0.9rem;
+  padding: 1.15rem 0.8rem;
+  border: 1px solid rgb(84 72 52 / 10%);
+  background: rgb(239 235 226 / 54%);
+}
+
+.form-card-current {
+  background: rgb(255 252 244 / 35%);
+}
+
+.form-glyph {
+  font-size: 3.2rem;
+  line-height: 1;
+}
+
+.form-placeholder {
+  width: 3.2rem;
+  height: 3.2rem;
+  border: 1px dashed rgb(84 72 52 / 24%);
+  background: linear-gradient(135deg, transparent 49%, rgb(84 72 52 / 12%) 50%, transparent 51%);
+}
+
+.form-label {
+  color: #96978f;
+  font-size: 0.49rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.lesson-note {
+  width: min(100%, 32rem);
+  margin: 3.5rem auto;
+  padding: 2rem 2.25rem;
+  border: 1px solid rgb(84 72 52 / 8%);
+  background: rgb(239 235 226 / 76%);
+  color: #666961;
+  font-size: 0.86rem;
+  line-height: 1.8;
+}
+
+.lesson-note p {
+  margin: 1.15rem 0 0;
+}
+
+.lesson-note .note-title + p,
+.lesson-note > p:first-of-type {
+  margin-top: 0;
+}
+
+.note-title {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-size: 0.57rem;
+}
+
+.lesson-note .character-forms {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.lesson-note .form-card {
+  background: rgb(250 247 238 / 42%);
+}
+
+.character-focus {
+  display: grid;
+  width: min(100%, 18rem);
+  min-height: 10rem;
+  margin: 2.75rem auto;
+  place-items: center;
+  font-size: 6rem;
+  line-height: 1;
+}
+
+.lesson-complete {
+  width: min(100%, 34rem);
+  margin: 9rem auto 1rem;
+  padding: 3.7rem 2rem 3.5rem;
+  text-align: center;
+}
+
+.lesson-divider {
+  width: min(100%, 32rem);
+  border: 0;
+}
+
+.lesson-divider-solid {
+  margin: 5rem auto;
+  border-top: 1px solid rgb(84 72 52 / 38%);
+}
+
+.lesson-divider-dashed {
+  height: 1px;
+  margin: 5rem auto;
+  background: repeating-linear-gradient(
+    to right,
+    rgb(84 72 52 / 38%) 0 0.45rem,
+    transparent 0.45rem 0.85rem
+  );
+}
+
+.lesson-divider + .category-break,
+.lesson-divider + .char-display,
+.lesson-divider + .lesson-note {
+  margin-top: 0;
+}
+
+.lesson-complete h2 {
+  margin: 0.8rem 0 0;
+  font-size: 1.65rem;
+  font-weight: 500;
+}
+
+.lesson-complete > p:not(.eyebrow) {
+  margin: 0.8rem auto 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.lesson-complete button {
+  margin-top: 2rem;
+  padding: 0.8rem 1.5rem;
+  border: 0;
+  background: var(--red);
+  color: #fffaf1;
+  cursor: pointer;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.74rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+
+.lesson-complete button:hover {
+  background: #b8343a;
+}
+
+.lesson-complete button:focus-visible,
+.profile-button:focus-visible,
+.nav-tab:focus-visible,
+.brand:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 4px;
+}
+
+@media (max-width: 740px) {
+  .lesson-shell {
+    padding: 3.5rem 1.4rem 5rem;
+  }
+
+  .lesson-heading {
+    margin-bottom: 7rem;
+  }
+
+  .char-display {
+    width: calc(100% - 1.25rem);
+    margin-top: 7rem;
+  }
+
+  .section-marker {
+    left: -1.25rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.8rem;
+  }
+
+  .category-break {
+    margin-top: 6.5rem;
+    margin-bottom: 4.5rem;
+  }
+}
+
 @media (max-width: 640px) {
   .topbar {
     grid-template-columns: auto 1fr;
+    height: 4rem;
     padding: 0 1rem;
+  }
+
+  .brand-name {
+    display: none;
   }
 
   .primary-nav {
@@ -155,7 +564,51 @@ body::before {
     gap: 1rem;
   }
 
+  .nav-tab {
+    font-size: 0.75rem;
+  }
+
   .profile-button {
     display: none;
+  }
+
+  .lesson-manuscript > p {
+    font-size: 0.91rem;
+    line-height: 1.82;
+  }
+
+  .lesson-quote,
+  .lesson-note {
+    padding-right: 1.35rem;
+    padding-left: 1.35rem;
+  }
+}
+
+@media (max-width: 470px) {
+  .primary-nav {
+    gap: 0.72rem;
+  }
+
+  .nav-tab {
+    font-size: 0.68rem;
+  }
+
+  .lesson-shell {
+    padding-right: 1.1rem;
+    padding-left: 1.1rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .form-card {
+    min-height: 7.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }

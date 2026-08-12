@@ -1,11 +1,14 @@
+import LessonOne from "~/content/lessons/001.mdx";
+import { lessonComponents } from "~/components/lesson";
+
 import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Verbarium" },
+    { title: "Lesson 1 · Verbarium" },
     {
       name: "description",
-      content: "Learn Literary and Classical Chinese with Verbarium.",
+      content: "About the primitive 一, a single stroke.",
     },
   ];
 }
@@ -22,7 +25,7 @@ export default function Home() {
         </a>
 
         <nav className="primary-nav" aria-label="Primary navigation">
-          <a className="nav-tab nav-tab-active" href="#lessons" aria-current="page">
+          <a className="nav-tab nav-tab-active" href="#lesson" aria-current="page">
             Lessons
           </a>
           <a className="nav-tab" href="#characters">
@@ -37,6 +40,12 @@ export default function Home() {
           EB
         </button>
       </header>
+
+      <main className="lesson-shell" id="lesson">
+        <article className="lesson lesson-manuscript">
+          <LessonOne components={lessonComponents} />
+        </article>
+      </main>
     </div>
   );
 }
