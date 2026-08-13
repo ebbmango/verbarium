@@ -14,13 +14,6 @@ export function LessonHeader({ number, primitive, total }: LessonHeaderProps) {
       <p className="lesson-subtitle">
         About the primitive <span lang="zh-Hant">{primitive}</span>, a single stroke.
       </p>
-      <div className="lesson-progress" aria-label={`Lesson ${number} of ${total}`}>
-        <span>{number}</span>
-        <span className="progress-line" aria-hidden="true">
-          <span style={{ width: `${(number / total) * 100}%` }} />
-        </span>
-        <span>{total}</span>
-      </div>
     </header>
   );
 }
