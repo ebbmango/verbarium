@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=LXGW+WenKai+Mono+TC:wght@300;400;700&family=Noto+Serif+TC:wght@200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap");
+
 :root {
   color-scheme: light;
   --paper: #f3e7d1;
@@ -88,7 +90,7 @@ body::before {
 
 .brand-name {
   color: #242822;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
   font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: -0.015em;
@@ -159,7 +161,8 @@ body::before {
 .lesson {
   width: min(100%, 38rem);
   margin: 0 auto;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Source Serif 4", Georgia, "Times New Roman", "LXGW WenKai Mono TC",
+    serif;
   text-align: center;
 }
 
@@ -231,11 +234,12 @@ body::before {
   background: var(--red);
 }
 
-.lesson-manuscript > p {
+.lesson-manuscript>p {
   width: min(100%, 32rem);
   margin: 1.4rem auto 0;
   color: #565850;
-  font-size: 0.96rem;
+  font-size: 1rem;
+  font-weight: 400;
   line-height: 1.9;
 }
 
@@ -246,9 +250,9 @@ body::before {
   text-align: center;
 }
 
-.lesson-heading + .char-display,
-.category-break + .char-display,
-.lesson-note + .char-display {
+.lesson-heading+.char-display,
+.category-break+.char-display,
+.lesson-note+.char-display {
   margin-top: 0;
 }
 
@@ -262,12 +266,11 @@ body::before {
   place-items: center;
   background: var(--red);
   color: #fffaf1;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
   font-size: 0.9rem;
   line-height: 1;
 }
 
-.study-character,
 .form-glyph,
 .character-focus {
   font-family: "Kaiti TC", "Kaiti SC", STKaiti, "Songti TC", "Noto Serif CJK TC",
@@ -277,7 +280,9 @@ body::before {
 
 .study-character {
   margin: 0.75rem 0 0;
+  font-family: "Noto Serif TC", "Noto Serif CJK TC", "Songti TC", serif;
   font-size: clamp(5.4rem, 14vw, 7.35rem);
+  font-weight: 400;
   line-height: 1;
 }
 
@@ -292,29 +297,39 @@ body::before {
 
 .lesson-quote p {
   margin: 0.75rem 0 0;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  font-weight: 400;
   line-height: 1.75;
 }
 
 .lesson-quote p:first-child {
   margin-top: 0;
-  color: var(--red);
-  font-family: "Kaiti TC", "Kaiti SC", STKaiti, "Songti TC", serif;
-  font-size: 1.16rem;
+  color: #000;
+  font-size: 1.7rem;
   letter-spacing: 0.025em;
   line-height: 1.65;
 }
 
+.lesson-quote :lang(zh-Hant),
+.lesson-note :lang(zh-Hant) {
+  font-family: "LXGW WenKai Mono TC", "Kaiti TC", "Kaiti SC", STKaiti, serif;
+}
+
+.lesson-quote>p:lang(zh-Hant) {
+  font-weight: 300;
+}
+
 .quote-source {
   margin-top: 1.15rem;
-  color: #85877f;
+  /* color: #85877f; */
+  color: var(--red);
   font-size: 0.54rem;
   font-style: normal;
 }
 
-.quote-source::before {
+/* .quote-source::before {
   content: "— ";
-}
+} */
 
 .quote-source-pending {
   color: #a39b8d;
@@ -414,6 +429,7 @@ body::before {
   background: rgb(239 235 226 / 76%);
   color: #666961;
   font-size: 0.86rem;
+  font-weight: 400;
   line-height: 1.8;
 }
 
@@ -421,8 +437,8 @@ body::before {
   margin: 1.15rem 0 0;
 }
 
-.lesson-note .note-title + p,
-.lesson-note > p:first-of-type {
+.lesson-note .note-title+p,
+.lesson-note>p:first-of-type {
   margin-top: 0;
 }
 
@@ -471,16 +487,14 @@ body::before {
 .lesson-divider-dashed {
   height: 1px;
   margin: 5rem auto;
-  background: repeating-linear-gradient(
-    to right,
-    rgb(84 72 52 / 38%) 0 0.45rem,
-    transparent 0.45rem 0.85rem
-  );
+  background: repeating-linear-gradient(to right,
+      rgb(84 72 52 / 38%) 0 0.45rem,
+      transparent 0.45rem 0.85rem);
 }
 
-.lesson-divider + .category-break,
-.lesson-divider + .char-display,
-.lesson-divider + .lesson-note {
+.lesson-divider+.category-break,
+.lesson-divider+.char-display,
+.lesson-divider+.lesson-note {
   margin-top: 0;
 }
 
@@ -490,7 +504,7 @@ body::before {
   font-weight: 500;
 }
 
-.lesson-complete > p:not(.eyebrow) {
+.lesson-complete>p:not(.eyebrow) {
   margin: 0.8rem auto 0;
   color: var(--muted);
   font-size: 0.9rem;
@@ -571,7 +585,7 @@ body::before {
     display: none;
   }
 
-  .lesson-manuscript > p {
+  .lesson-manuscript>p {
     font-size: 0.91rem;
     line-height: 1.82;
   }
