@@ -36,28 +36,9 @@ This document is a handoff for future chats. It records only deferred ideas and 
 
 **Done when:** Introductory sentences clearly read as belonging to the following quote, while major character and category sections still have deliberate breathing room.
 
-## 2. Evaluate the original/translation hierarchy
-
-**Status:** Completed.
-
-**What this means:** The original Chinese and its English translation currently differ mainly through size, font family, and color. One possible treatment—based on quote-slicer—is to make the English translation Source Serif 4 italic at approximately weight 350 while leaving the Chinese original upright WenKai at weight 300. This would visually label one line as the source and the other as editorial translation without adding interface chrome.
-
-**Current behavior:**
-
-- Original: WenKai, `1.7rem`, weight 300, black.
-- Translation: Source Serif 4, `1rem`, italic at weight 350, muted gray inherited from `.lesson-quote`.
-- Quotations can occupy up to `50rem` within a `52rem` lesson container; narrower lesson elements retain their existing measures.
-- Longer quotations use deliberate line breaks in the lesson MDX so approved source and translation phrases remain intact on desktop.
-
-**Tested treatment:** Compared the translation at `font-style: italic; font-weight: 350` across short and long quotations at desktop and mobile widths.
-
-**Decision:** Adopted the italic treatment, wider quotation measure, and deliberate line breaks. The translation reads as a distinct editorial voice without separating it from the original, the lighter weight remains legible against the paper texture, and long approved phrases no longer wrap prematurely on desktop.
-
-**Done when:** The source and translation are immediately distinguishable but still read as one quotation unit.
-
 ## 3. Revisit commentary presentation
 
-**Status:** Worth exploring later.
+**Status:** In progress.
 
 **Problem:** Commentary currently uses a full subtle border and tinted background. Longer commentary sections may benefit from a clearer editorial structure.
 
@@ -67,7 +48,7 @@ This document is a handoff for future chats. It records only deferred ideas and 
 
 - Keep the current full box but refine padding and title placement.
 - Replace the full border with a restrained accent edge.
-- Compare centered commentary against left-aligned commentary as a treatment local to notes only.
+- Test left-aligned commentary as a treatment local to notes only. Prefer it over justification: the narrow responsive measure makes uneven word spacing likely, particularly on mobile.
 
 **Constraint:** The general proposal to left-align all manuscript prose was discarded. Do not reintroduce it. Any alignment experiment must be limited to commentary and reviewed independently.
 
