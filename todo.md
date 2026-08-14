@@ -45,11 +45,13 @@ This document is a handoff for future chats. It records only deferred ideas and 
 **Current behavior:**
 
 - Original: WenKai, `1.7rem`, weight 300, black.
-- Translation: Source Serif 4, `1rem`, weight 400, upright, muted gray inherited from `.lesson-quote`.
+- Translation: Source Serif 4, `1rem`, italic at weight 350, muted gray inherited from `.lesson-quote`.
+- Quotations can occupy up to `50rem` within a `52rem` lesson container; narrower lesson elements retain their existing measures.
+- Longer quotations use deliberate line breaks in the lesson MDX so approved source and translation phrases remain intact on desktop.
 
-**Possible test only:** Compare the current translation against `font-style: italic; font-weight: 350`. Do not commit this direction without first showing or clearly explaining the visual effect.
+**Tested treatment:** Compared the translation at `font-style: italic; font-weight: 350` across short and long quotations at desktop and mobile widths.
 
-**Decision:** Adopted the italic treatment after comparing short and long quotations at desktop and mobile widths. The translation now reads as a distinct editorial voice without separating it from the original, and the lighter weight remains legible against the paper texture.
+**Decision:** Adopted the italic treatment, wider quotation measure, and deliberate line breaks. The translation reads as a distinct editorial voice without separating it from the original, the lighter weight remains legible against the paper texture, and long approved phrases no longer wrap prematurely on desktop.
 
 **Done when:** The source and translation are immediately distinguishable but still read as one quotation unit.
 
