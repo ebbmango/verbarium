@@ -38,7 +38,7 @@ This document is a handoff for future chats. It records only deferred ideas and 
 
 ## 2. Evaluate the original/translation hierarchy
 
-**Status:** Needs explanation and visual testing before implementation.
+**Status:** Completed.
 
 **What this means:** The original Chinese and its English translation currently differ mainly through size, font family, and color. One possible treatment—based on quote-slicer—is to make the English translation Source Serif 4 italic at approximately weight 350 while leaving the Chinese original upright WenKai at weight 300. This would visually label one line as the source and the other as editorial translation without adding interface chrome.
 
@@ -48,6 +48,8 @@ This document is a handoff for future chats. It records only deferred ideas and 
 - Translation: Source Serif 4, `1rem`, weight 400, upright, muted gray inherited from `.lesson-quote`.
 
 **Possible test only:** Compare the current translation against `font-style: italic; font-weight: 350`. Do not commit this direction without first showing or clearly explaining the visual effect.
+
+**Decision:** Adopted the italic treatment after comparing short and long quotations at desktop and mobile widths. The translation now reads as a distinct editorial voice without separating it from the original, and the lighter weight remains legible against the paper texture.
 
 **Done when:** The source and translation are immediately distinguishable but still read as one quotation unit.
 

@@ -302,6 +302,11 @@ body::before {
   line-height: 1.75;
 }
 
+.lesson-quote > p + p {
+  font-style: italic;
+  font-weight: 350;
+}
+
 .lesson-quote p:first-child {
   margin-top: 0;
   color: #000;
