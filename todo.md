@@ -36,9 +36,34 @@ This document is a handoff for future chats. It records only deferred ideas and 
 
 **Done when:** Introductory sentences clearly read as belonging to the following quote, while major character and category sections still have deliberate breathing room.
 
+## 2. Explore responsive quote wrapping
+
+**Status:** Deferred; research and test before implementation.
+
+**Goal:** Let original quote text and translations adopt pleasing, different line breaks at wide and narrow widths without maintaining separate copies of the content.
+
+**First option to test:** Prefer natural wrapping and try the CSS `text-wrap` property on `.lesson-quote p`:
+
+- `text-wrap: pretty` aims to improve line endings and avoid typographic orphans while largely preserving normal wrapping.
+- `text-wrap: balance` redistributes text across lines for a more even shape. It may suit short quotations, but should be tested carefully on longer translations.
+
+These approaches respond automatically to the available width and keep the MDX clean. Compare them against the current explicitly authored `<br />` elements on desktop, intermediate widths, and narrow mobile screens. Confirm browser support for the project targets before adopting either value.
+
+**Optional escape hatch:** If a small number of quotations need editorial control, consider a lightweight MDX component for viewport-specific break opportunities. Prefer a single accessible text stream. A `<wbr>`-style marker is only an optional wrapping opportunity and cannot guarantee a line break; responsive `<br>` markers provide exact lineation but are more brittle.
+
+**Risks and constraints:**
+
+- Manual breakpoints become coupled to wording, font metrics, font size, container width, and viewport thresholds.
+- Two curated layouts can still look awkward at intermediate widths.
+- Traditional Chinese already has many natural break opportunities between characters, so adding `<wbr>` may not meaningfully prioritize a preferred point.
+- Avoid literal zero-width-space characters because they can affect editing, search, and copied text.
+- Do not duplicate full desktop and mobile quote text; that would create maintenance and accessibility problems.
+
+**Done when:** Quotes wrap gracefully across representative widths, the MDX remains readable, and exceptional editorial breaks can be expressed without duplicating content.
+
 ## 3. Revisit commentary presentation
 
-**Status:** In progress.
+**Status:** Treatment implemented; awaiting visual review.
 
 **Problem:** Commentary currently uses a full subtle border and tinted background. Longer commentary sections may benefit from a clearer editorial structure.
 
@@ -49,6 +74,8 @@ This document is a handoff for future chats. It records only deferred ideas and 
 - Keep the current full box but refine padding and title placement.
 - Replace the full border with a restrained accent edge.
 - Test left-aligned commentary as a treatment local to notes only. Prefer it over justification: the narrow responsive measure makes uneven word spacing likely, particularly on mobile.
+
+**Current treatment:** Commentary is left-aligned inside a square, fully bordered panel with a translucent warm-brown wash, preserving the underlying paper character while creating an unmistakable boundary from lesson prose. The existing red label identifies the panel without additional ornament; slightly larger prose and a relaxed line height support longer notes.
 
 **Constraint:** The general proposal to left-align all manuscript prose was discarded. Do not reintroduce it. Any alignment experiment must be limited to commentary and reviewed independently.
 
