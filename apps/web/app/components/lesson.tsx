@@ -2,11 +2,27 @@ import type { ComponentPropsWithoutRef, PropsWithChildren } from "react";
 
 type LessonHeaderProps = {
   number: number;
-  total: number;
   primitive: string;
 };
 
-export function LessonHeader({ number, primitive, total }: LessonHeaderProps) {
+type LessonTrackerProps = {
+  number: number;
+  total: number;
+}
+
+export function LessonTracker({ number, total }: LessonTrackerProps) {
+  return (
+    <div className="lesson-progress" aria-label={`Lesson ${number} of ${total}`}>
+      <span>{number}</span>
+      <span className="progress-line" aria-hidden="true">
+        <span style={{ width: `${(number / total) * 100}%` }} />
+      </span>
+      <span>{total}</span>
+    </div>
+  )
+}
+
+export function LessonHeader({ number, primitive }: LessonHeaderProps) {
   return (
     <header className="lesson-heading">
       <p className="eyebrow">Etymological lessons</p>
@@ -14,6 +30,7 @@ export function LessonHeader({ number, primitive, total }: LessonHeaderProps) {
       <p className="lesson-subtitle">
         About the primitive <span lang="zh-Hant">{primitive}</span>, a single stroke.
       </p>
+
     </header>
   );
 }
@@ -137,6 +154,7 @@ export const lessonComponents = {
   Commentary,
   LessonComplete,
   LessonHeader,
+  LessonTracker,
   Quote,
   SectionBreak,
 };

@@ -428,14 +428,16 @@ body::before {
 
 .lesson-note {
   width: min(100%, 32rem);
-  margin: 3.5rem auto;
-  padding: 2rem 2.25rem;
-  border: 1px solid rgb(84 72 52 / 8%);
-  background: rgb(239 235 226 / 76%);
-  color: #666961;
-  font-size: 0.86rem;
+  margin: 4.25rem auto;
+  padding: 2rem 2.25rem 2.15rem;
+  border: 1px solid rgb(84 72 52 / 20%);
+  background: rgb(108 83 49 / 10%);
+  box-shadow: inset 0 0 0 1px rgb(255 252 244 / 18%);
+  color: #555951;
+  font-size: 0.92rem;
   font-weight: 400;
-  line-height: 1.8;
+  line-height: 1.85;
+  text-align: left;
 }
 
 .lesson-note p {
@@ -449,8 +451,13 @@ body::before {
 
 .note-title {
   display: block;
-  margin-bottom: 0.8rem;
+  margin-bottom: 1.25rem;
   font-size: 0.57rem;
+}
+
+.lesson-note strong {
+  color: #454741;
+  font-weight: 650;
 }
 
 .lesson-note .character-forms {
@@ -473,10 +480,26 @@ body::before {
 }
 
 .lesson-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: min(100%, 34rem);
-  margin: 9rem auto 1rem;
-  padding: 3.7rem 2rem 3.5rem;
+  margin: 8rem auto 1rem;
+  padding: 0 2rem 3.5rem;
   text-align: center;
+}
+
+.lesson-closing-quote {
+  margin: 0;
+  color: var(--ink);
+  font-family: "LXGW WenKai Mono TC", "Kaiti TC", "Kaiti SC", STKaiti, serif;
+  font-size: 1.35rem;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  line-height: 1;
+  opacity: 0.3;
+  text-orientation: upright;
+  writing-mode: vertical-rl;
 }
 
 .lesson-divider {
@@ -517,7 +540,7 @@ body::before {
 }
 
 .lesson-complete button {
-  margin-top: 2rem;
+  margin-top: 7rem;
   padding: 0.8rem 1.5rem;
   border: 0;
   background: var(--red);
@@ -564,6 +587,14 @@ body::before {
     margin-top: 6.5rem;
     margin-bottom: 4.5rem;
   }
+
+  .lesson-complete {
+    margin-top: 6.5rem;
+  }
+
+  .lesson-complete button {
+    margin-top: 6rem;
+  }
 }
 
 @media (max-width: 640px) {
@@ -595,10 +626,13 @@ body::before {
     line-height: 1.82;
   }
 
-  .lesson-quote,
-  .lesson-note {
+  .lesson-quote {
     padding-right: 1.35rem;
     padding-left: 1.35rem;
+  }
+
+  .lesson-note {
+    padding: 1.65rem 1.4rem 1.75rem;
   }
 }
 
