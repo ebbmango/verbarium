@@ -1,15 +1,34 @@
 @import url("https://fonts.googleapis.com/css2?family=LXGW+WenKai+Mono+TC:wght@300;400;700&family=Noto+Serif+TC:wght@200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap");
 
+/* Design tokens */
+
 :root {
   color-scheme: light;
+
   --paper: #f3e7d1;
   --ink: #292a25;
   --muted: #70736c;
   --faint: #a5a69f;
-  --line: rgb(84 72 52 / 15%);
   --red: #cf3f45;
   --green: #4f806e;
+
+  --font-manuscript: "Source Serif 4", Georgia, "Times New Roman",
+    "LXGW WenKai Mono TC", serif;
+  --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-ui: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-han-brand: "Songti TC", "Noto Serif CJK TC", Georgia, serif;
+  --font-han-display: "Noto Serif TC", "Noto Serif CJK TC", "Songti TC", serif;
+  --font-han-handwritten: "Kaiti TC", "Kaiti SC", STKaiti, "Songti TC",
+    "Noto Serif CJK TC", serif;
+  --font-han-quote: "LXGW WenKai Mono TC", "Kaiti TC", "Kaiti SC", STKaiti,
+    serif;
+
+  --measure-lesson: 52rem;
+  --measure-copy: 32rem;
+  --measure-study: 29rem;
 }
+
+/* Document foundation */
 
 * {
   box-sizing: border-box;
@@ -36,6 +55,14 @@ button {
   font: inherit;
 }
 
+.lesson-complete button:focus-visible,
+.profile-button:focus-visible,
+.nav-tab:focus-visible,
+.brand:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 4px;
+}
+
 body::before {
   position: fixed;
   z-index: 1;
@@ -47,6 +74,8 @@ body::before {
   pointer-events: none;
 }
 
+/* Application shell */
+
 .paper {
   min-height: 100svh;
   background:
@@ -55,6 +84,8 @@ body::before {
     url("/paper-texture.png") center / cover fixed,
     var(--paper);
 }
+
+/* Site header */
 
 .topbar {
   display: grid;
@@ -83,14 +114,14 @@ body::before {
   place-items: center;
   background: #b64f3b;
   color: #fff8eb;
-  font-family: "Songti TC", "Noto Serif CJK TC", Georgia, serif;
+  font-family: var(--font-han-brand);
   font-size: 1rem;
   line-height: 1;
 }
 
 .brand-name {
   color: #242822;
-  font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-size: 1.35rem;
   font-weight: 700;
   letter-spacing: -0.015em;
@@ -110,7 +141,7 @@ body::before {
   height: 100%;
   color: #68706a;
   text-decoration: none;
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.875rem;
   font-weight: 650;
 }
@@ -142,7 +173,7 @@ body::before {
   background: rgb(255 252 244 / 72%);
   color: #3e735f;
   cursor: pointer;
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.72rem;
   font-weight: 750;
 }
@@ -150,6 +181,8 @@ body::before {
 .profile-button:hover {
   background: rgb(255 252 244 / 96%);
 }
+
+/* Lesson frame and body copy */
 
 .lesson-shell {
   position: relative;
@@ -159,12 +192,22 @@ body::before {
 }
 
 .lesson {
-  width: min(100%, 52rem);
+  width: min(100%, var(--measure-lesson));
   margin: 0 auto;
-  font-family: "Source Serif 4", Georgia, "Times New Roman", "LXGW WenKai Mono TC",
-    serif;
+  font-family: var(--font-manuscript);
   text-align: center;
 }
+
+.lesson-manuscript > p {
+  width: min(100%, var(--measure-copy));
+  margin: 1.4rem auto 0;
+  color: #565850;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.9;
+}
+
+/* Lesson heading and progress */
 
 .lesson-heading {
   position: relative;
@@ -178,7 +221,7 @@ body::before {
 .quote-source,
 .character-forms figcaption span,
 .form-label {
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-weight: 750;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -193,7 +236,6 @@ body::before {
 }
 
 .lesson-heading h1 {
-  /* margin: 0.75rem 0 0.45rem; */
   font-size: clamp(2rem, 5vw, 2.65rem);
   font-weight: 500;
   letter-spacing: -0.035em;
@@ -201,7 +243,6 @@ body::before {
 }
 
 .lesson-subtitle {
-  /* margin-top: 24px; */
   color: var(--muted);
   font-size: 0.98rem;
   font-style: italic;
@@ -215,7 +256,7 @@ body::before {
   gap: 0.8rem;
   margin-top: 2.7rem;
   color: var(--faint);
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -234,18 +275,11 @@ body::before {
   background: var(--red);
 }
 
-.lesson-manuscript>p {
-  width: min(100%, 32rem);
-  margin: 1.4rem auto 0;
-  color: #565850;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.9;
-}
+/* Character sections */
 
 .char-display {
   position: relative;
-  width: min(100%, 29rem);
+  width: min(100%, var(--measure-study));
   margin: 8rem auto 2.8rem;
   text-align: center;
 }
@@ -266,25 +300,26 @@ body::before {
   place-items: center;
   background: var(--red);
   color: #fffaf1;
-  font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+  font-family: var(--font-serif);
   font-size: 0.9rem;
   line-height: 1;
 }
 
 .form-glyph,
 .character-focus {
-  font-family: "Kaiti TC", "Kaiti SC", STKaiti, "Songti TC", "Noto Serif CJK TC",
-    serif;
+  font-family: var(--font-han-handwritten);
   font-weight: 400;
 }
 
 .study-character {
   margin: 0.75rem 0 0;
-  font-family: "Noto Serif TC", "Noto Serif CJK TC", "Songti TC", serif;
+  font-family: var(--font-han-display);
   font-size: clamp(5.4rem, 14vw, 7.35rem);
   font-weight: 400;
   line-height: 1;
 }
+
+/* Quotations */
 
 .lesson-quote {
   position: relative;
@@ -317,35 +352,32 @@ body::before {
 
 .lesson-quote :lang(zh-Hant),
 .lesson-note :lang(zh-Hant) {
-  font-family: "LXGW WenKai Mono TC", "Kaiti TC", "Kaiti SC", STKaiti, serif;
+  font-family: var(--font-han-quote);
 }
 
-.lesson-quote>p:lang(zh-Hant) {
+.lesson-quote > p:lang(zh-Hant) {
   font-weight: 300;
 }
 
 .quote-source {
   margin-top: 1.15rem;
-  /* color: #85877f; */
   color: var(--red);
   font-size: 0.54rem;
   font-style: normal;
 }
 
-/* .quote-source::before {
-  content: "— ";
-} */
-
 .quote-source-pending {
   color: #a39b8d;
 }
+
+/* Category breaks */
 
 .category-break {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.1rem;
-  width: min(100%, 32rem);
+  width: min(100%, var(--measure-copy));
   margin: 8rem auto 5rem;
   color: #62645d;
   text-align: center;
@@ -353,7 +385,7 @@ body::before {
 
 .category-break span {
   color: var(--red);
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.61rem;
   font-weight: 750;
   letter-spacing: 0.16em;
@@ -367,8 +399,10 @@ body::before {
   line-height: 1.75;
 }
 
+/* Historical form studies */
+
 .character-forms {
-  width: min(100%, 29rem);
+  width: min(100%, var(--measure-study));
   margin: 2.65rem auto;
 }
 
@@ -416,7 +450,12 @@ body::before {
   width: 3.2rem;
   height: 3.2rem;
   border: 1px dashed rgb(84 72 52 / 24%);
-  background: linear-gradient(135deg, transparent 49%, rgb(84 72 52 / 12%) 50%, transparent 51%);
+  background: linear-gradient(
+    135deg,
+    transparent 49%,
+    rgb(84 72 52 / 12%) 50%,
+    transparent 51%
+  );
 }
 
 .form-label {
@@ -426,8 +465,10 @@ body::before {
   text-align: center;
 }
 
+/* Commentary */
+
 .lesson-note {
-  width: min(100%, 32rem);
+  width: min(100%, var(--measure-copy));
   margin: 4.25rem auto;
   padding: 2rem 2.25rem 2.15rem;
   border: 1px solid rgb(84 72 52 / 20%);
@@ -444,8 +485,8 @@ body::before {
   margin: 1.15rem 0 0;
 }
 
-.lesson-note .note-title+p,
-.lesson-note>p:first-of-type {
+.lesson-note .note-title + p,
+.lesson-note > p:first-of-type {
   margin-top: 0;
 }
 
@@ -479,20 +520,17 @@ body::before {
   line-height: 1;
 }
 
+/* Lesson completion and dividers */
+
 .lesson-complete {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: min(100%, 34rem);
-  margin: 8rem auto 1rem;
-  padding: 0 2rem 3.5rem;
-  text-align: center;
+  display: contents;
 }
 
 .lesson-closing-quote {
-  margin: 0;
+  width: max-content;
+  margin: 70px auto 0;
   color: var(--ink);
-  font-family: "LXGW WenKai Mono TC", "Kaiti TC", "Kaiti SC", STKaiti, serif;
+  font-family: var(--font-han-quote);
   font-size: 1.35rem;
   font-weight: 300;
   letter-spacing: 0.3em;
@@ -503,7 +541,7 @@ body::before {
 }
 
 .lesson-divider {
-  width: min(100%, 32rem);
+  width: min(100%, var(--measure-copy));
   border: 0;
 }
 
@@ -515,14 +553,16 @@ body::before {
 .lesson-divider-dashed {
   height: 1px;
   margin: 5rem auto;
-  background: repeating-linear-gradient(to right,
-      rgb(84 72 52 / 38%) 0 0.45rem,
-      transparent 0.45rem 0.85rem);
+  background: repeating-linear-gradient(
+    to right,
+    rgb(84 72 52 / 38%) 0 0.45rem,
+    transparent 0.45rem 0.85rem
+  );
 }
 
-.lesson-divider+.category-break,
-.lesson-divider+.char-display,
-.lesson-divider+.lesson-note {
+.lesson-divider + .category-break,
+.lesson-divider + .char-display,
+.lesson-divider + .lesson-note {
   margin-top: 0;
 }
 
@@ -540,13 +580,13 @@ body::before {
 }
 
 .lesson-complete button {
-  margin-top: 7rem;
+  margin: 0;
   padding: 0.8rem 1.5rem;
   border: 0;
   background: var(--red);
   color: #fffaf1;
   cursor: pointer;
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.74rem;
   font-weight: 750;
   letter-spacing: 0.02em;
@@ -556,13 +596,7 @@ body::before {
   background: #b8343a;
 }
 
-.lesson-complete button:focus-visible,
-.profile-button:focus-visible,
-.nav-tab:focus-visible,
-.brand:focus-visible {
-  outline: 2px solid var(--green);
-  outline-offset: 4px;
-}
+/* Responsive adjustments */
 
 @media (max-width: 740px) {
   .lesson-shell {
@@ -586,14 +620,6 @@ body::before {
   .category-break {
     margin-top: 6.5rem;
     margin-bottom: 4.5rem;
-  }
-
-  .lesson-complete {
-    margin-top: 6.5rem;
-  }
-
-  .lesson-complete button {
-    margin-top: 6rem;
   }
 }
 
@@ -621,7 +647,7 @@ body::before {
     display: none;
   }
 
-  .lesson-manuscript>p {
+  .lesson-manuscript > p {
     font-size: 0.91rem;
     line-height: 1.82;
   }
