@@ -366,6 +366,10 @@ body::before {
   font-style: normal;
 }
 
+.quote-source a {
+  text-decoration: none;
+}
+
 .quote-source-pending {
   color: #a39b8d;
 }
