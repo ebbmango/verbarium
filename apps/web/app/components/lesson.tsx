@@ -55,15 +55,22 @@ export function CharDisplay({ character, label }: CharDisplayProps) {
 
 type QuoteProps = PropsWithChildren<{
   source?: string;
+  sourceHref?: string;
   sourcePending?: boolean;
 }>;
 
-export function Quote({ children, source, sourcePending = false }: QuoteProps) {
+export function Quote({ children, source, sourceHref, sourcePending = false }: QuoteProps) {
   return (
     <blockquote className="lesson-quote">
       {children}
       <footer className={sourcePending ? "quote-source quote-source-pending" : "quote-source"}>
-        {sourcePending ? "Source pending" : source}
+        {sourcePending ? (
+          "Source pending"
+        ) : sourceHref ? (
+          <a href={sourceHref}>{source}</a>
+        ) : (
+          source
+        )}
       </footer>
     </blockquote>
   );
