@@ -1,5 +1,5 @@
-import { render, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { act, fireEvent, render, within } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { wangBiNotesOnOne } from "../content/quotes/wang-bi-notes-on-one";
 import type { QuoteSlicerExport } from "../quote-slicer-export";
@@ -12,6 +12,17 @@ function textWithAuthoredBreaks(element: Element): string {
     return node.textContent ?? "";
   }).join("");
 }
+
+function token(paragraph: Element, id: number): HTMLElement {
+  const element = paragraph.querySelector(`[data-token-id="${id}"]`);
+
+  expect(element).not.toBeNull();
+  return element as HTMLElement;
+}
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe("LegacyQuote", () => {
   it("preserves authored quotation content and linked provenance", () => {
@@ -105,5 +116,293 @@ describe("Quote", () => {
     expect(quotation).not.toHaveTextContent("Wrong target order");
     expect(provenance).toHaveTextContent("An unlinked textual witness");
     expect(within(provenance as HTMLElement).queryByRole("link")).not.toBeInTheDocument();
+  });
+
+  it("activates every member of a many-to-many mapping after the cold delay", () => {
+    vi.useFakeTimers();
+
+    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const quotation = container.querySelector("blockquote.lesson-quote");
+    const source = quotation?.children[0] as Element;
+    const target = quotation?.children[1] as Element;
+    const firstYe = token(source, 6);
+    const secondYe = token(source, 11);
+    const targetIs = token(target, 2);
+
+    fireEvent.pointerEnter(firstYe);
+    act(() => vi.advanceTimersByTime(499));
+
+    expect(firstYe.style.color).toBe("");
+    expect(secondYe.style.color).toBe("");
+    expect(targetIs.style.color).toBe("");
+
+    act(() => vi.advanceTimersByTime(1));
+
+    expect(firstYe.style.color).toBe("var(--red)");
+    expect(secondYe.style.color).toBe("var(--red)");
+    expect(targetIs.style.color).toBe("var(--red)");
+  });
+
+  it("activates an unsorted mapping from the target without changing rendered order", () => {
+    vi.useFakeTimers();
+
+    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const quotation = container.querySelector("blockquote.lesson-quote");
+    const source = quotation?.children[0] as Element;
+    const target = quotation?.children[1] as Element;
+
+    fireEvent.pointerEnter(token(target, 4));
+    act(() => vi.advanceTimersByTime(500));
+
+    expect(token(source, 5).style.color).toBe("var(--red)");
+    expect(token(target, 4).style.color).toBe("var(--red)");
+    expect(token(target, 6).style.color).toBe("var(--red)");
+    expect(target.textContent).toBe("One is the origin of number and the utmost of things.");
+  });
+
+  it("does not restart pending activation or flicker active color within one mapping", () => {
+    vi.useFakeTimers();
+
+    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const source = container.querySelector("blockquote.lesson-quote")?.children[0] as Element;
+    const firstYe = token(source, 6);
+    const secondYe = token(source, 11);
+
+    fireEvent.pointerEnter(firstYe);
+    act(() => vi.advanceTimersByTime(400));
+    fireEvent.pointerEnter(secondYe);
+    act(() => vi.advanceTimersByTime(100));
+
+    expect(firstYe.style.color).toBe("var(--red)");
+    expect(secondYe.style.color).toBe("var(--red)");
+
+    fireEvent.pointerEnter(firstYe);
+    expect(firstYe.style.color).toBe("var(--red)");
+    expect(secondYe.style.color).toBe("var(--red)");
+  });
+
+  it("keeps equal source and target IDs independent for one-sided mappings", () => {
+    vi.useFakeTimers();
+
+    const oneSidedQuote = {
+      meta: { sourceText: "甲", targetText: "Alpha", provenance: "A witness" },
+      sourceTokens: [{ id: 0, text: "甲", pinyin: null, line: 0, type: "character" }],
+      targetTokens: [{ id: 0, text: "Alpha", line: 0, type: "text" }],
+      mappings: [
+        { id: "source-only", sourceTokenIds: [0], targetTokenIds: [] },
+        { id: "target-only", sourceTokenIds: [], targetTokenIds: [0] },
+      ],
+    } satisfies QuoteSlicerExport;
+
+    const sourceRender = render(<Quote quote={oneSidedQuote} />);
+    const sourceParagraph = sourceRender.container.querySelector("blockquote")?.children[0] as Element;
+    const targetParagraph = sourceRender.container.querySelector("blockquote")?.children[1] as Element;
+
+    fireEvent.pointerEnter(token(sourceParagraph, 0));
+    act(() => vi.advanceTimersByTime(500));
+
+    expect(token(sourceParagraph, 0).style.color).toBe("var(--red)");
+    expect(token(targetParagraph, 0).style.color).toBe("");
+
+    sourceRender.unmount();
+
+    const targetRender = render(<Quote quote={oneSidedQuote} />);
+    const nextSourceParagraph = targetRender.container.querySelector("blockquote")?.children[0] as Element;
+    const nextTargetParagraph = targetRender.container.querySelector("blockquote")?.children[1] as Element;
+
+    fireEvent.pointerEnter(token(nextTargetParagraph, 0));
+    act(() => vi.advanceTimersByTime(500));
+
+    expect(token(nextSourceParagraph, 0).style.color).toBe("");
+    expect(token(nextTargetParagraph, 0).style.color).toBe("var(--red)");
+  });
+
+  it("clears immediately when the pointer enters an unmapped source or target token", () => {
+    vi.useFakeTimers();
+
+    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const quotation = container.querySelector("blockquote") as Element;
+    const source = quotation.children[0] as Element;
+    const target = quotation.children[1] as Element;
+    const mappedOne = token(source, 0);
+
+    fireEvent.pointerEnter(mappedOne);
+    act(() => vi.advanceTimersByTime(500));
+    expect(mappedOne.style.color).toBe("var(--red)");
+
+    fireEvent.pointerEnter(token(source, 1));
+
+    expect(mappedOne.style.color).toBe("");
+
+    const targetOne = token(target, 0);
+    fireEvent.pointerEnter(targetOne);
+    act(() => vi.advanceTimersByTime(300));
+    expect(targetOne.style.color).toBe("var(--red)");
+
+    fireEvent.pointerEnter(token(target, 12));
+    expect(targetOne.style.color).toBe("");
+  });
+
+  it("cancels pending work and clears active color when either paragraph is left", () => {
+    vi.useFakeTimers();
+
+    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const quotation = container.querySelector("blockquote") as Element;
+    const source = quotation.children[0] as Element;
+    const target = quotation.children[1] as Element;
+    const sourceOne = token(source, 0);
+    const targetOne = token(target, 0);
+
+    fireEvent.pointerEnter(sourceOne);
+    act(() => vi.advanceTimersByTime(400));
+    fireEvent.pointerLeave(source);
+    act(() => vi.advanceTimersByTime(100));
+    expect(sourceOne.style.color).toBe("");
+
+    fireEvent.pointerEnter(targetOne);
+    act(() => vi.advanceTimersByTime(500));
+    expect(targetOne.style.color).toBe("var(--red)");
+
+    fireEvent.pointerLeave(target);
+    expect(targetOne.style.color).toBe("");
+  });
+
+  it("retains active mapping A until mapping B activates after the warm delay", () => {
+    vi.useFakeTimers();
+
+    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const quotation = container.querySelector("blockquote") as Element;
+    const source = quotation.children[0] as Element;
+    const target = quotation.children[1] as Element;
+    const mappingA = token(source, 0);
+    const mappingB = token(source, 3);
+
+    fireEvent.pointerEnter(mappingA);
+    act(() => vi.advanceTimersByTime(500));
+    fireEvent.pointerEnter(mappingB);
+    act(() => vi.advanceTimersByTime(299));
+
+    expect(mappingA.style.color).toBe("var(--red)");
+    expect(mappingB.style.color).toBe("");
+
+    act(() => vi.advanceTimersByTime(1));
+
+    expect(mappingA.style.color).toBe("");
+    expect(mappingB.style.color).toBe("var(--red)");
+    expect(token(target, 10).style.color).toBe("var(--red)");
+  });
+
+  it("uses the warm delay only during the 500 ms grace period", () => {
+    vi.useFakeTimers();
+
+    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const source = container.querySelector("blockquote")?.children[0] as Element;
+    const mappingA = token(source, 0);
+    const mappingB = token(source, 3);
+
+    fireEvent.pointerEnter(mappingA);
+    act(() => vi.advanceTimersByTime(500));
+    fireEvent.pointerEnter(token(source, 1));
+    fireEvent.pointerEnter(mappingB);
+    act(() => vi.advanceTimersByTime(299));
+    expect(mappingB.style.color).toBe("");
+
+    act(() => vi.advanceTimersByTime(1));
+    expect(mappingB.style.color).toBe("var(--red)");
+
+    fireEvent.pointerEnter(token(source, 1));
+    act(() => vi.advanceTimersByTime(500));
+    fireEvent.pointerEnter(mappingA);
+    act(() => vi.advanceTimersByTime(300));
+    expect(mappingA.style.color).toBe("");
+
+    act(() => vi.advanceTimersByTime(200));
+    expect(mappingA.style.color).toBe("var(--red)");
+  });
+
+  it("retains the active mapping across target whitespace and an internal gap", () => {
+    vi.useFakeTimers();
+
+    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const target = container.querySelector("blockquote")?.children[1] as Element;
+    const targetOne = token(target, 0);
+
+    fireEvent.pointerEnter(targetOne);
+    act(() => vi.advanceTimersByTime(500));
+    expect(targetOne.style.color).toBe("var(--red)");
+
+    fireEvent.pointerEnter(token(target, 1));
+    expect(targetOne.style.color).toBe("var(--red)");
+
+    fireEvent.pointerEnter(target);
+    expect(targetOne.style.color).toBe("var(--red)");
+  });
+
+  it("cancels pending timers when the export changes or the quotation unmounts", () => {
+    vi.useFakeTimers();
+
+    const replacementQuote = {
+      ...wangBiNotesOnOne,
+      mappings: [
+        {
+          id: wangBiNotesOnOne.mappings[0].id,
+          sourceTokenIds: [3],
+          targetTokenIds: [],
+        },
+      ],
+    } satisfies QuoteSlicerExport;
+    const quoteRender = render(<Quote quote={wangBiNotesOnOne} />);
+    const originalSource = quoteRender.container.querySelector("blockquote")?.children[0] as Element;
+
+    fireEvent.pointerEnter(token(originalSource, 0));
+    act(() => vi.advanceTimersByTime(400));
+    quoteRender.rerender(<Quote quote={replacementQuote} />);
+    act(() => vi.advanceTimersByTime(100));
+
+    const replacementSource = quoteRender.container.querySelector("blockquote")?.children[0] as Element;
+    const replacementMember = token(replacementSource, 3);
+    expect(replacementMember.style.color).toBe("");
+
+    fireEvent.pointerEnter(replacementMember);
+    act(() => vi.advanceTimersByTime(499));
+    expect(replacementMember.style.color).toBe("");
+    act(() => vi.advanceTimersByTime(1));
+    expect(replacementMember.style.color).toBe("var(--red)");
+
+    quoteRender.unmount();
+
+    const pendingRender = render(<Quote quote={wangBiNotesOnOne} />);
+    const pendingSource = pendingRender.container.querySelector("blockquote")?.children[0] as Element;
+    fireEvent.pointerEnter(token(pendingSource, 0));
+    expect(vi.getTimerCount()).toBe(1);
+
+    pendingRender.unmount();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("changes only active text color and removes its presentation immediately on clear", () => {
+    vi.useFakeTimers();
+
+    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const source = container.querySelector("blockquote")?.children[0] as Element;
+    const activeToken = token(source, 0);
+    const restingToken = token(source, 1);
+
+    fireEvent.pointerEnter(activeToken);
+    act(() => vi.advanceTimersByTime(500));
+
+    expect(activeToken).toHaveClass("quote-token-active");
+    expect(activeToken.style.color).toBe("var(--red)");
+    expect(activeToken.style.background).toBe("");
+    expect(activeToken.style.fontWeight).toBe("");
+    expect(activeToken.style.opacity).toBe("");
+    expect(activeToken.style.padding).toBe("");
+    expect(restingToken).not.toHaveClass("quote-token-active");
+    expect(restingToken.getAttribute("style")).toBeNull();
+
+    fireEvent.pointerEnter(restingToken);
+
+    expect(activeToken).not.toHaveClass("quote-token-active");
+    expect(activeToken.style.color).toBe("");
   });
 });
