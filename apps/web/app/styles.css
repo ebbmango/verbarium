@@ -359,6 +359,14 @@ body::before {
   font-weight: 300;
 }
 
+.quote-source-group {
+  white-space: nowrap;
+}
+
+.quote-target-whitespace {
+  white-space: break-spaces;
+}
+
 .quote-source {
   margin-top: 1.15rem;
   color: var(--red);

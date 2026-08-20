@@ -1,5 +1,9 @@
 import type { ComponentPropsWithoutRef, PropsWithChildren } from "react";
 
+import { LegacyQuote, Quote } from "./quote";
+
+export { LegacyQuote, Quote } from "./quote";
+
 type LessonHeaderProps = {
   number: number;
   primitive: string;
@@ -50,29 +54,6 @@ export function CharDisplay({ character, label }: CharDisplayProps) {
         {character}
       </h2>
     </div>
-  );
-}
-
-type QuoteProps = PropsWithChildren<{
-  source?: string;
-  sourceHref?: string;
-  sourcePending?: boolean;
-}>;
-
-export function Quote({ children, source, sourceHref, sourcePending = false }: QuoteProps) {
-  return (
-    <blockquote className="lesson-quote">
-      {children}
-      <footer className={sourcePending ? "quote-source quote-source-pending" : "quote-source"}>
-        {sourcePending ? (
-          "Source pending"
-        ) : sourceHref ? (
-          <a href={sourceHref}>{source}</a>
-        ) : (
-          source
-        )}
-      </footer>
-    </blockquote>
   );
 }
 
@@ -162,6 +143,7 @@ export const lessonComponents = {
   LessonComplete,
   LessonHeader,
   LessonTracker,
+  LegacyQuote,
   Quote,
   SectionBreak,
 };

@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "pnpm --filter @verbarium/web dev",
     "build": "pnpm --filter @verbarium/web build",
+    "test": "pnpm --filter @verbarium/web test",
     "typecheck": "pnpm --filter @verbarium/web typecheck"
   }
 }
