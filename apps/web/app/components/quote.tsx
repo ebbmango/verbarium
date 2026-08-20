@@ -171,7 +171,9 @@ function QuoteFrame({ children, provenance, sourceHref, sourcePending = false }:
         {sourcePending ? (
           "Source pending"
         ) : sourceHref ? (
-          <a href={sourceHref}>{provenance}</a>
+          <a href={sourceHref} rel="noopener noreferrer" target="_blank">
+            {provenance}
+          </a>
         ) : (
           provenance
         )}

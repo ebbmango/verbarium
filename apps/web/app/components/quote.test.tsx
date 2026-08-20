@@ -43,10 +43,10 @@ describe("LegacyQuote", () => {
 
     const provenance = quotation?.children[2];
     expect(provenance).toHaveClass("quote-source");
-    expect(within(provenance as HTMLElement).getByRole("link", { name: "The textual witness" })).toHaveAttribute(
-      "href",
-      "https://example.com/witness",
-    );
+    const sourceLink = within(provenance as HTMLElement).getByRole("link", { name: "The textual witness" });
+    expect(sourceLink).toHaveAttribute("href", "https://example.com/witness");
+    expect(sourceLink).toHaveAttribute("target", "_blank");
+    expect(sourceLink).toHaveAttribute("rel", "noopener noreferrer");
   });
 });
 
@@ -74,10 +74,12 @@ describe("Quote", () => {
     expect(target?.querySelectorAll("br")).toHaveLength(0);
 
     const provenance = quotation?.children[2];
-    expect(within(provenance as HTMLElement).getByRole("link", { name: "Wang Bi’s notes on the Dao De Jing" })).toHaveAttribute(
-      "href",
-      "https://ctext.org/dao-de-zhen-jing-zhu#n90518",
-    );
+    const sourceLink = within(provenance as HTMLElement).getByRole("link", {
+      name: "Wang Bi’s notes on the Dao De Jing",
+    });
+    expect(sourceLink).toHaveAttribute("href", "https://ctext.org/dao-de-zhen-jing-zhu#n90518");
+    expect(sourceLink).toHaveAttribute("target", "_blank");
+    expect(sourceLink).toHaveAttribute("rel", "noopener noreferrer");
     expect(quotation).not.toHaveTextContent("yi1");
     expect(quotation).not.toHaveTextContent("shu4");
   });
