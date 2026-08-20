@@ -38,7 +38,11 @@ This document is a handoff for future chats. It records only deferred ideas and 
 
 ## 2. Explore responsive quote wrapping
 
-**Status:** Deferred; research and test before implementation.
+**Status:** Superseded for interactive `Quote` content; retained for `LegacyQuote` mock-ups.
+
+**Updated direction:** For an interactive quote, the ordered token arrays and their `line` fields are the authority for authored line breaks. Do not preserve or infer line breaks from the existing MDX `<br />` elements. Natural wrapping may still occur within an authored line when the viewport requires it. `LegacyQuote` remains available for quickly mocking up emerging content with authored children and `<br />` elements.
+
+**Post-MVP direction:** Coordinate a future Quote Slicer line model that can author different intentional line breaks for different viewport ranges, then teach Verbarium to consume those variants. The October 2026 MVP is desktop-first and does not include this model.
 
 **Goal:** Let original quote text and translations adopt pleasing, different line breaks at wide and narrow widths without maintaining separate copies of the content.
 
@@ -96,3 +100,63 @@ These approaches respond automatically to the available width and keep the MDX c
 **Status:** Deferred; do not implement now.
 
 `LessonHeader` receives `total`, and `.lesson-progress`, `.progress-line`, and related CSS already exist, but the component does not render them. This can be revisited when navigation and multi-lesson behavior are in scope.
+
+## 6. Decide how unavailable provenance links are communicated
+
+**Status:** Deferred; preserve the current quote-source styling for the first interactive renderer.
+
+Quote Slicer currently exports provenance text but not a provenance/source URL. Initially, render the provenance with the existing `.quote-source` treatment whether or not it is linked. Later, decide whether the absence of a link warrants distinct styling or other feedback, and distinguish a genuinely unavailable link from provenance that is still editorially unresolved.
+
+Coordinate the long-term answer with Quote Slicer's export contract and Verbarium's future source/bibliography model.
+
+## 7. Establish a machine-readable Quote Slicer interchange
+
+**Status:** Deferred cross-repository work; use typed `.ts` data modules in Verbarium for now.
+
+Quote Slicer's display formatter can emit bare `undefined` for unannotated pinyin. Bare `undefined` is valid in a TypeScript object literal but invalid in JSON. A strict JSON export should omit that optional `pinyin` property; `null` should remain available for the distinct “not applicable” state.
+
+Define and coordinate:
+
+- a strict machine-export path in Quote Slicer;
+- schema/version compatibility and validation in Verbarium;
+- an explicit migration procedure for every breaking export-model change, coordinated across Quote Slicer, persisted quote data, and Verbarium;
+- eventual export of the selected provenance/source link;
+- the boundary between an authoring export and the future database record.
+
+## 8. Validate Quote Slicer exports at the ingestion seam
+
+**Status:** Deferred; explicitly outside the first interactive-renderer implementation.
+
+TypeScript can check the field shapes of locally imported exports, but it cannot prove their relational invariants. Before exports arrive from a database or another runtime source, add validation for duplicate token and mapping IDs, dangling token references, overlapping mapping ownership, invalid line progression, and unsupported schema versions.
+
+Keep validation at the ingestion seam so the quote renderer can operate on trusted data without duplicating recovery rules throughout its implementation.
+
+## 9. Finalize Quote ID semantics
+
+**Status:** Deferred to the database-backed quote-reference architecture; record an ADR before implementation.
+
+The proposed public format is `LNNNTQNN`, for example `L001AQ01`: lesson number, subsection tag, and per-subsection quote number. Before treating it as a permanent identifier, decide:
+
+- whether it identifies a source passage, a complete source–translation–alignment aggregate, or one lesson occurrence;
+- whether its quote number is an immutable accession number or the quotation's current display order;
+- what happens when a quotation is inserted, reordered, moved, reused, retired, or replaced;
+- whether the subsection tag is specifically the lesson's `A`–`J`-style character-study label;
+- whether the one-letter tag, `001`–`177` lesson range, and `01`–`99` quote range are permanent limits;
+- how untagged quotations are identified;
+- whether the compact spelling supersedes Hylia's existing `L001A_Q01` example;
+- which system allocates IDs and prevents collisions;
+- which textual, translation, and alignment edits preserve the same ID.
+
+The current renderer does not need Quote IDs and must not encode provisional answers to these questions.
+
+## 10. Add transliteration presentation
+
+**Status:** Post-MVP; defer until after the October 2026 release target.
+
+Quote Slicer exports pinyin metadata, and the interactive renderer should retain it in the input data without displaying it. Later work must decide where transliteration appears, whether it is persistent or interaction-driven, and how it affects quote layout and accessibility.
+
+## 11. Reconsider `LegacyQuote` feedback
+
+**Status:** Deferred; use the current quotation styling without a badge or warning in the MVP.
+
+`LegacyQuote` remains a supported tool for mocking up emerging lesson content before a Quote Slicer export exists. Later, decide whether authors or readers need visual feedback that a quotation is static and provisional. Its absence of highlighting is the only distinction for now.
