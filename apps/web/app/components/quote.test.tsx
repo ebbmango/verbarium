@@ -1,6 +1,7 @@
 import { act, fireEvent, render, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { shuowenJieziOnOne } from "../content/quotes/shuowen-jiezi-on-one";
 import { wangBiNotesOnOne } from "../content/quotes/wang-bi-notes-on-one";
 import type { QuoteSlicerExport } from "../quote-slicer-export";
 import { LegacyQuote, Quote } from "./quote";
@@ -82,6 +83,29 @@ describe("Quote", () => {
     expect(sourceLink).toHaveAttribute("rel", "noopener noreferrer");
     expect(quotation).not.toHaveTextContent("yi1");
     expect(quotation).not.toHaveTextContent("shu4");
+  });
+
+  it("rebuilds the second quotation with its authored line breaks", () => {
+    const { container } = render(
+      <Quote
+        quote={shuowenJieziOnOne}
+        sourceHref="https://ctext.org/shuo-wen-jie-zi/yi-bu#n26162"
+      />,
+    );
+
+    const quotation = container.querySelector("blockquote.lesson-quote");
+    const source = quotation?.children[0] as Element;
+    const target = quotation?.children[1] as Element;
+    const provenance = quotation?.children[2] as HTMLElement;
+
+    expect(textWithAuthoredBreaks(source)).toBe("惟初太始，道立於一，\n造分天地，化成萬物。");
+    expect(textWithAuthoredBreaks(target)).toBe(
+      "At the very beginning, at the great origin,\nthe Dao was established in One.\nIt created and separated Heaven and Earth,\ntransforming into all things.",
+    );
+
+    const sourceLink = within(provenance).getByRole("link", { name: "Shuowen Jiezi" });
+    expect(sourceLink).toHaveAttribute("href", "https://ctext.org/shuo-wen-jie-zi/yi-bu#n26162");
+    expect(quotation).not.toHaveTextContent("chu1");
   });
 
   it("uses token order and line assignments instead of flattened metadata", () => {
