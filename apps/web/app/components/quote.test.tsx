@@ -23,6 +23,7 @@ function token(paragraph: Element, id: number): HTMLElement {
 
 afterEach(() => {
   vi.useRealTimers();
+  vi.restoreAllMocks();
 });
 
 describe("LegacyQuote", () => {
@@ -404,6 +405,115 @@ describe("Quote", () => {
 
     pendingRender.unmount();
     expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("activates, toggles, switches, and clears mappings immediately on touch", () => {
+    vi.useFakeTimers();
+
+    const { container } = render(
+      <div>
+        <Quote quote={wangBiNotesOnOne} />
+        <button type="button">Outside the quotation</button>
+      </div>,
+    );
+    const quotation = container.querySelector("blockquote") as Element;
+    const source = quotation.children[0] as Element;
+    const target = quotation.children[1] as Element;
+    const sourceOne = token(source, 0);
+    const targetOne = token(target, 0);
+    const otherMapping = token(source, 3);
+
+    fireEvent.touchStart(sourceOne);
+    expect(sourceOne.style.color).toBe("var(--red)");
+    expect(targetOne.style.color).toBe("var(--red)");
+    expect(vi.getTimerCount()).toBe(0);
+
+    fireEvent.touchStart(sourceOne);
+    expect(sourceOne.style.color).toBe("");
+
+    fireEvent.touchStart(otherMapping);
+    expect(otherMapping.style.color).toBe("var(--red)");
+    fireEvent.touchStart(targetOne);
+    expect(otherMapping.style.color).toBe("");
+    expect(sourceOne.style.color).toBe("var(--red)");
+
+    fireEvent.touchStart(token(source, 1));
+    expect(sourceOne.style.color).toBe("");
+
+    fireEvent.touchStart(targetOne);
+    fireEvent.touchStart(within(container).getByRole("button", { name: "Outside the quotation" }));
+    expect(targetOne.style.color).toBe("");
+  });
+
+  it("keeps touch selection exclusive across quotations", () => {
+    const { container } = render(
+      <>
+        <Quote quote={wangBiNotesOnOne} />
+        <Quote quote={shuowenJieziOnOne} />
+      </>,
+    );
+    const quotations = container.querySelectorAll("blockquote");
+    const firstSource = quotations[0].children[0] as Element;
+    const secondSource = quotations[1].children[0] as Element;
+    const firstMapping = token(firstSource, 0);
+    const secondMapping = token(secondSource, 1);
+
+    fireEvent.touchStart(firstMapping);
+    expect(firstMapping.style.color).toBe("var(--red)");
+
+    fireEvent.touchStart(secondMapping);
+    expect(firstMapping.style.color).toBe("");
+    expect(secondMapping.style.color).toBe("var(--red)");
+  });
+
+  it("cancels hover work, resets warmth, and guards synthetic pointer events after touch", () => {
+    vi.useFakeTimers();
+
+    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const source = container.querySelector("blockquote")?.children[0] as Element;
+    const mappingA = token(source, 0);
+    const mappingB = token(source, 3);
+
+    fireEvent.pointerEnter(mappingA);
+    act(() => vi.advanceTimersByTime(500));
+    fireEvent.pointerEnter(token(source, 1));
+    expect(vi.getTimerCount()).toBe(1);
+
+    fireEvent.touchStart(mappingB);
+    expect(mappingB.style.color).toBe("var(--red)");
+    expect(vi.getTimerCount()).toBe(0);
+
+    fireEvent.touchStart(mappingB);
+    fireEvent.pointerEnter(mappingB);
+    act(() => vi.advanceTimersByTime(500));
+    expect(mappingB.style.color).toBe("");
+    expect(vi.getTimerCount()).toBe(0);
+
+    act(() => vi.advanceTimersByTime(1));
+    fireEvent.pointerEnter(mappingA);
+    act(() => vi.advanceTimersByTime(300));
+    expect(mappingA.style.color).toBe("");
+    act(() => vi.advanceTimersByTime(200));
+    expect(mappingA.style.color).toBe("var(--red)");
+  });
+
+  it("replaces and removes document touch coordination with the quotation lifecycle", () => {
+    const addEventListener = vi.spyOn(document, "addEventListener");
+    const removeEventListener = vi.spyOn(document, "removeEventListener");
+    const quoteRender = render(<Quote quote={wangBiNotesOnOne} />);
+    const firstTouchListener = addEventListener.mock.calls.find(([type]) => type === "touchstart")?.[1];
+
+    expect(firstTouchListener).toBeDefined();
+
+    quoteRender.rerender(<Quote quote={shuowenJieziOnOne} />);
+    const touchListeners = addEventListener.mock.calls.filter(([type]) => type === "touchstart");
+    const replacementTouchListener = touchListeners.at(-1)?.[1];
+
+    expect(removeEventListener).toHaveBeenCalledWith("touchstart", firstTouchListener);
+    expect(replacementTouchListener).not.toBe(firstTouchListener);
+
+    quoteRender.unmount();
+    expect(removeEventListener).toHaveBeenCalledWith("touchstart", replacementTouchListener);
   });
 
   it("changes only active text color and removes its presentation immediately on clear", () => {

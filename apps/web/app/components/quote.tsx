@@ -1,4 +1,13 @@
-import { Fragment, type CSSProperties, type PropsWithChildren, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Fragment,
+  type CSSProperties,
+  type PropsWithChildren,
+  type Ref,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import type { QuoteSlicerExport, SourceToken, TargetToken } from "../quote-slicer-export";
 
@@ -11,6 +20,7 @@ const leadingPunctuation = /^[\p{Ps}\p{Pi}]/u;
 const coldHighlightDelay = 500;
 const warmHighlightDelay = 300;
 const highlightWarmthGrace = 500;
+const syntheticMouseGuard = 500;
 
 type MappingIndexes = {
   source: Map<number, string>;
@@ -112,6 +122,7 @@ function SourceTokens({ interaction, tokens }: { interaction: TokenInteraction; 
                 className={tokenClassName(undefined, mappingId, interaction.activeMappingId)}
                 data-token-id={token.id}
                 data-token-type={token.type}
+                data-mapping-id={mappingId}
                 key={`source-${token.id}`}
                 onPointerEnter={() => interaction.onTokenPointerEnter(mappingId ?? null)}
                 style={activeTokenStyle(mappingId, interaction.activeMappingId)}
@@ -145,6 +156,7 @@ function TargetTokens({ interaction, tokens }: { interaction: TokenInteraction; 
         )}
         data-token-id={token.id}
         data-token-type={token.type}
+        data-mapping-id={mappingId}
         key={`target-${token.id}`}
         onPointerEnter={
           token.type === "whitespace" ? undefined : () => interaction.onTokenPointerEnter(mappingId ?? null)
@@ -159,13 +171,14 @@ function TargetTokens({ interaction, tokens }: { interaction: TokenInteraction; 
 
 type QuoteFrameProps = PropsWithChildren<{
   provenance?: string;
+  quotationRef?: Ref<HTMLQuoteElement>;
   sourceHref?: string;
   sourcePending?: boolean;
 }>;
 
-function QuoteFrame({ children, provenance, sourceHref, sourcePending = false }: QuoteFrameProps) {
+function QuoteFrame({ children, provenance, quotationRef, sourceHref, sourcePending = false }: QuoteFrameProps) {
   return (
-    <blockquote className="lesson-quote">
+    <blockquote className="lesson-quote" ref={quotationRef}>
       {children}
       <footer className={sourcePending ? "quote-source quote-source-pending" : "quote-source"}>
         {sourcePending ? (
@@ -184,7 +197,9 @@ function QuoteFrame({ children, provenance, sourceHref, sourcePending = false }:
 
 export function Quote({ quote, sourceHref }: QuoteProps) {
   const [activeMappingId, setActiveMappingId] = useState<string | null>(null);
+  const quotation = useRef<HTMLQuoteElement>(null);
   const pointerMapping = useRef<string | null>(null);
+  const lastTouchTime = useRef(Number.NEGATIVE_INFINITY);
   const warm = useRef(false);
   const lightTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const graceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -223,6 +238,7 @@ export function Quote({ quote, sourceHref }: QuoteProps) {
   };
 
   const onTokenPointerEnter = (mappingId: string | null) => {
+    if (Date.now() - lastTouchTime.current <= syntheticMouseGuard) return;
     if (mappingId === pointerMapping.current) return;
     pointerMapping.current = mappingId;
     clearLightTimer();
@@ -244,9 +260,31 @@ export function Quote({ quote, sourceHref }: QuoteProps) {
   useEffect(() => {
     pointerMapping.current = null;
     warm.current = false;
+    lastTouchTime.current = Number.NEGATIVE_INFINITY;
     setActiveMappingId(null);
 
+    const onDocumentTouchStart = (event: TouchEvent) => {
+      lastTouchTime.current = Date.now();
+      clearLightTimer();
+      clearGraceTimer();
+      warm.current = false;
+
+      const target = event.target instanceof Element ? event.target : null;
+      const mappedToken = target?.closest<HTMLElement>("[data-mapping-id]") ?? null;
+      const mappingId =
+        mappedToken && quotation.current?.contains(mappedToken) ? mappedToken.dataset.mappingId ?? null : null;
+
+      setActiveMappingId((currentMappingId) => {
+        const nextMappingId = mappingId === currentMappingId ? null : mappingId;
+        pointerMapping.current = nextMappingId;
+        return nextMappingId;
+      });
+    };
+
+    document.addEventListener("touchstart", onDocumentTouchStart, { passive: true });
+
     return () => {
+      document.removeEventListener("touchstart", onDocumentTouchStart);
       clearLightTimer();
       clearGraceTimer();
     };
@@ -255,7 +293,7 @@ export function Quote({ quote, sourceHref }: QuoteProps) {
   const interaction = { activeMappingId, mappingIndexes, onTokenPointerEnter };
 
   return (
-    <QuoteFrame provenance={quote.meta.provenance} sourceHref={sourceHref}>
+    <QuoteFrame provenance={quote.meta.provenance} quotationRef={quotation} sourceHref={sourceHref}>
       <p lang="zh-Hant" onPointerLeave={() => onTokenPointerEnter(null)}>
         <SourceTokens interaction={interaction} tokens={quote.sourceTokens} />
       </p>
