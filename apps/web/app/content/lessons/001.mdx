@@ -1,5 +1,6 @@
 import { shuowenJieziOnOne } from "../quotes/shuowen-jiezi-on-one";
 import { wangBiNotesOnOne } from "../quotes/wang-bi-notes-on-one";
+import { kangxiZidianOnShuan } from "../quotes/kangxi-zidian-on-shuan";
 
 <LessonHeader number={1} total={177} primitive="一" />
 
@@ -174,10 +175,9 @@ A beam 一 used to bolt a 門 door shut.
 
 <CharacterForms character="閂" description="Form comparison" />
 
-<LegacyQuote source="Kangxi Zidian">
-  <p lang="zh-Hant">門橫關也。</p>
-  <p>A door’s horizontal closure.</p>
-</LegacyQuote>
+{/* 門橫關也。 */}
+{/* It is the horizontal crossbar of a door. */}
+<Quote quote={kangxiZidianOnShuan} sourceHref="https://ctext.org/kangxi-zidian/169/0/zh#:~:text=%E9%96%82%EF%BC%9A%E3%80%8A%E5%AD%97%E5%BD%99%E8%A3%9C%E3%80%8B%E6%95%B8%E9%82%84%E5%88%87%EF%BC%8C%E9%9F%B3%F0%A3%9F%B4%E3%80%82%E9%96%80%E6%A9%AB%E9%97%9C%E4%B9%9F%E3%80%82" />
 
 <hr className="lesson-divider lesson-divider-dashed" />
 
