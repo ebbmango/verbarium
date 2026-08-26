@@ -53,7 +53,7 @@ export const wangBiNotesOnOne = {
     {
       id: "23bcfb73-04b7-4f4c-b9f6-6d412b66493e",
       sourceTokenIds: [5],
-      targetTokenIds: [6],
+      targetTokenIds: [6, 4],
     },
     {
       id: "d83afeda-de52-4685-9d7f-ae0cf9519a96",
