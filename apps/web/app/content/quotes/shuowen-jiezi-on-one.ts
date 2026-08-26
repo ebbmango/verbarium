@@ -84,7 +84,7 @@ export const shuowenJieziOnOne = {
     {
       id: "fb8ab1d6-2171-47c7-99ac-d0101ef8be9e",
       sourceTokenIds: [1],
-      targetTokenIds: [6],
+      targetTokenIds: [6, 4],
     },
     {
       id: "9d8a1d19-865e-47e5-b53d-33cfacf7d718",
@@ -104,7 +104,7 @@ export const shuowenJieziOnOne = {
     {
       id: "7b4b759c-d11b-4b7e-a938-05592359ef48",
       sourceTokenIds: [6],
-      targetTokenIds: [22],
+      targetTokenIds: [22, 20],
     },
     {
       id: "e147a8bf-70df-4c85-9e11-f8f6cf58ca0a",
@@ -133,13 +133,8 @@ export const shuowenJieziOnOne = {
     },
     {
       id: "e7819fba-f93d-4a03-b4f7-7e0c5fb1b14f",
-      sourceTokenIds: [15],
-      targetTokenIds: [42],
-    },
-    {
-      id: "f4e78e63-cc7e-42ec-8306-b793b2b1801f",
-      sourceTokenIds: [16],
-      targetTokenIds: [44],
+      sourceTokenIds: [15, 16],
+      targetTokenIds: [42, 44],
     },
     {
       id: "ed279995-4d7a-490c-afff-47720f28932c",
