@@ -3,6 +3,7 @@ import { wangBiNotesOnOne } from "../quotes/wang-bi-notes-on-one";
 import { kangxiZidianOnShuan } from "../quotes/kangxi-zidian-on-shuan";
 import { shuowenJieziOnKao } from "../quotes/shuowen-jiezi-on-kao";
 import { shuowenJieziOnTian } from "../quotes/shuowen-jiezi-on-tian";
+import { shuowenJieziOnYu } from "../quotes/shuowen-jiezi-on-yu";
 
 <LessonHeader number={1} total={177} primitive="一" />
 
@@ -41,10 +42,9 @@ The rain. Drops of water falling from a 冂 cloud that hangs to 一 heaven; 丿 
 
 <CharacterForms character="雨" description="Old and new form of the character" />
 
-<LegacyQuote source="Kangxi Zidian">
-  <p lang="zh-Hant">一像天。冂像雲。水从雲下也。</p>
-  <p>一 represents the sky. 冂 represents a cloud.<br/>Water flows down from the sky.</p>
-</LegacyQuote>
+{/* 水从雲下也。一象天，冂象雲，水霝其閒也。 */}
+{/* Water descends from the clouds. 一 represents heaven; 冂 represents a cloud; water falls between them. */}
+<Quote quote={shuowenJieziOnYu} />
 
 It is the 173rd radical in the Kangxi.
 
