@@ -4,7 +4,7 @@ export const kangxiZidianOnShuan = {
   meta: {
     sourceText: "門橫關也。",
     targetText: "It is the horizontal crossbar of a door.",
-    provenance: "Kangxi Zidian, quoting Zihui Bu",
+    provenance: "Zihui Bu",
   },
   sourceTokens: [
     { id: 0, text: "門", pinyin: "men2", line: 0, type: "character" },
@@ -32,24 +32,24 @@ export const kangxiZidianOnShuan = {
   ],
   mappings: [
     {
-      id: "c44331e0-0bcf-4f45-a08e-90e5981b02b9",
+      id: "c0d25bf4-9370-4224-9c90-8f5b5cf46294",
+      sourceTokenIds: [3],
+      targetTokenIds: [0, 2],
+    },
+    {
+      id: "45bf81e2-8301-4a41-a31c-2fd523592e3c",
       sourceTokenIds: [0],
       targetTokenIds: [14],
     },
     {
-      id: "53d84bc6-276a-4b41-a3a9-79bf2b244d8a",
+      id: "0e199304-d627-4b1e-be41-223a5b158081",
       sourceTokenIds: [1],
       targetTokenIds: [6],
     },
     {
-      id: "5801623b-74ac-470a-ab0c-589655f7795a",
+      id: "4bc316b0-2ed8-4a3d-8c46-85cb64fde0e3",
       sourceTokenIds: [2],
       targetTokenIds: [8],
-    },
-    {
-      id: "43739c34-a43a-4b2f-8ca0-18a04c572b4f",
-      sourceTokenIds: [3],
-      targetTokenIds: [2],
     },
   ],
 } satisfies QuoteSlicerExport;
