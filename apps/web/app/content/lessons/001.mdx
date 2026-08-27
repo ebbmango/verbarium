@@ -1,5 +1,6 @@
 import { shuowenJieziOnOne } from "../quotes/shuowen-jiezi-on-one";
 import { wangBiNotesOnOne } from "../quotes/wang-bi-notes-on-one";
+import { huainanziOnOne } from "../quotes/huainanzi-on-one";
 import { kangxiZidianOnShuan } from "../quotes/kangxi-zidian-on-shuan";
 import { shuowenJieziOnKao } from "../quotes/shuowen-jiezi-on-kao";
 import { shuowenJieziOnTian } from "../quotes/shuowen-jiezi-on-tian";
@@ -11,10 +12,9 @@ import { analectsOnXueqi } from "../quotes/analects-on-xueqi";
 
 <CharDisplay character="一" label="A" />
 
-<LegacyQuote source="The Wenzi" sourceHref="https://ctext.org/wenzi/dao-de#n58586">
-  <p lang="zh-Hant">一也者，萬物之本也。</p>
-  <p>One is the root of all things.</p>
-</LegacyQuote>
+{/* 一也者，萬物之本也。 */}
+{/* One is the foundation of all things. */}
+<Quote quote={huainanziOnOne} sourceHref="https://ctext.org/huainanzi/quan-yan-xun/zh#:~:text=%E4%B8%80%E4%B9%9F%E8%80%85%EF%BC%8C%E8%90%AC%E7%89%A9%E4%B9%8B%E6%9C%AC%E4%B9%9F%EF%BC%8C%E7%84%A1%E6%95%B5%E4%B9%8B%E9%81%93%E4%B9%9F%E3%80%82" />
 
 It figures the primordial unity, source of all beings.
 
@@ -167,7 +167,6 @@ The meanings of “trunk” and “roots” are whence come this character’s a
 Morphologically, this character is the reverse of 末.
 
 <hr className="lesson-divider lesson-divider-solid" />
-
 <SectionBreak ordinal="Third">
   一 often represents an obstruction or hindrance.
 </SectionBreak>
