@@ -57,7 +57,7 @@ export const chunqiuFanluOnTian = {
     { "id": 47, "text": "謂", "pinyin": "wei4" , "line": 2, "type": "character"   },
     { "id": 48, "text": "受", "pinyin": "shou4", "line": 2, "type": "character"   },
     { "id": 49, "text": "命", "pinyin": "ming4", "line": 2, "type": "character"   },
-    { "id": 50, "text": "於", "pinyin": "wu1"  , "line": 2, "type": "character"   },
+    { "id": 50, "text": "於", "pinyin": "yu2"  , "line": 2, "type": "character"   },
     { "id": 51, "text": "天", "pinyin": "tian1", "line": 2, "type": "character"   },
     { "id": 52, "text": "亦", "pinyin": "yi4"  , "line": 2, "type": "character"   },
     { "id": 53, "text": "可", "pinyin": "ke3"  , "line": 2, "type": "character"   },
