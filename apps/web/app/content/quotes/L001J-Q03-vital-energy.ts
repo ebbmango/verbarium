@@ -1,6 +1,6 @@
 import type { QuoteSlicerExport } from "../../quote-slicer-export";
 
-export const analectsOnXueqi = {
+export const l001jQ03VitalEnergy = {
   meta: {
     sourceText: "少之時，血氣未定及其壯也，血氣方剛及其老也，血氣既衰",
     targetText:

@@ -135,7 +135,7 @@ Keep validation at the ingestion seam so the quote renderer can operate on trust
 
 **Status:** Deferred to the database-backed quote-reference architecture; record an ADR before implementation.
 
-The proposed public format is `LNNNTQNN`, for example `L001AQ01`: lesson number, subsection tag, and per-subsection quote number. Before treating it as a permanent identifier, decide:
+The working public format is `LNNNT-QNN`, for example `L001A-Q01`: lesson number, subsection tag, and per-subsection quote number. Quote asset names append a short descriptive slug, for example `L001A-Q01-one-foundation`. Before treating the ID as permanent, decide:
 
 - whether it identifies a source passage, a complete source–translation–alignment aggregate, or one lesson occurrence;
 - whether its quote number is an immutable accession number or the quotation's current display order;
@@ -143,11 +143,10 @@ The proposed public format is `LNNNTQNN`, for example `L001AQ01`: lesson number,
 - whether the subsection tag is specifically the lesson's `A`–`J`-style character-study label;
 - whether the one-letter tag, `001`–`177` lesson range, and `01`–`99` quote range are permanent limits;
 - how untagged quotations are identified;
-- whether the compact spelling supersedes Hylia's existing `L001A_Q01` example;
 - which system allocates IDs and prevents collisions;
 - which textual, translation, and alignment edits preserve the same ID.
 
-The current renderer does not need Quote IDs and must not encode provisional answers to these questions.
+Local quote assets use working Quote IDs for authoring and navigation. Their database identity and lifecycle semantics remain deferred.
 
 ## 10. Add transliteration presentation
 

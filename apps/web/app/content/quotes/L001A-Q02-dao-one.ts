@@ -1,6 +1,6 @@
 import type { QuoteSlicerExport } from "../../quote-slicer-export";
 
-export const shuowenJieziOnOne = {
+export const l001aQ02DaoOne = {
   meta: {
     sourceText: "惟初太始，道立於一，造分天地，化成萬物。",
     targetText:

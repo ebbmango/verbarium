@@ -1,8 +1,8 @@
 import { act, fireEvent, render, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { shuowenJieziOnOne } from "../content/quotes/shuowen-jiezi-on-one";
-import { wangBiNotesOnOne } from "../content/quotes/wang-bi-notes-on-one";
+import { l001aQ02DaoOne } from "../content/quotes/L001A-Q02-dao-one";
+import { l001aQ03OriginNumber } from "../content/quotes/L001A-Q03-origin-number";
 import type { QuoteSlicerExport } from "../quote-slicer-export";
 import { LegacyQuote, Quote } from "./quote";
 
@@ -56,7 +56,7 @@ describe("Quote", () => {
   it("rebuilds the first quotation from its Quote Slicer export", () => {
     const { container } = render(
       <Quote
-        quote={wangBiNotesOnOne}
+        quote={l001aQ03OriginNumber}
         sourceHref="https://ctext.org/dao-de-zhen-jing-zhu#n90518"
       />,
     );
@@ -89,7 +89,7 @@ describe("Quote", () => {
   it("rebuilds the second quotation with its authored line breaks", () => {
     const { container } = render(
       <Quote
-        quote={shuowenJieziOnOne}
+        quote={l001aQ02DaoOne}
         sourceHref="https://ctext.org/shuo-wen-jie-zi/yi-bu#n26162"
       />,
     );
@@ -148,7 +148,7 @@ describe("Quote", () => {
   it("activates every member of a many-to-many mapping after the cold delay", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
     const quotation = container.querySelector("blockquote.lesson-quote");
     const source = quotation?.children[0] as Element;
     const target = quotation?.children[1] as Element;
@@ -173,7 +173,7 @@ describe("Quote", () => {
   it("activates an unsorted mapping from the target without changing rendered order", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
     const quotation = container.querySelector("blockquote.lesson-quote");
     const source = quotation?.children[0] as Element;
     const target = quotation?.children[1] as Element;
@@ -190,7 +190,7 @@ describe("Quote", () => {
   it("does not restart pending activation or flicker active color within one mapping", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
     const source = container.querySelector("blockquote.lesson-quote")?.children[0] as Element;
     const firstYe = token(source, 6);
     const secondYe = token(source, 11);
@@ -247,7 +247,7 @@ describe("Quote", () => {
   it("clears immediately when the pointer enters an unmapped source or target token", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
     const quotation = container.querySelector("blockquote") as Element;
     const source = quotation.children[0] as Element;
     const target = quotation.children[1] as Element;
@@ -273,7 +273,7 @@ describe("Quote", () => {
   it("cancels pending work and clears active color when either paragraph is left", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
     const quotation = container.querySelector("blockquote") as Element;
     const source = quotation.children[0] as Element;
     const target = quotation.children[1] as Element;
@@ -297,7 +297,7 @@ describe("Quote", () => {
   it("retains active mapping A until mapping B activates after the warm delay", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
     const quotation = container.querySelector("blockquote") as Element;
     const source = quotation.children[0] as Element;
     const target = quotation.children[1] as Element;
@@ -322,7 +322,7 @@ describe("Quote", () => {
   it("uses the warm delay only during the 500 ms grace period", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
     const source = container.querySelector("blockquote")?.children[0] as Element;
     const mappingA = token(source, 0);
     const mappingB = token(source, 3);
@@ -350,7 +350,7 @@ describe("Quote", () => {
   it("retains the active mapping across target whitespace and an internal gap", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
     const target = container.querySelector("blockquote")?.children[1] as Element;
     const targetOne = token(target, 0);
 
@@ -369,16 +369,16 @@ describe("Quote", () => {
     vi.useFakeTimers();
 
     const replacementQuote = {
-      ...wangBiNotesOnOne,
+      ...l001aQ03OriginNumber,
       mappings: [
         {
-          id: wangBiNotesOnOne.mappings[0].id,
+          id: l001aQ03OriginNumber.mappings[0].id,
           sourceTokenIds: [3],
           targetTokenIds: [],
         },
       ],
     } satisfies QuoteSlicerExport;
-    const quoteRender = render(<Quote quote={wangBiNotesOnOne} />);
+    const quoteRender = render(<Quote quote={l001aQ03OriginNumber} />);
     const originalSource = quoteRender.container.querySelector("blockquote")?.children[0] as Element;
 
     fireEvent.pointerEnter(token(originalSource, 0));
@@ -398,7 +398,7 @@ describe("Quote", () => {
 
     quoteRender.unmount();
 
-    const pendingRender = render(<Quote quote={wangBiNotesOnOne} />);
+    const pendingRender = render(<Quote quote={l001aQ03OriginNumber} />);
     const pendingSource = pendingRender.container.querySelector("blockquote")?.children[0] as Element;
     fireEvent.pointerEnter(token(pendingSource, 0));
     expect(vi.getTimerCount()).toBe(1);
@@ -412,7 +412,7 @@ describe("Quote", () => {
 
     const { container } = render(
       <div>
-        <Quote quote={wangBiNotesOnOne} />
+        <Quote quote={l001aQ03OriginNumber} />
         <button type="button">Outside the quotation</button>
       </div>,
     );
@@ -448,8 +448,8 @@ describe("Quote", () => {
   it("keeps touch selection exclusive across quotations", () => {
     const { container } = render(
       <>
-        <Quote quote={wangBiNotesOnOne} />
-        <Quote quote={shuowenJieziOnOne} />
+        <Quote quote={l001aQ03OriginNumber} />
+        <Quote quote={l001aQ02DaoOne} />
       </>,
     );
     const quotations = container.querySelectorAll("blockquote");
@@ -469,7 +469,7 @@ describe("Quote", () => {
   it("cancels hover work, resets warmth, and guards synthetic pointer events after touch", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
     const source = container.querySelector("blockquote")?.children[0] as Element;
     const mappingA = token(source, 0);
     const mappingB = token(source, 3);
@@ -500,12 +500,12 @@ describe("Quote", () => {
   it("replaces and removes document touch coordination with the quotation lifecycle", () => {
     const addEventListener = vi.spyOn(document, "addEventListener");
     const removeEventListener = vi.spyOn(document, "removeEventListener");
-    const quoteRender = render(<Quote quote={wangBiNotesOnOne} />);
+    const quoteRender = render(<Quote quote={l001aQ03OriginNumber} />);
     const firstTouchListener = addEventListener.mock.calls.find(([type]) => type === "touchstart")?.[1];
 
     expect(firstTouchListener).toBeDefined();
 
-    quoteRender.rerender(<Quote quote={shuowenJieziOnOne} />);
+    quoteRender.rerender(<Quote quote={l001aQ02DaoOne} />);
     const touchListeners = addEventListener.mock.calls.filter(([type]) => type === "touchstart");
     const replacementTouchListener = touchListeners.at(-1)?.[1];
 
@@ -519,7 +519,7 @@ describe("Quote", () => {
   it("changes only active text color and removes its presentation immediately on clear", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={wangBiNotesOnOne} />);
+    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
     const source = container.querySelector("blockquote")?.children[0] as Element;
     const activeToken = token(source, 0);
     const restingToken = token(source, 1);

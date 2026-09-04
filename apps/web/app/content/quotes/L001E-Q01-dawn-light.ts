@@ -1,6 +1,6 @@
 import type { QuoteSlicerExport } from "../../quote-slicer-export";
 
-export const shuowenJieziOnDan = {
+export const l001eQ01DawnLight = {
   meta: {
     sourceText: "明也。从日見一上。一，地也。",
     targetText: "It is light. From 日, as seen above a line. The stroke is the ground.",

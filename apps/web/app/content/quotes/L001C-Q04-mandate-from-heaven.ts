@@ -1,6 +1,6 @@
 import type { QuoteSlicerExport } from "../../quote-slicer-export";
 
-export const chunqiuFanluOnTian = {
+export const l001cQ04MandateFromHeaven = {
   "meta": {
     "sourceText": "天子受命於天，諸侯受命於天子，子受命於父，臣妾受命於君，妻受命於夫。諸所受命者，其尊皆天也，雖謂受命於天亦可。",
     "targetText": "The Son of Heaven receives his mandate from Heaven; the feudal lords receive their mandates from the Son of Heaven; a son receives commands from his father; subjects and concubines receive commands from their lord; a wife receives commands from her husband. As for all those from whom decrees are received, their superior is, in all cases, Heaven. Even stating they receive their allotment from Heaven is also acceptable.",

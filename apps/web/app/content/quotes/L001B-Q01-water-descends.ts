@@ -1,6 +1,6 @@
 import type { QuoteSlicerExport } from "../../quote-slicer-export";
 
-export const shuowenJieziOnYu = {
+export const l001bQ01WaterDescends = {
   meta: {
     sourceText: "水从雲下也。一象天，冂象雲，水霝其閒也。",
     targetText:

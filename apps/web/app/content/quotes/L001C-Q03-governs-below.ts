@@ -1,6 +1,6 @@
 import type { QuoteSlicerExport } from "../../quote-slicer-export";
 
-export const jingdianShiwenOnTian = {
+export const l001cQ03GovernsBelow = {
   meta: {
     sourceText: "居高理下，為人經緯，故其字一大以鎮之也。",
     targetText:

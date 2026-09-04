@@ -1,6 +1,6 @@
 import type { QuoteSlicerExport } from "../../quote-slicer-export";
 
-export const kangxiZidianOnShuan = {
+export const l001hQ01DoorCrossbar = {
   meta: {
     sourceText: "門橫關也。",
     targetText: "It is the horizontal crossbar of a door.",

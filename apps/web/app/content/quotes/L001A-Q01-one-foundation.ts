@@ -1,6 +1,6 @@
 import type { QuoteSlicerExport } from "../../quote-slicer-export";
 
-export const huainanziOnOne = {
+export const l001aQ01OneFoundation = {
   meta: {
     sourceText: "一也者，萬物之本也。",
     targetText: "One is the foundation of all things.",

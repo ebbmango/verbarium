@@ -1,6 +1,6 @@
 import type { QuoteSlicerExport } from "../../quote-slicer-export";
 
-export const wangBiNotesOnOne = {
+export const l001aQ03OriginNumber = {
   meta: {
     sourceText: "一者，數之始也，物之極也。",
     targetText: "One is the origin of number and the utmost of things.",

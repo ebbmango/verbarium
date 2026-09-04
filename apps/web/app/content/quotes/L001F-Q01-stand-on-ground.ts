@@ -1,6 +1,6 @@
 import type { QuoteSlicerExport } from "../../quote-slicer-export";
 
-export const shuowenJieziOnLi = {
+export const l001fQ01StandOnGround = {
   meta: {
     sourceText: "住也。从大立一之上。",
     targetText:

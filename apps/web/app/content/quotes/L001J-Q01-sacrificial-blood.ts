@@ -1,6 +1,6 @@
 import type { QuoteSlicerExport } from "../../quote-slicer-export";
 
-export const shuowenJieziOnXue = {
+export const l001jQ01SacrificialBlood = {
   meta: {
     sourceText: "祭所薦牲血也。从皿，一象血形。",
     targetText:

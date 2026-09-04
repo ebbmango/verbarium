@@ -1,6 +1,6 @@
 import type { QuoteSlicerExport } from "../../quote-slicer-export";
 
-export const shuowenJieziOnKao = {
+export const l001iQ01BlockedBreath = {
   meta: {
     sourceText: "气欲舒出。𠃑上礙於一也。",
     targetText:

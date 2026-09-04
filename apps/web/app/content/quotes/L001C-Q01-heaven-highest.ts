@@ -1,6 +1,6 @@
 import type { QuoteSlicerExport } from "../../quote-slicer-export";
 
-export const shuowenJieziOnTian = {
+export const l001cQ01HeavenHighest = {
   meta: {
     sourceText: "天顚也。至高無上，从一大。",
     targetText:

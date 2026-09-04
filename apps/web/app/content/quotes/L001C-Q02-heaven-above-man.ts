@@ -1,6 +1,6 @@
 import type { QuoteSlicerExport } from "../../quote-slicer-export";
 
-export const shuowenTongxunDingshengOnTian = {
+export const l001cQ02HeavenAboveMan = {
   meta: {
     sourceText: "按大猶人也，天在人上，仰首見之。",
     targetText:
