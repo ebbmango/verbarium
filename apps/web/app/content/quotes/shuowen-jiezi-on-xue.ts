@@ -84,7 +84,7 @@ export const shuowenJieziOnXue = {
     },
     {
       id: "2afa19d2-8d84-458a-ab8a-765050289352",
-      sourceTokenIds: [2],
+      sourceTokenIds: [1, 2],
       targetTokenIds: [12],
     },
     {
