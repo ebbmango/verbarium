@@ -95,12 +95,12 @@ export const shuowenTongxunDingshengOnTian = {
     {
       id: "9cc5f98d-eae4-4069-999e-6b74061e390b",
       sourceTokenIds: [9],
-      targetTokenIds: [14, 18],
+      targetTokenIds: [14],
     },
     {
       id: "2c209be8-ec01-421f-94ac-016837110b27",
       sourceTokenIds: [11],
-      targetTokenIds: [],
+      targetTokenIds: [18],
     },
     {
       id: "55b793b3-799d-426f-a4dc-76b821cfa0e4",
