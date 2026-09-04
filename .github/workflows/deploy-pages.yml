@@ -1,0 +1,77 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Enable pnpm
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type-check
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Configure GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v6
+
+      - name: Build
+        run: pnpm build
+        env:
+          VERBARIUM_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+
+      - name: Prepare GitHub Pages artifact
+        env:
+          VERBARIUM_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: |
+          artifact_directory=apps/web/build/client
+          if [[ -n "${VERBARIUM_BASE_PATH}" ]]; then
+            cp "${artifact_directory}/index.html" "${artifact_directory}/404.html"
+            cp "${artifact_directory}${VERBARIUM_BASE_PATH}/index.html" "${artifact_directory}/index.html"
+          else
+            cp "${artifact_directory}/__spa-fallback.html" "${artifact_directory}/404.html"
+          fi
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: apps/web/build/client
+
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
