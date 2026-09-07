@@ -368,6 +368,10 @@ body::before {
   white-space: break-spaces;
 }
 
+.quote-target-hanzi {
+  font-style: normal;
+}
+
 .quote-token-active {
   transition: color 280ms ease;
 }

@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { l001aQ02DaoOne } from "../content/quotes/L001A-Q02-dao-one";
 import { l001aQ03OriginNumber } from "../content/quotes/L001A-Q03-origin-number";
+import { l001cQ01HeavenHighest } from "../content/quotes/L001C-Q01-heaven-highest";
 import type { QuoteSlicerExport } from "../quote-slicer-export";
 import { LegacyQuote, Quote } from "./quote";
 
@@ -107,6 +108,18 @@ describe("Quote", () => {
     const sourceLink = within(provenance).getByRole("link", { name: "Shuowen Jiezi" });
     expect(sourceLink).toHaveAttribute("href", "https://ctext.org/shuo-wen-jie-zi/yi-bu#n26162");
     expect(quotation).not.toHaveTextContent("chu1");
+  });
+
+  it("marks only translated Chinese characters as non-italic", () => {
+    const { container } = render(<Quote quote={l001cQ01HeavenHighest} />);
+    const target = container.querySelector("blockquote.lesson-quote")?.children[1] as Element;
+    const hanzi = token(target, 0);
+    const translatedText = token(target, 2);
+
+    expect(hanzi).toHaveTextContent("天");
+    expect(hanzi).toHaveClass("quote-target-hanzi");
+    expect(translatedText).toHaveTextContent("is");
+    expect(translatedText).not.toHaveClass("quote-target-hanzi");
   });
 
   it("uses token order and line assignments instead of flattened metadata", () => {

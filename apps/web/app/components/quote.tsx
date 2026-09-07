@@ -150,7 +150,11 @@ function TargetTokens({ interaction, tokens }: { interaction: TokenInteraction; 
     return (
       <span
         className={tokenClassName(
-          token.type === "whitespace" ? "quote-target-whitespace" : undefined,
+          token.type === "whitespace"
+            ? "quote-target-whitespace"
+            : token.type === "hanzi"
+              ? "quote-target-hanzi"
+              : undefined,
           mappingId,
           interaction.activeMappingId,
         )}
