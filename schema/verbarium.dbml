@@ -10,7 +10,8 @@ Project Verbarium {
   identifier strategy has not been decided yet.
 
   `token_sequence` is a conceptual placeholder type. The physical storage
-  representation for ordered tokens has not been decided yet.
+  representation for ordered tokens has not been decided yet. Token sequences
+  are lossless for textual content and do not encode editorial line breaks.
   '''
 }
 
@@ -30,11 +31,10 @@ Table Attestation {
   id identifier [pk]
   passage_id identifier [not null, ref: > Passage.id]
   provenance_id identifier [not null, ref: > Provenance.id]
-  text text [not null]
   tokens token_sequence [not null]
   witness_url text [not null]
 
-  Note: 'One source-language textual form of a Passage. It owns its source-language text and ordered token sequence. Provenance identifies the shared source/resource; witness_url points directly to the specific attested text within that resource.'
+  Note: 'One source-language textual form of a Passage. Its ordered tokens are the canonical lossless textual representation, including punctuation and textual whitespace but excluding editorial line breaks. Provenance identifies the shared source/resource; witness_url points directly to the specific attested text within that resource.'
 }
 
 Table Translation {
