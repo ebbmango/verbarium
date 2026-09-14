@@ -5,18 +5,35 @@ Project Verbarium {
 
   Model only durable decisions here. Hylia records the reasoning behind them.
   The passage schema is intentionally being introduced incrementally.
+
+  `identifier` is a conceptual placeholder type. The concrete PostgreSQL
+  identifier strategy has not been decided yet.
   '''
 }
 
-// First modeling target: passage architecture.
-//
-// Durable conceptual model:
-// - Passage is the reusable passage-level entity.
-// - An Attestation is one source-language textual form of a Passage.
-// - A Translation is one translated rendering of a Passage and does not
-//   imply knowledge of which Attestation the translator historically used.
-// - An Alignment connects one Attestation with one Translation for Verbarium's
-//   structured correspondence/mapping data.
-//
-// No tables are declared yet because field-level and identifier decisions
-// are not settled.
+Table Passage {
+  id identifier [pk]
+
+  Note: 'Identity-only container for attestations and translations of the same passage.'
+}
+
+Table Attestation {
+  id identifier [pk]
+  passage_id identifier [not null, ref: > Passage.id]
+
+  Note: 'One source-language textual form of a Passage.'
+}
+
+Table Translation {
+  id identifier [pk]
+  passage_id identifier [not null, ref: > Passage.id]
+
+  Note: 'One translated rendering of a Passage; it does not imply a known historical Attestation basis.'
+}
+
+Table Alignment {
+  attestation_id identifier [not null, ref: > Attestation.id]
+  translation_id identifier [not null, ref: > Translation.id]
+
+  Note: 'Connects one Attestation with one Translation for Verbarium alignment data. Passage identity is implied by the referenced entities rather than duplicated here.'
+}
