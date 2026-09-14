@@ -2,6 +2,10 @@
 
 Verbarium is a reading environment for Literary and Classical Chinese. Its lessons combine authored narrative with quotations whose source text and translation can be explored through many-to-many alignment.
 
+## Data model authority
+
+The evolving relational schema is defined in `schema/verbarium.dbml`. That file is the source of truth for what the current data model is. Hylia preserves the durable design reasoning behind it. Terms below that describe the existing Quote Slicer implementation should not override schema decisions once a concept has been modeled in DBML.
+
 ## Language
 
 **Quote Slicer export**:
