@@ -4,9 +4,19 @@ Project Verbarium {
   Canonical source of truth for Verbarium's evolving relational data model.
 
   Model only durable decisions here. Hylia records the reasoning behind them.
-  The quotation schema is intentionally being introduced incrementally.
+  The passage schema is intentionally being introduced incrementally.
   '''
 }
 
-// First modeling target: quotation architecture.
-// No tables are declared yet because field-level and identifier decisions are not settled.
+// First modeling target: passage architecture.
+//
+// Durable conceptual model:
+// - Passage is the reusable passage-level entity.
+// - An Attestation is one source-language textual form of a Passage.
+// - A Translation is one translated rendering of a Passage and does not
+//   imply knowledge of which Attestation the translator historically used.
+// - An Alignment connects one Attestation with one Translation for Verbarium's
+//   structured correspondence/mapping data.
+//
+// No tables are declared yet because field-level and identifier decisions
+// are not settled.
