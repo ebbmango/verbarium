@@ -20,13 +20,21 @@ Table Passage {
   Note: 'Identity-only container for attestations and translations of the same passage.'
 }
 
+Table Provenance {
+  id identifier [pk]
+
+  Note: 'Shared provenance resource for textual material. Its descriptive fields are intentionally not modeled yet.'
+}
+
 Table Attestation {
   id identifier [pk]
   passage_id identifier [not null, ref: > Passage.id]
+  provenance_id identifier [not null, ref: > Provenance.id]
   text text [not null]
   tokens token_sequence [not null]
+  witness_url text [not null]
 
-  Note: 'One source-language textual form of a Passage. It owns its source-language text and ordered token sequence.'
+  Note: 'One source-language textual form of a Passage. It owns its source-language text and ordered token sequence. Provenance identifies the shared source/resource; witness_url points directly to the specific attested text within that resource.'
 }
 
 Table Translation {
