@@ -8,6 +8,9 @@ Project Verbarium {
 
   `identifier` is a conceptual placeholder type. The concrete PostgreSQL
   identifier strategy has not been decided yet.
+
+  `token_sequence` is a conceptual placeholder type. The physical storage
+  representation for ordered tokens has not been decided yet.
   '''
 }
 
@@ -20,8 +23,10 @@ Table Passage {
 Table Attestation {
   id identifier [pk]
   passage_id identifier [not null, ref: > Passage.id]
+  text text [not null]
+  tokens token_sequence [not null]
 
-  Note: 'One source-language textual form of a Passage.'
+  Note: 'One source-language textual form of a Passage. It owns its source-language text and ordered token sequence.'
 }
 
 Table Translation {
