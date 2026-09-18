@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { l001aQ02DaoOne } from "../content/quotes/L001A-Q02-dao-one";
 import { l001aQ03OriginNumber } from "../content/quotes/L001A-Q03-origin-number";
 import { l001cQ01HeavenHighest } from "../content/quotes/L001C-Q01-heaven-highest";
+import { l001iQ01BlockedBreath } from "../content/quotes/L001I-Q01-blocked-breath";
 import type { AttestationTranslationAlignment } from "../quote-slicer-export";
 import { LegacyQuote, Quote } from "./quote";
 
@@ -110,6 +111,30 @@ describe("Quote", () => {
     const sourceLink = within(provenance).getByRole("link", { name: "Shuowen Jiezi" });
     expect(sourceLink).toHaveAttribute("href", "https://ctext.org/shuo-wen-jie-zi/yi-bu#n26162");
     expect(quotation).not.toHaveTextContent("chu1");
+  });
+
+  it("preserves boundary whitespace with or without an editorial break", () => {
+    const { container, rerender } = render(<Quote quote={l001iQ01BlockedBreath} />);
+    const target = container.querySelector("blockquote.lesson-quote")?.children[1] as Element;
+
+    expect(textWithAuthoredBreaks(target)).toBe(
+      "Air wishes to come out.\nThe upward flow is blocked by the horizontal stroke.",
+    );
+
+    const passageWithoutBreak = {
+      ...l001iQ01BlockedBreath,
+      alignment: {
+        ...l001iQ01BlockedBreath.alignment,
+        breaks: { ...l001iQ01BlockedBreath.alignment.breaks, translation: [] },
+      },
+    } satisfies AttestationTranslationAlignment;
+
+    rerender(<Quote quote={passageWithoutBreak} />);
+
+    const unbrokenTarget = container.querySelector("blockquote.lesson-quote")?.children[1] as Element;
+    expect(textWithAuthoredBreaks(unbrokenTarget)).toBe(
+      "Air wishes to come out. The upward flow is blocked by the horizontal stroke.",
+    );
   });
 
   it("marks only translated Chinese characters as non-italic", () => {

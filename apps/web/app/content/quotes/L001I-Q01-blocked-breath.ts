@@ -28,6 +28,7 @@ export const l001iQ01BlockedBreath = {
       { id: 6, text: "come", type: "text" },
       { id: 7, text: " ", type: "whitespace" },
       { id: 8, text: "out.", type: "text" },
+      { id: 26, text: " ", type: "whitespace" },
       { id: 9, text: "The", type: "text" },
       { id: 10, text: " ", type: "whitespace" },
       { id: 11, text: "upward", type: "text" },
@@ -102,7 +103,7 @@ export const l001iQ01BlockedBreath = {
     ],
     breaks: {
       attestation: [],
-      translation: [9],
+      translation: [10],
     },
   },
 } satisfies AttestationTranslationAlignment;
