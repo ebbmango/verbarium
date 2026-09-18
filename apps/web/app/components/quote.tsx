@@ -9,10 +9,15 @@ import {
   useState,
 } from "react";
 
-import type { QuoteSlicerExport, SourceToken, TargetToken } from "../quote-slicer-export";
+import type {
+  AttestationTranslationAlignment,
+  SourceToken,
+  TargetToken,
+} from "../quote-slicer-export";
 
 type QuoteProps = {
-  quote: QuoteSlicerExport;
+  provenance?: string;
+  quote: AttestationTranslationAlignment;
   sourceHref?: string;
 };
 
@@ -46,7 +51,7 @@ function tokenClassName(
   return classNames.filter(Boolean).join(" ") || undefined;
 }
 
-function groupSourceTokens(tokens: SourceToken[]): number[][] {
+function groupSourceTokens(tokens: SourceToken[], breakPositions: ReadonlySet<number>): number[][] {
   const groups: number[][] = [];
   let currentGroup: number[] | null = null;
   let pendingLeadingPunctuation: number[] = [];
@@ -66,10 +71,7 @@ function groupSourceTokens(tokens: SourceToken[]): number[][] {
     const isLeading = isPunctuation && leadingPunctuation.test(token.text);
 
     if (isLeading) {
-      if (
-        pendingLeadingPunctuation.length > 0 &&
-        tokens[pendingLeadingPunctuation[0]].line !== token.line
-      ) {
+      if (pendingLeadingPunctuation.length > 0 && breakPositions.has(index)) {
         flushPendingLeadingPunctuation();
       }
       flushCurrentGroup();
@@ -78,7 +80,7 @@ function groupSourceTokens(tokens: SourceToken[]): number[][] {
     }
 
     if (isPunctuation) {
-      if (currentGroup && tokens[currentGroup[0]].line === token.line) {
+      if (currentGroup && !breakPositions.has(index)) {
         currentGroup.push(index);
       } else {
         flushCurrentGroup();
@@ -89,10 +91,7 @@ function groupSourceTokens(tokens: SourceToken[]): number[][] {
     }
 
     flushCurrentGroup();
-    if (
-      pendingLeadingPunctuation.length > 0 &&
-      tokens[pendingLeadingPunctuation[0]].line === token.line
-    ) {
+    if (pendingLeadingPunctuation.length > 0 && !breakPositions.has(index)) {
       currentGroup = [...pendingLeadingPunctuation, index];
       pendingLeadingPunctuation = [];
     } else {
@@ -106,10 +105,20 @@ function groupSourceTokens(tokens: SourceToken[]): number[][] {
   return groups;
 }
 
-function SourceTokens({ interaction, tokens }: { interaction: TokenInteraction; tokens: SourceToken[] }) {
-  return groupSourceTokens(tokens).map((group, groupIndex) => {
+function SourceTokens({
+  breaks,
+  interaction,
+  tokens,
+}: {
+  breaks: number[];
+  interaction: TokenInteraction;
+  tokens: SourceToken[];
+}) {
+  const breakPositions = new Set(breaks);
+
+  return groupSourceTokens(tokens, breakPositions).map((group, groupIndex) => {
     const lastIndex = group[group.length - 1];
-    const hasBreakAfter = lastIndex < tokens.length - 1 && tokens[lastIndex + 1].line !== tokens[lastIndex].line;
+    const hasBreakAfter = breakPositions.has(lastIndex + 1);
 
     return (
       <Fragment key={`source-group-${groupIndex}`}>
@@ -138,37 +147,49 @@ function SourceTokens({ interaction, tokens }: { interaction: TokenInteraction; 
   });
 }
 
-function TargetTokens({ interaction, tokens }: { interaction: TokenInteraction; tokens: TargetToken[] }) {
+function TargetTokens({
+  breaks,
+  interaction,
+  tokens,
+}: {
+  breaks: number[];
+  interaction: TokenInteraction;
+  tokens: TargetToken[];
+}) {
+  const breakPositions = new Set(breaks);
+
   return tokens.map((token, index) => {
-    const isBoundaryWhitespace =
-      token.type === "whitespace" && index < tokens.length - 1 && tokens[index + 1].line !== token.line;
+    const hasBreakAfter = breakPositions.has(index + 1);
+    const isBoundaryWhitespace = token.type === "whitespace" && hasBreakAfter;
 
     if (isBoundaryWhitespace) return <br key={`target-${token.id}`} />;
 
     const mappingId = interaction.mappingIndexes.target.get(token.id);
 
     return (
-      <span
-        className={tokenClassName(
-          token.type === "whitespace"
-            ? "quote-target-whitespace"
-            : token.type === "hanzi"
-              ? "quote-target-hanzi"
-              : undefined,
-          mappingId,
-          interaction.activeMappingId,
-        )}
-        data-token-id={token.id}
-        data-token-type={token.type}
-        data-mapping-id={mappingId}
-        key={`target-${token.id}`}
-        onPointerEnter={
-          token.type === "whitespace" ? undefined : () => interaction.onTokenPointerEnter(mappingId ?? null)
-        }
-        style={activeTokenStyle(mappingId, interaction.activeMappingId)}
-      >
-        {token.text}
-      </span>
+      <Fragment key={`target-${token.id}`}>
+        <span
+          className={tokenClassName(
+            token.type === "whitespace"
+              ? "quote-target-whitespace"
+              : token.type === "hanzi"
+                ? "quote-target-hanzi"
+                : undefined,
+            mappingId,
+            interaction.activeMappingId,
+          )}
+          data-token-id={token.id}
+          data-token-type={token.type}
+          data-mapping-id={mappingId}
+          onPointerEnter={
+            token.type === "whitespace" ? undefined : () => interaction.onTokenPointerEnter(mappingId ?? null)
+          }
+          style={activeTokenStyle(mappingId, interaction.activeMappingId)}
+        >
+          {token.text}
+        </span>
+        {hasBreakAfter ? <br /> : null}
+      </Fragment>
     );
   });
 }
@@ -199,7 +220,7 @@ function QuoteFrame({ children, provenance, quotationRef, sourceHref, sourcePend
   );
 }
 
-export function Quote({ quote, sourceHref }: QuoteProps) {
+export function Quote({ provenance, quote, sourceHref }: QuoteProps) {
   const [activeMappingId, setActiveMappingId] = useState<string | null>(null);
   const quotation = useRef<HTMLQuoteElement>(null);
   const pointerMapping = useRef<string | null>(null);
@@ -211,13 +232,13 @@ export function Quote({ quote, sourceHref }: QuoteProps) {
     const source = new Map<number, string>();
     const target = new Map<number, string>();
 
-    quote.mappings.forEach((mapping) => {
+    quote.alignment.mappings.forEach((mapping) => {
       mapping.sourceTokenIds.forEach((tokenId) => source.set(tokenId, mapping.id));
       mapping.targetTokenIds.forEach((tokenId) => target.set(tokenId, mapping.id));
     });
 
     return { source, target };
-  }, [quote.mappings]);
+  }, [quote.alignment.mappings]);
 
   const clearLightTimer = () => {
     if (lightTimer.current !== null) {
@@ -297,12 +318,20 @@ export function Quote({ quote, sourceHref }: QuoteProps) {
   const interaction = { activeMappingId, mappingIndexes, onTokenPointerEnter };
 
   return (
-    <QuoteFrame provenance={quote.meta.provenance} quotationRef={quotation} sourceHref={sourceHref}>
+    <QuoteFrame provenance={provenance} quotationRef={quotation} sourceHref={sourceHref}>
       <p lang="zh-Hant" onPointerLeave={() => onTokenPointerEnter(null)}>
-        <SourceTokens interaction={interaction} tokens={quote.sourceTokens} />
+        <SourceTokens
+          breaks={quote.alignment.breaks.attestation}
+          interaction={interaction}
+          tokens={quote.attestation.tokens}
+        />
       </p>
       <p onPointerLeave={() => onTokenPointerEnter(null)}>
-        <TargetTokens interaction={interaction} tokens={quote.targetTokens} />
+        <TargetTokens
+          breaks={quote.alignment.breaks.translation}
+          interaction={interaction}
+          tokens={quote.translation.tokens}
+        />
       </p>
     </QuoteFrame>
   );

@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { l001aQ02DaoOne } from "../content/quotes/L001A-Q02-dao-one";
 import { l001aQ03OriginNumber } from "../content/quotes/L001A-Q03-origin-number";
 import { l001cQ01HeavenHighest } from "../content/quotes/L001C-Q01-heaven-highest";
-import type { QuoteSlicerExport } from "../quote-slicer-export";
+import type { AttestationTranslationAlignment } from "../quote-slicer-export";
 import { LegacyQuote, Quote } from "./quote";
 
 function textWithAuthoredBreaks(element: Element): string {
@@ -54,9 +54,10 @@ describe("LegacyQuote", () => {
 });
 
 describe("Quote", () => {
-  it("rebuilds the first quotation from its Quote Slicer export", () => {
+  it("rebuilds a passage from its aligned token sequences", () => {
     const { container } = render(
       <Quote
+        provenance="Wang Bi’s notes on the Dao De Jing"
         quote={l001aQ03OriginNumber}
         sourceHref="https://ctext.org/dao-de-zhen-jing-zhu#n90518"
       />,
@@ -87,9 +88,10 @@ describe("Quote", () => {
     expect(quotation).not.toHaveTextContent("shu4");
   });
 
-  it("rebuilds the second quotation with its authored line breaks", () => {
+  it("rebuilds the migrated passage with alignment-owned line breaks", () => {
     const { container } = render(
       <Quote
+        provenance="Shuowen Jiezi"
         quote={l001aQ02DaoOne}
         sourceHref="https://ctext.org/shuo-wen-jie-zi/yi-bu#n26162"
       />,
@@ -122,29 +124,30 @@ describe("Quote", () => {
     expect(translatedText).not.toHaveClass("quote-target-hanzi");
   });
 
-  it("uses token order and line assignments instead of flattened metadata", () => {
+  it("uses token order and explicit boundary positions", () => {
     const multilineQuote = {
-      meta: {
-        sourceText: "Wrong source order",
-        targetText: "Wrong target order",
-        provenance: "An unlinked textual witness",
+      attestation: {
+        tokens: [
+          { id: 9, text: "甲", pinyin: undefined, type: "character" },
+          { id: 3, text: "，", pinyin: null, type: "punctuation" },
+          { id: 7, text: "乙", pinyin: "yi3", type: "character" },
+        ],
       },
-      sourceTokens: [
-        { id: 9, text: "甲", pinyin: undefined, line: 0, type: "character" },
-        { id: 3, text: "，", pinyin: null, line: 0, type: "punctuation" },
-        { id: 7, text: "乙", pinyin: "yi3", line: 1, type: "character" },
-      ],
-      targetTokens: [
-        { id: 20, text: "First", line: 0, type: "text" },
-        { id: 4, text: "  ", line: 0, type: "whitespace" },
-        { id: 12, text: "part", line: 0, type: "text" },
-        { id: 5, text: " ", line: 0, type: "whitespace" },
-        { id: 1, text: "Second", line: 1, type: "text" },
-      ],
-      mappings: [],
-    } satisfies QuoteSlicerExport;
+      translation: {
+        tokens: [
+          { id: 20, text: "First", type: "text" },
+          { id: 4, text: "  ", type: "whitespace" },
+          { id: 12, text: "part", type: "text" },
+          { id: 1, text: "Second", type: "text" },
+        ],
+      },
+      alignment: {
+        mappings: [],
+        breaks: { attestation: [2], translation: [3] },
+      },
+    } satisfies AttestationTranslationAlignment;
 
-    const { container } = render(<Quote quote={multilineQuote} />);
+    const { container } = render(<Quote provenance="An unlinked textual witness" quote={multilineQuote} />);
     const quotation = container.querySelector("blockquote.lesson-quote");
     const source = quotation?.children[0];
     const target = quotation?.children[1];
@@ -152,8 +155,6 @@ describe("Quote", () => {
 
     expect(textWithAuthoredBreaks(source as Element)).toBe("甲，\n乙");
     expect(textWithAuthoredBreaks(target as Element)).toBe("First  part\nSecond");
-    expect(quotation).not.toHaveTextContent("Wrong source order");
-    expect(quotation).not.toHaveTextContent("Wrong target order");
     expect(provenance).toHaveTextContent("An unlinked textual witness");
     expect(within(provenance as HTMLElement).queryByRole("link")).not.toBeInTheDocument();
   });
@@ -161,32 +162,32 @@ describe("Quote", () => {
   it("activates every member of a many-to-many mapping after the cold delay", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
+    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
     const quotation = container.querySelector("blockquote.lesson-quote");
     const source = quotation?.children[0] as Element;
     const target = quotation?.children[1] as Element;
-    const firstYe = token(source, 6);
-    const secondYe = token(source, 11);
-    const targetIs = token(target, 2);
+    const firstMember = token(source, 15);
+    const secondMember = token(source, 16);
+    const targetMember = token(target, 42);
 
-    fireEvent.pointerEnter(firstYe);
+    fireEvent.pointerEnter(firstMember);
     act(() => vi.advanceTimersByTime(499));
 
-    expect(firstYe.style.color).toBe("");
-    expect(secondYe.style.color).toBe("");
-    expect(targetIs.style.color).toBe("");
+    expect(firstMember.style.color).toBe("");
+    expect(secondMember.style.color).toBe("");
+    expect(targetMember.style.color).toBe("");
 
     act(() => vi.advanceTimersByTime(1));
 
-    expect(firstYe.style.color).toBe("var(--red)");
-    expect(secondYe.style.color).toBe("var(--red)");
-    expect(targetIs.style.color).toBe("var(--red)");
+    expect(firstMember.style.color).toBe("var(--red)");
+    expect(secondMember.style.color).toBe("var(--red)");
+    expect(targetMember.style.color).toBe("var(--red)");
   });
 
   it("activates an unsorted mapping from the target without changing rendered order", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
+    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
     const quotation = container.querySelector("blockquote.lesson-quote");
     const source = quotation?.children[0] as Element;
     const target = quotation?.children[1] as Element;
@@ -194,45 +195,53 @@ describe("Quote", () => {
     fireEvent.pointerEnter(token(target, 4));
     act(() => vi.advanceTimersByTime(500));
 
-    expect(token(source, 5).style.color).toBe("var(--red)");
+    expect(token(source, 1).style.color).toBe("var(--red)");
     expect(token(target, 4).style.color).toBe("var(--red)");
     expect(token(target, 6).style.color).toBe("var(--red)");
-    expect(target.textContent).toBe("One is the origin of number and the utmost of things.");
+    expect(textWithAuthoredBreaks(target)).toBe(
+      "At the very beginning, at the great origin,\nthe Dao was established in One.\nIt created and separated Heaven and Earth,\ntransforming into all things.",
+    );
   });
 
   it("does not restart pending activation or flicker active color within one mapping", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
+    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
     const source = container.querySelector("blockquote.lesson-quote")?.children[0] as Element;
-    const firstYe = token(source, 6);
-    const secondYe = token(source, 11);
+    const firstMember = token(source, 15);
+    const secondMember = token(source, 16);
 
-    fireEvent.pointerEnter(firstYe);
+    fireEvent.pointerEnter(firstMember);
     act(() => vi.advanceTimersByTime(400));
-    fireEvent.pointerEnter(secondYe);
+    fireEvent.pointerEnter(secondMember);
     act(() => vi.advanceTimersByTime(100));
 
-    expect(firstYe.style.color).toBe("var(--red)");
-    expect(secondYe.style.color).toBe("var(--red)");
+    expect(firstMember.style.color).toBe("var(--red)");
+    expect(secondMember.style.color).toBe("var(--red)");
 
-    fireEvent.pointerEnter(firstYe);
-    expect(firstYe.style.color).toBe("var(--red)");
-    expect(secondYe.style.color).toBe("var(--red)");
+    fireEvent.pointerEnter(firstMember);
+    expect(firstMember.style.color).toBe("var(--red)");
+    expect(secondMember.style.color).toBe("var(--red)");
   });
 
   it("keeps equal source and target IDs independent for one-sided mappings", () => {
     vi.useFakeTimers();
 
     const oneSidedQuote = {
-      meta: { sourceText: "甲", targetText: "Alpha", provenance: "A witness" },
-      sourceTokens: [{ id: 0, text: "甲", pinyin: null, line: 0, type: "character" }],
-      targetTokens: [{ id: 0, text: "Alpha", line: 0, type: "text" }],
-      mappings: [
-        { id: "source-only", sourceTokenIds: [0], targetTokenIds: [] },
-        { id: "target-only", sourceTokenIds: [], targetTokenIds: [0] },
-      ],
-    } satisfies QuoteSlicerExport;
+      attestation: {
+        tokens: [{ id: 0, text: "甲", pinyin: null, type: "character" }],
+      },
+      translation: {
+        tokens: [{ id: 0, text: "Alpha", type: "text" }],
+      },
+      alignment: {
+        mappings: [
+          { id: "source-only", sourceTokenIds: [0], targetTokenIds: [] },
+          { id: "target-only", sourceTokenIds: [], targetTokenIds: [0] },
+        ],
+        breaks: { attestation: [], translation: [] },
+      },
+    } satisfies AttestationTranslationAlignment;
 
     const sourceRender = render(<Quote quote={oneSidedQuote} />);
     const sourceParagraph = sourceRender.container.querySelector("blockquote")?.children[0] as Element;
@@ -260,38 +269,38 @@ describe("Quote", () => {
   it("clears immediately when the pointer enters an unmapped source or target token", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
+    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
     const quotation = container.querySelector("blockquote") as Element;
     const source = quotation.children[0] as Element;
     const target = quotation.children[1] as Element;
-    const mappedOne = token(source, 0);
+    const mappedOne = token(source, 1);
 
     fireEvent.pointerEnter(mappedOne);
     act(() => vi.advanceTimersByTime(500));
     expect(mappedOne.style.color).toBe("var(--red)");
 
-    fireEvent.pointerEnter(token(source, 1));
+    fireEvent.pointerEnter(token(source, 0));
 
     expect(mappedOne.style.color).toBe("");
 
-    const targetOne = token(target, 0);
+    const targetOne = token(target, 4);
     fireEvent.pointerEnter(targetOne);
     act(() => vi.advanceTimersByTime(300));
     expect(targetOne.style.color).toBe("var(--red)");
 
-    fireEvent.pointerEnter(token(target, 12));
+    fireEvent.pointerEnter(token(target, 0));
     expect(targetOne.style.color).toBe("");
   });
 
   it("cancels pending work and clears active color when either paragraph is left", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
+    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
     const quotation = container.querySelector("blockquote") as Element;
     const source = quotation.children[0] as Element;
     const target = quotation.children[1] as Element;
-    const sourceOne = token(source, 0);
-    const targetOne = token(target, 0);
+    const sourceOne = token(source, 1);
+    const targetOne = token(target, 4);
 
     fireEvent.pointerEnter(sourceOne);
     act(() => vi.advanceTimersByTime(400));
@@ -310,12 +319,12 @@ describe("Quote", () => {
   it("retains active mapping A until mapping B activates after the warm delay", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
+    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
     const quotation = container.querySelector("blockquote") as Element;
     const source = quotation.children[0] as Element;
     const target = quotation.children[1] as Element;
-    const mappingA = token(source, 0);
-    const mappingB = token(source, 3);
+    const mappingA = token(source, 1);
+    const mappingB = token(source, 2);
 
     fireEvent.pointerEnter(mappingA);
     act(() => vi.advanceTimersByTime(500));
@@ -329,20 +338,20 @@ describe("Quote", () => {
 
     expect(mappingA.style.color).toBe("");
     expect(mappingB.style.color).toBe("var(--red)");
-    expect(token(target, 10).style.color).toBe("var(--red)");
+    expect(token(target, 12).style.color).toBe("var(--red)");
   });
 
   it("uses the warm delay only during the 500 ms grace period", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
+    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
     const source = container.querySelector("blockquote")?.children[0] as Element;
-    const mappingA = token(source, 0);
-    const mappingB = token(source, 3);
+    const mappingA = token(source, 1);
+    const mappingB = token(source, 2);
 
     fireEvent.pointerEnter(mappingA);
     act(() => vi.advanceTimersByTime(500));
-    fireEvent.pointerEnter(token(source, 1));
+    fireEvent.pointerEnter(token(source, 0));
     fireEvent.pointerEnter(mappingB);
     act(() => vi.advanceTimersByTime(299));
     expect(mappingB.style.color).toBe("");
@@ -350,7 +359,7 @@ describe("Quote", () => {
     act(() => vi.advanceTimersByTime(1));
     expect(mappingB.style.color).toBe("var(--red)");
 
-    fireEvent.pointerEnter(token(source, 1));
+    fireEvent.pointerEnter(token(source, 0));
     act(() => vi.advanceTimersByTime(500));
     fireEvent.pointerEnter(mappingA);
     act(() => vi.advanceTimersByTime(300));
@@ -363,15 +372,15 @@ describe("Quote", () => {
   it("retains the active mapping across target whitespace and an internal gap", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
+    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
     const target = container.querySelector("blockquote")?.children[1] as Element;
-    const targetOne = token(target, 0);
+    const targetOne = token(target, 4);
 
     fireEvent.pointerEnter(targetOne);
     act(() => vi.advanceTimersByTime(500));
     expect(targetOne.style.color).toBe("var(--red)");
 
-    fireEvent.pointerEnter(token(target, 1));
+    fireEvent.pointerEnter(token(target, 5));
     expect(targetOne.style.color).toBe("var(--red)");
 
     fireEvent.pointerEnter(target);
@@ -382,25 +391,28 @@ describe("Quote", () => {
     vi.useFakeTimers();
 
     const replacementQuote = {
-      ...l001aQ03OriginNumber,
-      mappings: [
-        {
-          id: l001aQ03OriginNumber.mappings[0].id,
-          sourceTokenIds: [3],
-          targetTokenIds: [],
-        },
-      ],
-    } satisfies QuoteSlicerExport;
-    const quoteRender = render(<Quote quote={l001aQ03OriginNumber} />);
+      ...l001aQ02DaoOne,
+      alignment: {
+        ...l001aQ02DaoOne.alignment,
+        mappings: [
+          {
+            id: l001aQ02DaoOne.alignment.mappings[0].id,
+            sourceTokenIds: [2],
+            targetTokenIds: [],
+          },
+        ],
+      },
+    } satisfies AttestationTranslationAlignment;
+    const quoteRender = render(<Quote quote={l001aQ02DaoOne} />);
     const originalSource = quoteRender.container.querySelector("blockquote")?.children[0] as Element;
 
-    fireEvent.pointerEnter(token(originalSource, 0));
+    fireEvent.pointerEnter(token(originalSource, 1));
     act(() => vi.advanceTimersByTime(400));
     quoteRender.rerender(<Quote quote={replacementQuote} />);
     act(() => vi.advanceTimersByTime(100));
 
     const replacementSource = quoteRender.container.querySelector("blockquote")?.children[0] as Element;
-    const replacementMember = token(replacementSource, 3);
+    const replacementMember = token(replacementSource, 2);
     expect(replacementMember.style.color).toBe("");
 
     fireEvent.pointerEnter(replacementMember);
@@ -411,9 +423,9 @@ describe("Quote", () => {
 
     quoteRender.unmount();
 
-    const pendingRender = render(<Quote quote={l001aQ03OriginNumber} />);
+    const pendingRender = render(<Quote quote={l001aQ02DaoOne} />);
     const pendingSource = pendingRender.container.querySelector("blockquote")?.children[0] as Element;
-    fireEvent.pointerEnter(token(pendingSource, 0));
+    fireEvent.pointerEnter(token(pendingSource, 1));
     expect(vi.getTimerCount()).toBe(1);
 
     pendingRender.unmount();
@@ -425,16 +437,16 @@ describe("Quote", () => {
 
     const { container } = render(
       <div>
-        <Quote quote={l001aQ03OriginNumber} />
+        <Quote quote={l001aQ02DaoOne} />
         <button type="button">Outside the quotation</button>
       </div>,
     );
     const quotation = container.querySelector("blockquote") as Element;
     const source = quotation.children[0] as Element;
     const target = quotation.children[1] as Element;
-    const sourceOne = token(source, 0);
-    const targetOne = token(target, 0);
-    const otherMapping = token(source, 3);
+    const sourceOne = token(source, 1);
+    const targetOne = token(target, 4);
+    const otherMapping = token(source, 2);
 
     fireEvent.touchStart(sourceOne);
     expect(sourceOne.style.color).toBe("var(--red)");
@@ -450,7 +462,7 @@ describe("Quote", () => {
     expect(otherMapping.style.color).toBe("");
     expect(sourceOne.style.color).toBe("var(--red)");
 
-    fireEvent.touchStart(token(source, 1));
+    fireEvent.touchStart(token(source, 0));
     expect(sourceOne.style.color).toBe("");
 
     fireEvent.touchStart(targetOne);
@@ -482,14 +494,14 @@ describe("Quote", () => {
   it("cancels hover work, resets warmth, and guards synthetic pointer events after touch", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
+    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
     const source = container.querySelector("blockquote")?.children[0] as Element;
-    const mappingA = token(source, 0);
-    const mappingB = token(source, 3);
+    const mappingA = token(source, 1);
+    const mappingB = token(source, 2);
 
     fireEvent.pointerEnter(mappingA);
     act(() => vi.advanceTimersByTime(500));
-    fireEvent.pointerEnter(token(source, 1));
+    fireEvent.pointerEnter(token(source, 0));
     expect(vi.getTimerCount()).toBe(1);
 
     fireEvent.touchStart(mappingB);
@@ -513,12 +525,12 @@ describe("Quote", () => {
   it("replaces and removes document touch coordination with the quotation lifecycle", () => {
     const addEventListener = vi.spyOn(document, "addEventListener");
     const removeEventListener = vi.spyOn(document, "removeEventListener");
-    const quoteRender = render(<Quote quote={l001aQ03OriginNumber} />);
+    const quoteRender = render(<Quote quote={l001aQ02DaoOne} />);
     const firstTouchListener = addEventListener.mock.calls.find(([type]) => type === "touchstart")?.[1];
 
     expect(firstTouchListener).toBeDefined();
 
-    quoteRender.rerender(<Quote quote={l001aQ02DaoOne} />);
+    quoteRender.rerender(<Quote quote={{ ...l001aQ02DaoOne }} />);
     const touchListeners = addEventListener.mock.calls.filter(([type]) => type === "touchstart");
     const replacementTouchListener = touchListeners.at(-1)?.[1];
 
@@ -532,10 +544,10 @@ describe("Quote", () => {
   it("changes only active text color and removes its presentation immediately on clear", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ03OriginNumber} />);
+    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
     const source = container.querySelector("blockquote")?.children[0] as Element;
-    const activeToken = token(source, 0);
-    const restingToken = token(source, 1);
+    const activeToken = token(source, 1);
+    const restingToken = token(source, 0);
 
     fireEvent.pointerEnter(activeToken);
     act(() => vi.advanceTimersByTime(500));

@@ -1,7 +1,6 @@
 export type SourceToken = {
   id: number;
   text: string;
-  line: number;
   type: "character" | "punctuation" | "number" | "symbol";
   pinyin?: string | null;
 };
@@ -9,7 +8,6 @@ export type SourceToken = {
 export type TargetToken = {
   id: number;
   text: string;
-  line: number;
   type: "text" | "hanzi" | "punctuation" | "whitespace";
 };
 
@@ -19,13 +17,18 @@ export type QuoteMapping = {
   targetTokenIds: number[];
 };
 
-export type QuoteSlicerExport = {
-  meta: {
-    sourceText: string;
-    targetText: string;
-    provenance: string;
+export type AttestationTranslationAlignment = {
+  attestation: {
+    tokens: SourceToken[];
   };
-  sourceTokens: SourceToken[];
-  targetTokens: TargetToken[];
-  mappings: QuoteMapping[];
+  translation: {
+    tokens: TargetToken[];
+  };
+  alignment: {
+    mappings: QuoteMapping[];
+    breaks: {
+      attestation: number[];
+      translation: number[];
+    };
+  };
 };
