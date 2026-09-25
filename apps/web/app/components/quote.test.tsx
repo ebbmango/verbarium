@@ -1,7 +1,8 @@
 import { act, fireEvent, render, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { l001aQ02DaoOne } from "../content/quotes/L001A-Q02-dao-one";
+// Run the Dao renderer/interaction regressions against the unchanged producer export.
+import { quoteSlicerDaoOne as l001aQ02DaoOne } from "../content/quotes/quote-slicer-dao-one";
 import { l001aQ03OriginNumber } from "../content/quotes/L001A-Q03-origin-number";
 import { l001cQ01HeavenHighest } from "../content/quotes/L001C-Q01-heaven-highest";
 import { l001iQ01BlockedBreath } from "../content/quotes/L001I-Q01-blocked-breath";

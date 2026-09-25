@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { AttestationTranslationAlignment } from "../../quote-slicer-export";
 import { l001aQ01OneFoundation } from "./L001A-Q01-one-foundation";
 import { l001aQ02DaoOne } from "./L001A-Q02-dao-one";
+import { quoteSlicerDaoOne } from "./quote-slicer-dao-one";
 import { l001aQ03OriginNumber } from "./L001A-Q03-origin-number";
 import { l001bQ01WaterDescends } from "./L001B-Q01-water-descends";
 import { l001cQ01HeavenHighest } from "./L001C-Q01-heaven-highest";
@@ -20,6 +21,7 @@ import { l001jQ01SacrificialBlood } from "./L001J-Q01-sacrificial-blood";
 import { l001jQ03VitalEnergy } from "./L001J-Q03-vital-energy";
 
 const passages: Array<[string, AttestationTranslationAlignment]> = [
+  ["Quote Slicer browser export", quoteSlicerDaoOne],
   ["L001A-Q01", l001aQ01OneFoundation],
   ["L001A-Q02", l001aQ02DaoOne],
   ["L001A-Q03", l001aQ03OriginNumber],
@@ -38,6 +40,15 @@ const passages: Array<[string, AttestationTranslationAlignment]> = [
   ["L001J-Q01", l001jQ01SacrificialBlood],
   ["L001J-Q03", l001jQ03VitalEnergy],
 ];
+
+it("consumes the producer export with unchanged canonical content, metadata, and correspondence", () => {
+  expect(quoteSlicerDaoOne.attestation).toEqual(l001aQ02DaoOne.attestation);
+  expect(quoteSlicerDaoOne.translation).toEqual(l001aQ02DaoOne.translation);
+  expect(quoteSlicerDaoOne.alignment.breaks).toEqual(l001aQ02DaoOne.alignment.breaks);
+  const memberships = (quote: AttestationTranslationAlignment) => quote.alignment.mappings
+    .map(m => JSON.stringify([m.sourceTokenIds, m.targetTokenIds])).sort();
+  expect(memberships(quoteSlicerDaoOne)).toEqual(memberships(l001aQ02DaoOne));
+});
 
 function expectValidBreaks(breaks: number[], tokenCount: number) {
   expect(new Set(breaks).size).toBe(breaks.length);
@@ -65,9 +76,31 @@ describe.each(passages)("%s alignment data", (_quoteId, passage) => {
     const attestationTokenIds = new Set(passage.attestation.tokens.map(({ id }) => id));
     const translationTokenIds = new Set(passage.translation.tokens.map(({ id }) => id));
 
+    expect(attestationTokenIds.size).toBe(passage.attestation.tokens.length);
+    expect(translationTokenIds.size).toBe(passage.translation.tokens.length);
+    expect(new Set(passage.alignment.mappings.map(m => m.id)).size).toBe(passage.alignment.mappings.length);
+    for (const key of ["sourceTokenIds", "targetTokenIds"] as const) {
+      const members = passage.alignment.mappings.flatMap(m => m[key]);
+      expect(new Set(members).size).toBe(members.length);
+    }
+
     passage.alignment.mappings.forEach((mapping) => {
       mapping.sourceTokenIds.forEach((tokenId) => expect(attestationTokenIds.has(tokenId)).toBe(true));
       mapping.targetTokenIds.forEach((tokenId) => expect(translationTokenIds.has(tokenId)).toBe(true));
     });
+  });
+
+  it("preserves canonical text and optional pinyin semantics", () => {
+    for (const token of [...passage.attestation.tokens, ...passage.translation.tokens]) {
+      expect(Number.isSafeInteger(token.id) && token.id >= 0).toBe(true);
+      expect(token.text.length).toBeGreaterThan(0);
+    }
+    for (const token of passage.attestation.tokens) {
+      expect(token.pinyin === undefined || token.pinyin === null || typeof token.pinyin === "string").toBe(true);
+    }
+    expect({
+      attestation: passage.attestation.tokens.map(t => t.text).join(""),
+      translation: passage.translation.tokens.map(t => t.text).join(""),
+    }).toMatchSnapshot();
   });
 });

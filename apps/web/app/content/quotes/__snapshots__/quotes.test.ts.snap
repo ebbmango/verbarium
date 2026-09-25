@@ -1,0 +1,127 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`L001A-Q01 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "一也者，萬物之本也。",
+  "translation": "One is the foundation of all things.",
+}
+`;
+
+exports[`L001A-Q02 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "惟初太始，道立於一，造分天地，化成萬物。",
+  "translation": "At the very beginning, at the great origin, the Dao was established in One. It created and separated Heaven and Earth, transforming into all things.",
+}
+`;
+
+exports[`L001A-Q03 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "一者，數之始也，物之極也。",
+  "translation": "One is the origin of number and the utmost of things.",
+}
+`;
+
+exports[`L001B-Q01 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "水从雲下也。一象天，冂象雲，水霝其閒也。",
+  "translation": "Water descends from the clouds. 一 represents heaven; 冂 represents a cloud; water falls between them.",
+}
+`;
+
+exports[`L001C-Q01 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "天顚也。至高無上，从一大。",
+  "translation": "天 is the highest. It is supremely high, there is nothing above it. It is composed of 一 and 大.",
+}
+`;
+
+exports[`L001C-Q02 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "按大猶人也，天在人上，仰首見之。",
+  "translation": "Note: 大 resembles a person. Heaven is above man; raising his head, he sees it.",
+}
+`;
+
+exports[`L001C-Q03 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "居高理下，為人經緯，故其字一大以鎮之也。",
+  "translation": "It sits above and governs what is below, as warp and weft to man. Therefore, its written form: the sky [above] man, thus holding him in his place. ",
+}
+`;
+
+exports[`L001C-Q04 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "天子受命於天，諸侯受命於天子，子受命於父，臣妾受命於君，妻受命於夫。諸所受命者，其尊皆天也，雖謂受命於天亦可。",
+  "translation": "The Son of Heaven receives his mandate from Heaven; the feudal lords receive their mandates from the Son of Heaven; a son receives commands from his father; subjects and concubines receive commands from their lord; a wife receives commands from her husband. As for all those from whom decrees are received, their superior is, in all cases, Heaven. Even stating they receive their allotment from Heaven is also acceptable.",
+}
+`;
+
+exports[`L001C-Q05 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "然則天亦可為凡顚之偁。臣於君、子於父、妻於夫、民於食皆曰天是也。",
+  "translation": "That being so, then 天 may likewise serve as the designation of whatsoever is at the summit. For instance: for a minister, his ruler; for a son, his father; for a wife, her husband; for the people, their food: all are called Heaven.",
+}
+`;
+
+exports[`L001D-Q01 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "木上曰末。从木，一在其上。",
+  "translation": "The top of a tree is called 末. From 木; 一 is above it.",
+}
+`;
+
+exports[`L001E-Q01 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "明也。从日見一上。一，地也。",
+  "translation": "It is light. From 日, as seen above a line. The stroke is the ground.",
+}
+`;
+
+exports[`L001F-Q01 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "住也。从大立一之上。",
+  "translation": "To stand still. Composed of a person standing above a horizontal stroke.",
+}
+`;
+
+exports[`L001G-Q01 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "木下曰本。从木，一在其下。",
+  "translation": "The bottom of a tree is called 本. From 木, a stroke is beneath it.",
+}
+`;
+
+exports[`L001H-Q01 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "門橫關也。",
+  "translation": "It is the horizontal crossbar of a door.",
+}
+`;
+
+exports[`L001I-Q01 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "气欲舒出。𠃑上礙於一也。",
+  "translation": "Air wishes to come out. The upward flow is blocked by the horizontal stroke.",
+}
+`;
+
+exports[`L001J-Q01 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "祭所薦牲血也。从皿，一象血形。",
+  "translation": "At a sacrifice, that which is presented is the blood of the sacrificial victim. Formed from a vessel; the stroke depicts the blood.",
+}
+`;
+
+exports[`L001J-Q03 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "少之時，血氣未定及其壯也，血氣方剛及其老也，血氣既衰",
+  "translation": "At the time of youth, blood and vital energy are not yet settled; reaching one's maturity, blood and vital energy are then strong; reaching one's seniority, blood and vital energy have already declined.",
+}
+`;
+
+exports[`Quote Slicer browser export alignment data > preserves canonical text and optional pinyin semantics 1`] = `
+{
+  "attestation": "惟初太始，道立於一，造分天地，化成萬物。",
+  "translation": "At the very beginning, at the great origin, the Dao was established in One. It created and separated Heaven and Earth, transforming into all things.",
+}
+`;
