@@ -45,7 +45,7 @@ exports[`L001C-Q02 alignment data > preserves canonical text and optional pinyin
 exports[`L001C-Q03 alignment data > preserves canonical text and optional pinyin semantics 1`] = `
 {
   "attestation": "居高理下，為人經緯，故其字一大以鎮之也。",
-  "translation": "It sits above and governs what is below, as warp and weft to man. Therefore, its written form: the sky [above] man, thus holding him in his place. ",
+  "translation": "It sits above and governs what is below, as warp and weft to man. Therefore, its written form: the sky [above] man, thus holding him in his place.",
 }
 `;
 
