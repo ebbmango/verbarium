@@ -82,7 +82,6 @@ export const l001cQ03GovernsBelow = {
       { id: 52, text: "his", type: "text" },
       { id: 53, text: " ", type: "whitespace" },
       { id: 54, text: "place.", type: "text" },
-      { id: 55, text: " ", type: "whitespace" },
     ],
   },
   alignment: {
