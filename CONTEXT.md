@@ -9,7 +9,7 @@ The evolving relational schema is defined in `schema/verbarium.dbml`. That file 
 ## Language
 
 **Quote Slicer export**:
-The complete authoring payload for one quotation: provenance text, ordered source and target tokens, line assignments, and many-to-many mappings. This is the canonical term in specifications and tickets.
+The alignment payload produced by Quote Slicer: canonical attestation and translation tokens, ID-based many-to-many mappings, and independent sequence-boundary arrays under `alignment.breaks`. Provenance and source URL remain separate Quote props. The exact application contract is `apps/web/app/quote-slicer-export.ts`; see `docs/quotation-contract.md` for invariants.
 
 **Quote ID**:
 The public identifier through which lesson content refers to a quotation. It has the form `LNNNT-QNN`, such as `L001A-Q01`: a zero-padded three-digit lesson number, a subsection tag letter, and a zero-padded two-digit quote number assigned within that subsection.

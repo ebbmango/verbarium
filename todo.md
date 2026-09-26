@@ -40,7 +40,7 @@ This document is a handoff for future chats. It records only deferred ideas and 
 
 **Status:** Superseded for interactive `Quote` content; retained for `LegacyQuote` mock-ups.
 
-**Updated direction:** For an interactive quote, the ordered token arrays and their `line` fields are the authority for authored line breaks. Do not preserve or infer line breaks from the existing MDX `<br />` elements. Natural wrapping may still occur within an authored line when the viewport requires it. `LegacyQuote` remains available for quickly mocking up emerging content with authored children and `<br />` elements.
+**Updated direction:** For an interactive quote, `alignment.breaks.attestation` and `alignment.breaks.translation` independently define authored sequence boundaries. Canonical tokens contain no line state. Natural wrapping may still occur within an authored line. `LegacyQuote` remains available for static MDX mockups.
 
 **Post-MVP direction:** Coordinate a future Quote Slicer line model that can author different intentional line breaks for different viewport ranges, then teach Verbarium to consume those variants. The October 2026 MVP is desktop-first and does not include this model.
 
@@ -127,7 +127,7 @@ Define and coordinate:
 
 **Status:** Deferred; explicitly outside the first interactive-renderer implementation.
 
-TypeScript can check the field shapes of locally imported exports, but it cannot prove their relational invariants. Before exports arrive from a database or another runtime source, add validation for duplicate token and mapping IDs, dangling token references, overlapping mapping ownership, invalid line progression, and unsupported schema versions.
+TypeScript checks the field shapes of imported exports. Content tests now check duplicate token/mapping IDs, dangling references, overlapping ownership, valid boundary positions, and exact canonical reconstruction. Before exports arrive from a database or another runtime source, add ingestion validation and decide versioning separately.
 
 Keep validation at the ingestion seam so the quote renderer can operate on trusted data without duplicating recovery rules throughout its implementation.
 
