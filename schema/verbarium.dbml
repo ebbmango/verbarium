@@ -9,14 +9,11 @@ Project Verbarium {
   `identifier` is a conceptual placeholder type. The concrete PostgreSQL
   identifier strategy has not been decided yet.
 
-  `token_sequence` is a conceptual placeholder type. The physical storage
-  representation for ordered tokens has not been decided yet. Token sequences
-  are lossless for textual content and do not encode editorial line breaks.
-
-  `alignment_mappings` and `alignment_breaks` are conceptual placeholder
-  types for structured Alignment-owned payloads. Their physical PostgreSQL
-  representation has not been decided yet; they are intentionally not
-  normalized into separate relational mapping/break tables at this stage.
+  Ordered token sequences and Alignment mappings/breaks are stored as jsonb.
+  These payloads preserve Quote Slicer's structured data directly and are
+  intentionally not normalized into separate relational child tables at this stage.
+  Token sequences remain lossless for textual content and do not encode editorial
+  line breaks.
   '''
 }
 
@@ -40,7 +37,7 @@ Table Attestation {
   id identifier [pk]
   passage_id identifier [not null, ref: > Passage.id]
   provenance_id identifier [not null, ref: > Provenance.id]
-  tokens token_sequence [not null]
+  tokens jsonb [not null]
   witness_url text
 
   Note: 'One source-language textual form of a Passage. Its ordered tokens are the canonical lossless textual representation, including punctuation and textual whitespace but excluding editorial line breaks. Provenance identifies the shared source/resource; witness_url is optional and points directly to the specific attested text within that resource when available.'
@@ -50,7 +47,7 @@ Table Translation {
   id identifier [pk]
   passage_id identifier [not null, ref: > Passage.id]
   provenance_id identifier [ref: > Provenance.id]
-  tokens token_sequence [not null]
+  tokens jsonb [not null]
   witness_url text
 
   Note: 'One translated rendering of a Passage. Its ordered tokens are the canonical lossless textual representation, parallel to Attestation tokens. Provenance is optional so Verbarium-authored translations need not invent an external source. witness_url is optional and points directly to this translation online when available. It does not imply a known historical Attestation basis.'
@@ -59,8 +56,8 @@ Table Translation {
 Table Alignment {
   attestation_id identifier [not null, ref: > Attestation.id]
   translation_id identifier [not null, ref: > Translation.id]
-  mappings alignment_mappings [not null]
-  breaks alignment_breaks [not null]
+  mappings jsonb [not null]
+  breaks jsonb [not null]
 
   indexes {
     (attestation_id, translation_id) [pk]
