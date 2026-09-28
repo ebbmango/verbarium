@@ -1,0 +1,5 @@
+project_id = "verbarium"
+
+[experimental.pgdelta]
+enabled = true
+declarative_schema_path = "./schemas"
