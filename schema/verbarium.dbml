@@ -62,5 +62,9 @@ Table Alignment {
   mappings alignment_mappings [not null]
   breaks alignment_breaks [not null]
 
-  Note: 'Connects one Attestation with one Translation for Verbarium alignment data. mappings and breaks are structured Alignment-owned payloads kept intact for faithful reconstruction rather than normalized into child tables. Passage identity is implied by the referenced entities rather than duplicated here.'
+  indexes {
+    (attestation_id, translation_id) [pk]
+  }
+
+  Note: 'Exactly one Alignment exists per Attestation/Translation pair, identified by the composite primary key. mappings and breaks are structured Alignment-owned payloads kept intact for faithful reconstruction rather than normalized into child tables. Passage identity is implied by the referenced entities rather than duplicated here. Multiple alternative alignments for the same pair are deferred until needed.'
 }
