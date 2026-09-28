@@ -40,9 +40,10 @@ Table Attestation {
 Table Translation {
   id identifier [pk]
   passage_id identifier [not null, ref: > Passage.id]
+  provenance_id identifier [ref: > Provenance.id]
   tokens token_sequence [not null]
 
-  Note: 'One translated rendering of a Passage. Its ordered tokens are the canonical lossless textual representation, parallel to Attestation tokens. It does not imply a known historical Attestation basis.'
+  Note: 'One translated rendering of a Passage. Its ordered tokens are the canonical lossless textual representation, parallel to Attestation tokens. Provenance is optional so Verbarium-authored translations need not invent an external source. It does not imply a known historical Attestation basis.'
 }
 
 Table Alignment {
