@@ -18,9 +18,10 @@ Project Verbarium {
 Table Provenance {
   id identifier [pk]
   title text
+  author text
   publication_year int
 
-  Note: 'Umbrella origin/source identity for textual material. A record may represent an underlying work, a broader origin such as a popular saying or oral tradition, or a more specific source such as an edition, manuscript resource, publication, or website. Structured fields are optional because different provenances carry different information. No fixed provenance type/category is modeled yet.'
+  Note: 'Umbrella origin/source identity for textual material. A record may represent an underlying work, a broader origin such as a popular saying or oral tradition, or a more specific source such as an edition, manuscript resource, publication, or website. Structured fields are optional because different provenances carry different information. author names the author of the textual object represented by this Provenance, including a translator when the Provenance represents a translation. No fixed provenance type/category is modeled yet.'
 }
 
 Table Passage {
