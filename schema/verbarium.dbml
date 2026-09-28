@@ -36,9 +36,9 @@ Table Attestation {
   passage_id identifier [not null, ref: > Passage.id]
   provenance_id identifier [not null, ref: > Provenance.id]
   tokens token_sequence [not null]
-  witness_url text [not null]
+  witness_url text
 
-  Note: 'One source-language textual form of a Passage. Its ordered tokens are the canonical lossless textual representation, including punctuation and textual whitespace but excluding editorial line breaks. Provenance identifies the shared source/resource; witness_url points directly to the specific attested text within that resource.'
+  Note: 'One source-language textual form of a Passage. Its ordered tokens are the canonical lossless textual representation, including punctuation and textual whitespace but excluding editorial line breaks. Provenance identifies the shared source/resource; witness_url is optional and points directly to the specific attested text within that resource when available.'
 }
 
 Table Translation {
