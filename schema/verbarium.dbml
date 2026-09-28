@@ -24,8 +24,9 @@ Table Passage {
 Table Provenance {
   id identifier [pk]
   title text [not null]
+  publication_year int
 
-  Note: 'Shared provenance resource for textual material. Bibliographic metadata is structured rather than stored as one opaque citation string. title identifies the cited work, edition, resource, or publication by name; additional fields remain intentionally undecided.'
+  Note: 'Shared provenance resource for textual material. Bibliographic metadata is structured rather than stored as one opaque citation string. title identifies the cited work, edition, resource, or publication by name; publication_year is optional when known; additional fields remain intentionally undecided.'
 }
 
 Table Attestation {
