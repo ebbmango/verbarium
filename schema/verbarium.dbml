@@ -15,10 +15,18 @@ Project Verbarium {
   '''
 }
 
+Table Work {
+  id identifier [pk]
+  title text [not null]
+
+  Note: 'Identity of an underlying textual work, distinct from any particular attestation, edition, publication, or translation.'
+}
+
 Table Passage {
   id identifier [pk]
+  work_id identifier [not null, ref: > Work.id]
 
-  Note: 'Identity-only container for attestations and translations of the same passage.'
+  Note: 'Bounded passage-level identity within a Work. Attestations and translations are concrete textual renderings of this passage.'
 }
 
 Table Provenance {
@@ -26,7 +34,7 @@ Table Provenance {
   title text [not null]
   publication_year int
 
-  Note: 'Shared provenance resource for textual material. Bibliographic metadata is structured rather than stored as one opaque citation string. title identifies the cited work, edition, resource, or publication by name; publication_year is optional when known; additional fields remain intentionally undecided.'
+  Note: 'Concrete bibliographic/source resource associated with an Attestation or Translation, distinct from the underlying Work. Metadata is structured rather than stored as one opaque citation string. title identifies the cited source/resource/publication by name; publication_year is optional when known; additional fields remain intentionally undecided.'
 }
 
 Table Attestation {
