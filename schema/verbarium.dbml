@@ -15,20 +15,12 @@ Project Verbarium {
   '''
 }
 
-Table Work {
-  id identifier [pk]
-  title text [not null]
-
-  Note: 'Identity of an identifiable underlying textual work. A Work is optional within Provenance because not every textual origin is a work.'
-}
-
 Table Provenance {
   id identifier [pk]
-  work_id identifier [ref: > Work.id]
-  title text [not null]
+  title text
   publication_year int
 
-  Note: 'Broader origin or source context for textual material. It may reference an identifiable Work, but can also stand independently for origins such as a popular saying or oral tradition. title and publication_year are existing structured provenance fields whose precise applicability will continue to be refined incrementally.'
+  Note: 'Umbrella origin/source identity for textual material. A record may represent an underlying work, a broader origin such as a popular saying or oral tradition, or a more specific source such as an edition, manuscript resource, publication, or website. Structured fields are optional because different provenances carry different information. No fixed provenance type/category is modeled yet.'
 }
 
 Table Passage {
