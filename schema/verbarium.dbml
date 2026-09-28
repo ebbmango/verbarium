@@ -12,6 +12,11 @@ Project Verbarium {
   `token_sequence` is a conceptual placeholder type. The physical storage
   representation for ordered tokens has not been decided yet. Token sequences
   are lossless for textual content and do not encode editorial line breaks.
+
+  `alignment_mappings` and `alignment_breaks` are conceptual placeholder
+  types for structured Alignment-owned payloads. Their physical PostgreSQL
+  representation has not been decided yet; they are intentionally not
+  normalized into separate relational mapping/break tables at this stage.
   '''
 }
 
@@ -54,6 +59,8 @@ Table Translation {
 Table Alignment {
   attestation_id identifier [not null, ref: > Attestation.id]
   translation_id identifier [not null, ref: > Translation.id]
+  mappings alignment_mappings [not null]
+  breaks alignment_breaks [not null]
 
-  Note: 'Connects one Attestation with one Translation for Verbarium alignment data. Passage identity is implied by the referenced entities rather than duplicated here.'
+  Note: 'Connects one Attestation with one Translation for Verbarium alignment data. mappings and breaks are structured Alignment-owned payloads kept intact for faithful reconstruction rather than normalized into child tables. Passage identity is implied by the referenced entities rather than duplicated here.'
 }
