@@ -19,7 +19,6 @@ function renderLessonAt(path: string) {
           <LessonPage params={{ number: path.split("/").pop() ?? "" }} loaderData={undefined} matches={[] as never} />
         </SessionProvider>
       ),
-      ErrorBoundary: () => <p>Not found</p>,
     },
     { path: "/account", Component: () => <p>Account</p> },
   ]);
@@ -42,9 +41,11 @@ describe("the lesson page", () => {
     ]);
   });
 
-  it("answers 404 for a lesson that does not exist", () => {
+  it("says there is no such lesson for a number no file carries", () => {
     renderLessonAt("/lessons/99");
 
-    expect(screen.getByText("Not found")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "404" })).toBeInTheDocument();
+    expect(screen.getByText("There is no Lesson 99.")).toBeInTheDocument();
+    expect(meta({ params: { number: "99" } } as never)).toEqual([{ title: "Lesson not found · Verbarium" }]);
   });
 });
