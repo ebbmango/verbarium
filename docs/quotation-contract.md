@@ -211,8 +211,8 @@ It is a test fixture, not a committed quotation: the Dao quotation itself is
 correspondence against the captured export.
 
 All 17 Lesson 1 quotations already satisfied the alignment rules before the
-producer migration. Canonical text snapshots and ID/reference/ownership checks
-guard their content.
+producer migration. Canonical text snapshots guard their content; the contract
+parser checks their structure when the registry loads and when the site builds.
 
 ## Later
 

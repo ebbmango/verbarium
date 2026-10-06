@@ -74,7 +74,7 @@ Lesson content is MDX imported at build time; quotations are quotation files
 (JSON) imported the same way and referenced by Quote ID. Both serve the native
 client too. The Expo app compiles
 the same MDX at build time with the official `@mdx-js/mdx` compiler and a native
-component map, and the quotation modules are plain data it can import directly.
+component map, and the quotation files are plain data it can import directly.
 Lessons therefore stay bundled for the MVP. The reasoning and the compile
 requirements are in Hylia, `Projects/Verbarium/Decisions/Lesson Content
 Architecture.md`, under *Native rendering*.
@@ -84,8 +84,8 @@ keeps them portable: markdown and semantic components rather than raw HTML tags,
 `className` or `style`. Every lesson written with raw markup is a lesson to
 rewrite for the native client.
 
-The quotation work is not forced by the native client, which can import
-TypeScript directly. Phase 2 puts quotations in their final form anyway:
+The quotation work is not forced by the native client, which can import the
+files directly. Phase 2 puts quotations in their final form anyway:
 
 - **A strict JSON format** ([#16](https://github.com/ebbmango/verbarium/issues/16)), exported by Quote Slicer
   ([quote-slicer#19](https://github.com/ebbmango/quote-slicer/issues/19),

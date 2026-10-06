@@ -221,8 +221,13 @@ function QuoteFrame({ children, provenance, quotationRef, sourceLink, sourcePend
   );
 }
 
+type QuoteProps = {
+  /** The Quote ID of a committed quotation file. */
+  id: string;
+};
+
 /** A quotation in a lesson, by its Quote ID: `<Quote id="L001A-Q01" />`. */
-export function Quote({ id }: { id: string }) {
+export function Quote({ id }: QuoteProps) {
   const quotation = quotationById(id);
   return <QuoteView provenance={quotation.provenance} quote={quotation} sourceLink={quotation.sourceLink} />;
 }
