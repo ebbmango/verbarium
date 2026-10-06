@@ -1,18 +1,8 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router";
 
+import { initialsFor } from "../lib/initials";
 import { useSession } from "../lib/session";
-
-/**
- * The letters shown for a signed-in reader: the first letter of the first two
- * words of the email's local part (`emanuel.borges@…` gives EB), or the first
- * two letters when it is one word (`ebbmango@…` gives EB).
- */
-export function initialsFor(email: string): string {
-  const localPart = email.split("@")[0] ?? "";
-  const words = localPart.split(/[._+-]+/).filter(Boolean);
-  const letters = words.length >= 2 ? words[0][0] + words[1][0] : (words[0] ?? "").slice(0, 2);
-  return letters.toUpperCase();
-}
 
 function SignInIcon() {
   return (
@@ -34,26 +24,43 @@ function SignInIcon() {
   );
 }
 
+function ReaderIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="none"
+      height="16"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      width="16"
+    >
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
+
+/** What the button shows and how it is named in each sign-in state. */
+function profileFace(state: ReturnType<typeof useSession>): { label: string; face: ReactNode } {
+  if (state.status === "loading") return { label: "Account", face: null };
+  if (!state.session) return { label: "Sign in", face: <SignInIcon /> };
+
+  const email = state.session.user.email;
+  const initials = initialsFor(email ?? "");
+
+  if (!initials) return { label: "Account", face: <ReaderIcon /> };
+  return { label: `${initials}, account for ${email}`, face: initials };
+}
+
 export function ProfileButton() {
-  const state = useSession();
-
-  if (state.status === "loading") {
-    return <Link aria-label="Account" className="profile-button" to="/account" />;
-  }
-
-  const initials = initialsFor(state.session?.user.email ?? "");
-
-  if (!initials) {
-    return (
-      <Link aria-label="Sign in" className="profile-button" to="/account">
-        <SignInIcon />
-      </Link>
-    );
-  }
+  const { label, face } = profileFace(useSession());
 
   return (
-    <Link aria-label={`Account: ${state.session?.user.email}`} className="profile-button" to="/account">
-      {initials}
+    <Link aria-label={label} className="profile-button" to="/account">
+      {face}
     </Link>
   );
 }
