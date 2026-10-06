@@ -1,9 +1,8 @@
-import { readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import type { AttestationTranslationAlignment } from "../../quote-slicer-export";
 import { formatQuotationFile, parseQuotationFile } from "../../quotation-file";
+import { lessonSources } from "../../test/lesson-sources";
 import { quotationById, quotations } from "./index";
 import { quoteSlicerDaoOne } from "./quote-slicer-dao-one";
 
@@ -12,10 +11,6 @@ import { quoteSlicerDaoOne } from "./quote-slicer-dao-one";
 // the content itself, the committed layout, the producer proof, and that the
 // files and the lessons agree on which quotations exist.
 const texts = import.meta.glob<string>("./L*.json", { eager: true, import: "default", query: "?raw" });
-const lessonsDirectory = join(import.meta.dirname, "../lessons");
-const lessons = readdirSync(lessonsDirectory)
-  .filter((name) => name.endsWith(".mdx"))
-  .map((name) => readFileSync(join(lessonsDirectory, name), "utf8"));
 
 const committed = Array.from(quotations.keys())
   .sort((left, right) => left.localeCompare(right))
@@ -40,7 +35,7 @@ it("consumes the producer export with unchanged canonical content, metadata, and
 
 it("has a file for every Quote ID the lessons use, and a lesson for every file", () => {
   const used = new Set(
-    lessons.flatMap((mdx) => Array.from(mdx.matchAll(/<Quote id="([^"]+)"/g), (match) => match[1])),
+    Array.from(lessonSources().values()).flatMap((mdx) => Array.from(mdx.matchAll(/<Quote id="([^"]+)"/g), (match) => match[1])),
   );
 
   expect(Array.from(used).sort()).toEqual(committed.map(([quoteId]) => quoteId));

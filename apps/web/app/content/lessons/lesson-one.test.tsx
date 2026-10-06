@@ -1,16 +1,15 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { lessonComponents } from "../../components/lesson";
 import { resetFakeSupabase } from "../../test/fake-supabase";
+import { lessonSources } from "../../test/lesson-sources";
 import { renderWithSession } from "../../test/render-with-session";
 import LessonOne from "./001.mdx";
 
 vi.mock("../../lib/supabase", () => import("../../test/fake-supabase"));
 
-const source = readFileSync(join(import.meta.dirname, "001.mdx"), "utf8");
+const source = lessonSources().get("001.mdx") ?? "";
 const han = /\p{Script=Han}/u;
 
 beforeEach(resetFakeSupabase);
