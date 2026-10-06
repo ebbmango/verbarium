@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 
 import { useSession } from "../lib/session";
@@ -21,6 +21,9 @@ export function FinishLesson({ lesson }: { lesson: number }) {
   const [status, setStatus] = useState<Status>("unknown");
   const [failed, setFailed] = useState(false);
   const readerId = session.session?.user.id;
+  // Who is signed in right now, for a save that is still in flight.
+  const currentReader = useRef(readerId);
+  currentReader.current = readerId;
 
   useEffect(() => {
     if (session.status === "loading") return;
@@ -46,7 +49,7 @@ export function FinishLesson({ lesson }: { lesson: number }) {
   }, [session.status, readerId, lesson]);
 
   const finish = async () => {
-    if (!session.session) {
+    if (!readerId) {
       void navigate("/account");
       return;
     }
@@ -56,6 +59,8 @@ export function FinishLesson({ lesson }: { lesson: number }) {
 
     const { error } = await supabase.from("lesson_completion").insert({ lesson });
 
+    // The reader signed out, or changed, while the save was on its way.
+    if (currentReader.current !== readerId) return;
     if (error && error.code !== duplicateKey) {
       setFailed(true);
       setStatus("unfinished");

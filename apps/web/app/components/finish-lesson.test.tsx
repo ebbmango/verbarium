@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { db, emit, resetFakeSupabase, sessionFor } from "../test/fake-supabase";
@@ -7,7 +7,7 @@ import { FinishLesson } from "./finish-lesson";
 
 vi.mock("../lib/supabase", () => import("../test/fake-supabase"));
 
-const completion = { table: "lesson_completion", columns: "completed_at", column: "lesson", value: 1 };
+const completionLookup = { table: "lesson_completion", columns: "completed_at", column: "lesson", value: 1 };
 
 beforeEach(resetFakeSupabase);
 
@@ -35,7 +35,7 @@ describe("FinishLesson", () => {
     renderWithSession(<FinishLesson lesson={1} />);
     emit("INITIAL_SESSION", sessionFor("reader@example.com"));
 
-    await waitFor(() => expect(db.maybeSingle).toHaveBeenCalledWith(completion));
+    await waitFor(() => expect(db.maybeSingle).toHaveBeenCalledWith(completionLookup));
     const button = await screen.findByRole("button", { name: "Finish lesson" });
     expect(button).toBeEnabled();
 
@@ -63,6 +63,31 @@ describe("FinishLesson", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Finish lesson" }));
 
     expect(await screen.findByRole("status")).toHaveTextContent("Lesson finished");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("still offers the button when the lookup fails, since a click settles it", async () => {
+    db.maybeSingle.mockResolvedValue({ data: null, error: { code: "PGRST301", message: "JWT expired" } });
+    renderWithSession(<FinishLesson lesson={1} />);
+    emit("INITIAL_SESSION", sessionFor("reader@example.com"));
+
+    expect(await screen.findByRole("button", { name: "Finish lesson" })).toBeEnabled();
+  });
+
+  it("does not show a lesson as finished to a reader who signed out while it was saving", async () => {
+    let resolveInsert!: (value: { error: null }) => void;
+    db.insert.mockReturnValue(new Promise((resolve) => (resolveInsert = resolve)));
+    renderWithSession(<FinishLesson lesson={1} />);
+    emit("INITIAL_SESSION", sessionFor("reader@example.com"));
+
+    fireEvent.click(await screen.findByRole("button", { name: "Finish lesson" }));
+    expect(screen.getByRole("button", { name: "Saving…" })).toBeDisabled();
+
+    emit("SIGNED_OUT", null);
+    await act(async () => resolveInsert({ error: null }));
+
+    expect(screen.getByRole("button", { name: "Finish lesson" })).toBeEnabled();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });
 
   it("says when saving failed and lets the reader try again", async () => {

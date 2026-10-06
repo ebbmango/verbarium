@@ -3,7 +3,6 @@ import type { ComponentPropsWithoutRef, PropsWithChildren } from "react";
 import { FinishLesson } from "./finish-lesson";
 import { LegacyQuote, Quote } from "./quote";
 
-export { FinishLesson } from "./finish-lesson";
 export { LegacyQuote, Quote } from "./quote";
 
 type LessonHeaderProps = {
