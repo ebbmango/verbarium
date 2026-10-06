@@ -203,7 +203,8 @@ body::before {
 }
 
 .lesson-manuscript > p,
-.account p {
+.account p,
+.landing p {
   width: min(100%, var(--measure-copy));
   margin: 1.4rem auto 0;
   color: #565850;
@@ -654,14 +655,6 @@ body::before {
 
 .landing .lesson-heading {
   margin-bottom: 3rem;
-}
-
-.landing p {
-  width: min(100%, var(--measure-copy));
-  margin: 1.4rem auto 0;
-  color: #565850;
-  font-size: 1rem;
-  line-height: 1.9;
 }
 
 .landing .button-primary {

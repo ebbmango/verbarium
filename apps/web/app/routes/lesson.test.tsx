@@ -16,7 +16,7 @@ function renderLessonAt(path: string) {
       path: "/lessons/:number",
       Component: () => (
         <SessionProvider>
-          <LessonPage params={{ number: path.split("/").pop() ?? "" }} loaderData={undefined} matches={[] as never} />
+          <LessonPage />
         </SessionProvider>
       ),
     },
@@ -34,10 +34,10 @@ describe("the lesson page", () => {
     expect(screen.getAllByRole("button", { name: "Finish lesson" })).toHaveLength(1);
   });
 
-  it("titles the page after the lesson", () => {
+  it("titles and describes the page after the lesson", () => {
     expect(meta({ params: { number: "1" } } as never)).toEqual([
       { title: "Lesson 1 · Verbarium" },
-      { name: "description", content: "Lesson 1 of Verbarium's etymological lessons." },
+      { name: "description", content: "About the primitive 一, a single stroke." },
     ]);
   });
 

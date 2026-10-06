@@ -27,16 +27,27 @@ export function LessonTracker({ number, total }: LessonTrackerProps) {
   )
 }
 
-export function LessonHeader({ number, primitive }: LessonHeaderProps) {
+type PageHeadingProps = PropsWithChildren<{
+  eyebrow: string;
+  title: string;
+}>;
+
+/** The title block a page opens with: the eyebrow, the title, and a subtitle line. */
+export function PageHeading({ children, eyebrow, title }: PageHeadingProps) {
   return (
     <header className="lesson-heading">
-      <p className="eyebrow">Etymological lessons</p>
-      <h1>Lesson {number}</h1>
-      <p className="lesson-subtitle">
-        About the primitive <span lang="zh-Hant">{primitive}</span>, a single stroke.
-      </p>
-
+      <p className="eyebrow">{eyebrow}</p>
+      <h1>{title}</h1>
+      <p className="lesson-subtitle">{children}</p>
     </header>
+  );
+}
+
+export function LessonHeader({ number, primitive }: LessonHeaderProps) {
+  return (
+    <PageHeading eyebrow="Etymological lessons" title={`Lesson ${number}`}>
+      About the primitive <span lang="zh-Hant">{primitive}</span>, a single stroke.
+    </PageHeading>
   );
 }
 

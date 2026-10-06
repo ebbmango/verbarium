@@ -1,4 +1,6 @@
-import { lessonComponents } from "~/components/lesson";
+import { useParams } from "react-router";
+
+import { lessonComponents, PageHeading } from "~/components/lesson";
 import { lessonByNumber } from "~/content/lessons";
 
 import type { Route } from "./+types/lesson";
@@ -10,14 +12,12 @@ function lessonFor(param: string | undefined) {
 export function meta({ params }: Route.MetaArgs) {
   const lesson = lessonFor(params.number);
   if (!lesson) return [{ title: "Lesson not found · Verbarium" }];
-  return [
-    { title: `Lesson ${lesson.number} · Verbarium` },
-    { name: "description", content: `Lesson ${lesson.number} of Verbarium's etymological lessons.` },
-  ];
+  return [{ title: `Lesson ${lesson.number} · Verbarium` }, { name: "description", content: lesson.description }];
 }
 
-export default function LessonPage({ params }: Route.ComponentProps) {
-  const lesson = lessonFor(params.number);
+export default function LessonPage() {
+  const { number } = useParams();
+  const lesson = lessonFor(number);
 
   // Addresses that were not pre-rendered reach here through the 404 fallback,
   // so the page already answers 404; this says why.
@@ -25,11 +25,9 @@ export default function LessonPage({ params }: Route.ComponentProps) {
     return (
       <main className="lesson-shell">
         <section className="lesson landing">
-          <header className="lesson-heading">
-            <p className="eyebrow">Etymological lessons</p>
-            <h1>404</h1>
-            <p className="lesson-subtitle">There is no Lesson {params.number}.</p>
-          </header>
+          <PageHeading eyebrow="Etymological lessons" title="404">
+            There is no Lesson {number}.
+          </PageHeading>
         </section>
       </main>
     );

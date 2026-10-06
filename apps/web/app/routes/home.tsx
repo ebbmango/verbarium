@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 
+import { PageHeading } from "~/components/lesson";
 import { lessonPath, lessons } from "~/content/lessons";
 
 import type { Route } from "./+types/home";
@@ -21,13 +22,9 @@ export default function Home() {
   return (
     <main className="lesson-shell">
       <section className="lesson landing">
-        <header className="lesson-heading">
-          <p className="eyebrow">Etymological lessons</p>
-          <h1>Verbarium</h1>
-          <p className="lesson-subtitle">
-            Reading Literary and Classical Chinese, one character at a time.
-          </p>
-        </header>
+        <PageHeading eyebrow="Etymological lessons" title="Verbarium">
+          Reading Literary and Classical Chinese, one character at a time.
+        </PageHeading>
         <p>
           <Link className="button-primary" to={lessonPath(first.number)}>
             Begin with Lesson {first.number}

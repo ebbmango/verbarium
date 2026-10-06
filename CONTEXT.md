@@ -68,6 +68,10 @@ A free-text qualification of where, when or in what context a sense is used, suc
 A person reading Verbarium. Anyone can read lessons; a signed-in reader's lesson completions are saved.
 _Avoid_: User, learner
 
+**Lesson address**:
+The URL of a lesson, `/lessons/N`, where N is the lesson's number: the number in its file name, `001.mdx` for Lesson 1.
+_Avoid_: Lesson route, lesson URL
+
 **Lesson completion**:
 The record that a reader finished a lesson.
 _Avoid_: Progress (also names the course-position indicator in the lesson header)

@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { lessonByNumber, lessonPath, lessons, lessonsInCourse } from "./index";
+import { lessonByNumber, lessons } from "./index";
+import { isLessonPath, lessonNumberFromFileName, lessonPath } from "./lesson-files";
 
 describe("lessons", () => {
   it("lists every committed lesson by the number in its file name, in order", () => {
     expect(lessons.map((lesson) => lesson.number)).toEqual([1]);
+    expect(lessons[0].description).toBe("About the primitive 一, a single stroke.");
     expect(typeof lessons[0].Content).toBe("function");
   });
 
@@ -13,9 +15,22 @@ describe("lessons", () => {
     expect(lessonByNumber(2)).toBeUndefined();
     expect(lessonByNumber(Number.NaN)).toBeUndefined();
   });
+});
 
-  it("gives each lesson its address and counts the course", () => {
+describe("lesson files", () => {
+  it("read the lesson number out of the file name and nothing else", () => {
+    expect(lessonNumberFromFileName("001.mdx")).toBe(1);
+    expect(lessonNumberFromFileName("020.mdx")).toBe(20);
+    expect(lessonNumberFromFileName("lesson-2.mdx")).toBeNull();
+    expect(lessonNumberFromFileName("001.mdx.bak")).toBeNull();
+    expect(lessonNumberFromFileName("index.ts")).toBeNull();
+  });
+
+  it("give each lesson its address and tell the lessons' addresses apart", () => {
     expect(lessonPath(1)).toBe("/lessons/1");
-    expect(lessonsInCourse).toBe(177);
+    expect(isLessonPath("/lessons/1")).toBe(true);
+    expect(isLessonPath("/lessons")).toBe(true);
+    expect(isLessonPath("/lessonsx")).toBe(false);
+    expect(isLessonPath("/account")).toBe(false);
   });
 });

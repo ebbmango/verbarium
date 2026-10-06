@@ -1,15 +1,12 @@
 import { Link, useLocation } from "react-router";
 
+import { isLessonPath } from "../content/lessons";
 import { ProfileButton } from "./profile-button";
 
-/** The Lessons tab is current on the home page and on every lesson. */
-function lessonsTabClassName(pathname: string) {
-  const current = pathname === "/" || pathname.startsWith("/lessons");
-  return current ? "nav-tab nav-tab-active" : "nav-tab";
-}
-
 export function SiteHeader() {
-  const lessonsTab = lessonsTabClassName(useLocation().pathname);
+  // The Lessons tab is current on the home page and on every lesson.
+  const { pathname } = useLocation();
+  const onLessons = pathname === "/" || isLessonPath(pathname);
 
   return (
     <header className="topbar">
@@ -21,11 +18,7 @@ export function SiteHeader() {
       </Link>
 
       <nav className="primary-nav" aria-label="Primary navigation">
-        <Link
-          aria-current={lessonsTab === "nav-tab nav-tab-active" ? "page" : undefined}
-          className={lessonsTab}
-          to="/"
-        >
+        <Link aria-current={onLessons ? "page" : undefined} className={onLessons ? "nav-tab nav-tab-active" : "nav-tab"} to="/">
           Lessons
         </Link>
         <a className="nav-tab" href="#characters">

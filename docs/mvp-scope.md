@@ -138,12 +138,15 @@ native client needs them.
 
 ## Deployment
 
-GitHub Pages stays. The application is a prerendered SPA (`ssr: false`,
-`prerender: true`), and Supabase is a hosted backend the browser calls over
-HTTPS, so authentication and per-user state need no server of Verbarium's own.
-`.github/workflows/deploy-pages.yml` already gates deploys on `pnpm typecheck`
-and `pnpm test`, and already copies `index.html` to `404.html` so deep links
-resolve client-side.
+GitHub Pages stays. The application is a prerendered SPA (`ssr: false`; every
+static route and one page per lesson file are pre-rendered, see
+`apps/web/react-router.config.ts`), and Supabase is a hosted backend the browser
+calls over HTTPS, so authentication and per-user state need no server of
+Verbarium's own. `.github/workflows/deploy-pages.yml` gates deploys on
+`pnpm typecheck` and `pnpm test`, then `apps/web/scripts/prepare-pages.sh`
+lifts the pre-rendered tree to the artifact root, so every route is served as
+its own page, and copies the SPA fallback to `404.html` so other addresses
+still resolve client-side.
 
 What Phase 1 adds is configuration, not hosting: the Supabase publishable key in the
 client bundle (public by design), auth redirect URLs allowlisted for the
