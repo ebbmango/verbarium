@@ -49,17 +49,23 @@ the lessons and gives full control over what each entry says. It also creates a
 second authoring queue alongside the quotations, which is the main cost of this
 decision.
 
-**Quotations move into Supabase during the MVP.** Dictionary senses link to
-example passages through a database join, so passages must be in the database by
-Phase 5; moving them in Phase 2 avoids converting several hundred quotation
-assets after bulk authoring. Quote Slicer's JSON exports are committed to the
-repository as the source of truth, and the database is loaded from them. A Quote
-ID identifies the quote itself and never changes.
+**Dictionary pages are MDX.** One page per headword, written like a lesson. Its
+entries, readings and senses are written in the page with fixed components, and
+its example quotations appear by Quote ID. A build step reads those components
+for search and flashcards. Senses stay out of the database because each belongs
+to one page; quotations, which lessons and dictionary pages share, belong to the
+database.
 
-Durable decisions are recorded in Hylia under `Projects/Verbarium/Decisions/`.
-Supabase (Backend Platform), the future Expo app (Repository Architecture) and
-quotation storage (Quote Identity and Storage) are already there; the
-hand-authored dictionary decision is not yet.
+**Quotations load into Supabase after the MVP.** During the MVP they are
+committed to the repository in their final form: Quote Slicer's versioned JSON
+exports, carrying their source name and link, referenced as `<Quote id="…">`.
+Loading them into the database afterwards is then an import script. A Quote ID
+identifies the quote itself and never changes.
+
+Durable decisions are recorded in Hylia under `Projects/Verbarium/Decisions/`:
+Supabase (Backend Platform), the future Expo app (Repository Architecture),
+dictionary pages (Character Data Model) and quotation storage (Quote Identity
+and Storage).
 
 ## Content delivery
 
@@ -77,14 +83,14 @@ keeps them portable: markdown and semantic components rather than raw HTML tags,
 rewrite for the native client.
 
 `todo.md` items 7, 8 and 9 are not forced by the native client, which can import
-TypeScript directly. They are forced by moving quotations into Supabase during
-the MVP (see *Decisions*), and belong to Phase 2:
+TypeScript directly. Items 7 and 8 belong to Phase 2, which puts quotations in
+their final form; item 9 is partly decided:
 
-- **Item 7, machine-readable Quote Slicer interchange.** Database storage needs
-  strict JSON, not TypeScript object literals. The bare-`undefined` pinyin
+- **Item 7, machine-readable Quote Slicer interchange.** The committed files are
+  strict JSON, not TypeScript object literals, so the bare-`undefined` pinyin
   problem must be solved for real.
-- **Item 8, ingestion validation at the seam.** The import script is the seam.
-  JSON files are not type-checked, so it validates every export before writing.
+- **Item 8, validation at the seam.** JSON files are not type-checked, so the
+  build validates every committed export; the later import script reuses it.
 - **Item 9, Quote ID semantics.** Partly decided: a Quote ID identifies the
   quote itself and never changes. The remaining questions stay open.
 
@@ -94,18 +100,18 @@ The web prototype is finished first; the Expo application in Phase 7 is a port
 of it, not a parallel track. Phase 4 runs in parallel with everything after
 phase 2; it is the long pole and it is authoring work, not engineering work.
 
-**Phase 1 — Persistence foundation.** Provision Supabase. Extend
-`schema/verbarium.dbml` with `User`, the flashcard review entities, and the
-dictionary entities. Establish a migration path. Wire authentication into the
-web application. New tables start locked, so each user table gets its grant and
-owner policy when created; see `todo.md` item 13.
+**Phase 1 — Persistence foundation.** Provision Supabase and establish a
+migration path. Add reader data: lesson completions now; flashcard review state
+waits for Phase 6, and dictionary content lives in MDX. Wire authentication into
+the web application. New tables start locked, so each user table gets its grant
+and owner policy when created; see `todo.md` item 13.
 
 **Phase 2 — Shared content.** Move lessons and quotations into a shared package
 both clients import, and add the MDX compile plugins the native client needs.
-Move quotations into Supabase: a versioned JSON export in Quote Slicer, exports
-committed as the source of truth, a validating import script, and lessons
-referencing quotes by Quote ID. Deliver `todo.md` items 7, 8 and 9. Agree the
-portable authoring rules before bulk authoring starts.
+Put quotations in their final form: a versioned JSON export in Quote Slicer,
+exports committed with their source name and link and validated at build, and
+lessons referencing quotes by Quote ID. Deliver `todo.md` items 7 and 8. Agree
+the portable authoring rules before bulk authoring starts.
 
 **Phase 3 — Multi-lesson web.** Lesson index, routing between lessons, and the
 progress indicator that `todo.md` item 5 defers. `LessonHeader` already receives
@@ -115,11 +121,12 @@ progress indicator that `todo.md` item 5 defers. `LessonHeader` already receives
 authored in Quote Slicer. Lesson 001 carries seventeen quotations, so budget
 roughly 300–340 alignment exports. Cross-repository work.
 
-**Phase 5 — Dictionary.** Character entity, hand-authored entry pipeline, routes
-and presentation. Second authoring queue.
+**Phase 5 — Dictionary.** One MDX page per headword, with components for
+entries, readings and senses; a build step that indexes them for search and
+flashcards; routes and presentation. Second authoring queue.
 
 **Phase 6 — Flashcards.** Review scheduling model and per-user review state,
-then the review interface.
+keyed by the headword's written string, then the review interface.
 
 **Phase 7 — Expo application.** Native lessons, dictionary and flashcards, built
 on the shared content package from Phase 2.
@@ -138,11 +145,11 @@ client bundle (public by design), auth redirect URLs allowlisted for the
 `/verbarium/` basename, and the `service_role` key kept out of the bundle and
 the repository.
 
-The first real argument for leaving Pages arrives at Phase 5. Hundreds of
+Phase 5 would have been the first real argument for leaving Pages: hundreds of
 dictionary pages need to be indexable, and SPA deep links return an HTTP 404
-status to crawlers. Two options then: prerender the dictionary routes at build
-time, which keeps Pages but couples the build to database availability, or move
-to a static-first host with functions and preview deploys. Neither is a rewrite.
+status to crawlers. Because dictionary pages and, during the MVP, quotations are
+files in the repository, those routes can be prerendered at build time without a
+database, so Pages stays.
 
 ## Risks
 

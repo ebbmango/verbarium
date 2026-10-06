@@ -111,7 +111,7 @@ Coordinate the long-term answer with Quote Slicer's export contract and Verbariu
 
 ## 7. Establish a machine-readable Quote Slicer interchange
 
-**Status:** MVP, Phase 2. Quotations move into Supabase during the MVP, with committed JSON exports as their source of truth (Hylia, `Projects/Verbarium/Decisions/Quote Identity and Storage.md`). Keep using typed `.ts` data modules until then.
+**Status:** MVP, Phase 2. During the MVP, quotations are committed as strict JSON exports, their source of truth; they load into Supabase after it (Hylia, `Projects/Verbarium/Decisions/Quote Identity and Storage.md`). Keep using typed `.ts` data modules until the export exists.
 
 Quote Slicer's display formatter can emit bare `undefined` for unannotated pinyin. Bare `undefined` is valid in a TypeScript object literal but invalid in JSON. A strict JSON export should omit that optional `pinyin` property; `null` should remain available for the distinct “not applicable” state.
 
@@ -121,11 +121,11 @@ Define and coordinate:
 - schema/version compatibility and validation in Verbarium;
 - an explicit migration procedure for every breaking export-model change, coordinated across Quote Slicer, persisted quote data, and Verbarium;
 - export of the provenance and source link, which the committed JSON must carry because it is the source of truth;
-- the import from committed JSON files into the database.
+- the import from committed JSON files into the database, after the MVP.
 
 ## 8. Validate Quote Slicer exports at the ingestion seam
 
-**Status:** MVP, Phase 2. The import script that loads committed JSON exports into Supabase is the ingestion seam; JSON files are not type-checked, so it validates every export before writing.
+**Status:** MVP, Phase 2. JSON files are not type-checked, so the build validates every committed export; the import script that loads them into Supabase after the MVP reuses the same validation.
 
 TypeScript checks the field shapes of imported exports. Content tests now check duplicate token/mapping IDs, dangling references, overlapping ownership, valid boundary positions, and exact canonical reconstruction. Before exports arrive from a database or another runtime source, add ingestion validation and decide versioning separately.
 
