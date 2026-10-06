@@ -1,5 +1,4 @@
 import { AccountPanel } from "~/components/account";
-import { SiteHeader } from "~/components/site-header";
 
 import type { Route } from "./+types/account";
 
@@ -15,12 +14,8 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Account() {
   return (
-    <div className="paper">
-      <SiteHeader />
-
-      <main className="account-shell">
-        <AccountPanel />
-      </main>
-    </div>
+    <main className="lesson-shell account-shell">
+      <AccountPanel />
+    </main>
   );
 }

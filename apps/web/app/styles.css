@@ -201,7 +201,8 @@ body::before {
   text-align: center;
 }
 
-.lesson-manuscript > p {
+.lesson-manuscript > p,
+.account p {
   width: min(100%, var(--measure-copy));
   margin: 1.4rem auto 0;
   color: #565850;
@@ -223,7 +224,8 @@ body::before {
 .note-title,
 .quote-source,
 .character-forms figcaption span,
-.form-label {
+.form-label,
+.account-form label {
   font-family: var(--font-ui);
   font-weight: 750;
   letter-spacing: 0.16em;
@@ -238,7 +240,8 @@ body::before {
   font-size: 0.68rem;
 }
 
-.lesson-heading h1 {
+.lesson-heading h1,
+.account h1 {
   font-size: clamp(2rem, 5vw, 2.65rem);
   font-weight: 500;
   letter-spacing: -0.035em;
@@ -629,32 +632,11 @@ body::before {
 
 /* Account */
 
-.account-shell {
-  position: relative;
-  z-index: 0;
-  padding: 4.75rem 1.5rem 7rem;
-}
-
 .account {
   width: min(100%, var(--measure-copy));
   margin: 0 auto;
   font-family: var(--font-manuscript);
   text-align: center;
-}
-
-.account h1 {
-  margin: 0.4rem 0 0;
-  font-size: clamp(2rem, 5vw, 2.65rem);
-  font-weight: 500;
-  letter-spacing: -0.035em;
-  line-height: 1;
-}
-
-.account p {
-  margin: 1.4rem auto 0;
-  color: #565850;
-  font-size: 1rem;
-  line-height: 1.9;
 }
 
 .account a {
@@ -673,11 +655,7 @@ body::before {
   display: grid;
   gap: 0.45rem;
   color: var(--muted);
-  font-family: var(--font-ui);
   font-size: 0.62rem;
-  font-weight: 750;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
 }
 
 .account-form input {
@@ -714,8 +692,8 @@ body::before {
 }
 
 .account-note {
-  font-size: 0.9rem;
   color: var(--muted);
+  font-size: 0.9rem;
 }
 
 /* Responsive adjustments */
@@ -769,7 +747,8 @@ body::before {
     display: none;
   }
 
-  .lesson-manuscript > p {
+  .lesson-manuscript > p,
+  .account p {
     font-size: 0.91rem;
     line-height: 1.82;
   }

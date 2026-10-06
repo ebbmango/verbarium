@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router";
 
-function navTab({ isActive }: { isActive: boolean }) {
+function navTabClassName({ isActive }: { isActive: boolean }) {
   return isActive ? "nav-tab nav-tab-active" : "nav-tab";
 }
 
@@ -15,7 +15,7 @@ export function SiteHeader() {
       </Link>
 
       <nav className="primary-nav" aria-label="Primary navigation">
-        <NavLink className={navTab} end to="/">
+        <NavLink className={navTabClassName} end to="/">
           Lessons
         </NavLink>
         <a className="nav-tab" href="#characters">
