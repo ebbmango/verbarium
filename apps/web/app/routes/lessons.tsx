@@ -17,9 +17,11 @@ export default function LessonIndex() {
   return (
     <main className="lesson-shell">
       <section className="lesson landing">
-        <PageHeading eyebrow="Etymological lessons" title="Lessons">
-          {lessons.length === 1 ? "One lesson so far." : `${lessons.length} lessons so far.`}
-        </PageHeading>
+        <PageHeading
+          eyebrow="Etymological lessons"
+          title="Lessons"
+          subtitle={lessons.length === 1 ? "One lesson so far." : `${lessons.length} lessons so far.`}
+        />
         <ol className="lesson-index">
           {lessons.map((lesson) => (
             <li key={lesson.number}>

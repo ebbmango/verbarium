@@ -76,6 +76,10 @@ _Avoid_: Lesson route, lesson URL
 The page at `/lessons` listing every committed lesson in course order, each linking to its lesson address.
 _Avoid_: Lesson list, table of contents
 
+**Course position**:
+The indicator in a lesson's header showing where the lesson stands in the course: its number along a line that ends at the course's last lesson, 177 in Wieger's course.
+_Avoid_: Progress bar, tracker
+
 **Lesson completion**:
 The record that a reader finished a lesson.
 _Avoid_: Progress (also names the course-position indicator in the lesson header)
