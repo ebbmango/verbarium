@@ -143,7 +143,7 @@ HTTPS, so authentication and per-user state need no server of Verbarium's own.
 and `pnpm test`, and already copies `index.html` to `404.html` so deep links
 resolve client-side.
 
-What Phase 1 adds is configuration, not hosting: the Supabase anon key in the
+What Phase 1 adds is configuration, not hosting: the Supabase publishable key in the
 client bundle (public by design), auth redirect URLs allowlisted for the
 `/verbarium/` basename, and the `service_role` key kept out of the bundle and
 the repository.

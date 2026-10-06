@@ -9,6 +9,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { SessionProvider } from "./lib/session";
 import "./styles.css";
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -21,7 +22,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <SessionProvider>{children}</SessionProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
