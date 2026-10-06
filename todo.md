@@ -165,3 +165,50 @@ Quote Slicer exports pinyin metadata, and the interactive renderer should retain
 **Status:** Deferred; do not implement now.
 
 The interactive `Quote` currently lets readers activate a Mapping with a pointer or touch. Add a keyboard interaction that lets a keyboard user activate the same Mapping and explore the relationship between attestation and translation tokens. Decide the focus behavior and accessible description before implementation, and preserve the current pointer and touch behavior.
+
+## 13. Enable Row Level Security on user tables
+
+**Status:** Deliberately deferred for the bachelor's thesis deadline. Not a
+hardening task — read this before creating the first user table.
+
+**Why this is not an ordinary "secure it later" item:** Verbarium is a
+prerendered SPA talking straight to Supabase from the browser. There is no
+server of its own in the request path, so PostgreSQL's own Row Level Security
+policies are the entire authorization boundary. A table without a policy is not
+weakly protected; it is readable and writable by anyone holding the Supabase
+anon key, and that key ships inside the client bundle by design. The table names
+and query shapes are visible in the same bundle, so there is nothing an attacker
+needs to guess.
+
+**Scope of the exposure:** every table holding per-user data — accounts,
+flashcard review state, reading progress. Lesson, quotation and dictionary
+content is editorially public and carries no comparable risk. If examiners or
+classmates create accounts during the thesis demonstration, the data left open
+is theirs.
+
+**Remedy, when it is taken up:** Supabase enables RLS by default on tables
+created through its dashboard, and an owner-only policy is three lines of SQL
+per table:
+
+```sql
+alter table flashcard_review enable row level security;
+create policy "own rows" on flashcard_review
+  for all using (auth.uid() = user_id);
+```
+
+Also keep the `service_role` key out of the client bundle and out of the
+repository; it bypasses RLS entirely. Anything genuinely needing it belongs in a
+Supabase Edge Function.
+
+**Deferral is a cost, not a saving.** The work is roughly a quarter-hour across
+all user tables if done while the schema is being written in Phase 1. Retrofitted
+later it means auditing policies against tables that already hold live data, and
+reasoning about what was reachable in the interim.
+
+**Trigger:** do this before any account other than the author's own exists —
+whichever comes first of a public demonstration, a shared link, or thesis
+submission.
+
+**Done when:** every table holding per-user data has RLS enabled and an
+owner-scoped policy, with a test proving a signed-in user cannot read another
+user's rows.
