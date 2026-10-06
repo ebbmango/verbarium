@@ -10,7 +10,7 @@ import { SessionProvider } from "../lib/session";
  */
 export function renderWithSession(ui: ReactNode, path = "/") {
   const Stub = createRoutesStub(
-    ["/", "/account"].map((route) => ({
+    ["/", "/account", "/lessons/1"].map((route) => ({
       path: route,
       Component: route === path ? () => <SessionProvider>{ui}</SessionProvider> : () => <p>{route}</p>,
     })),

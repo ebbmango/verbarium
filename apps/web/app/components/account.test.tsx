@@ -50,7 +50,7 @@ describe("AccountPanel", () => {
 
     expect(screen.getByRole("heading", { name: "Signed in" })).toBeInTheDocument();
     expect(screen.getByText("reader@example.com")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Back to Lesson 1" })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "Back to the lessons" })).toHaveAttribute("href", "/");
   });
 
   it("says in plain words that the password was wrong", async () => {

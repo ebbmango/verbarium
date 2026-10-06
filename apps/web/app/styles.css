@@ -650,6 +650,25 @@ body::before {
   opacity: 0.6;
 }
 
+/* Home */
+
+.landing .lesson-heading {
+  margin-bottom: 3rem;
+}
+
+.landing p {
+  width: min(100%, var(--measure-copy));
+  margin: 1.4rem auto 0;
+  color: #565850;
+  font-size: 1rem;
+  line-height: 1.9;
+}
+
+.landing .button-primary {
+  display: inline-block;
+  text-decoration: none;
+}
+
 /* Account */
 
 .account {

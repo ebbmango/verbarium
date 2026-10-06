@@ -176,7 +176,7 @@ function SignedIn({ email }: { email: string | undefined }) {
       </p>
       <AuthErrorMessage error={error} />
       <p>
-        <Link to="/">Back to Lesson 1</Link>
+        <Link to="/">Back to the lessons</Link>
       </p>
     </AccountSection>
   );
