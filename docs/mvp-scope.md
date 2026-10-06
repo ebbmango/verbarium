@@ -2,7 +2,8 @@
 
 The release the project is working toward. This document records what the MVP
 contains, the architectural decisions that follow from it, and the order the
-work has to happen in. It supersedes the scope assumptions in `todo.md`.
+work has to happen in. The work itself is tracked as GitHub issues, one
+milestone per phase: <https://github.com/ebbmango/verbarium/milestones>.
 
 ## Contents
 
@@ -82,17 +83,18 @@ keeps them portable: markdown and semantic components rather than raw HTML tags,
 `className` or `style`. Every lesson written with raw markup is a lesson to
 rewrite for the native client.
 
-`todo.md` items 7, 8 and 9 are not forced by the native client, which can import
-TypeScript directly. Items 7 and 8 belong to Phase 2, which puts quotations in
-their final form; item 9 is partly decided:
+The quotation work is not forced by the native client, which can import
+TypeScript directly. Phase 2 puts quotations in their final form anyway:
 
-- **Item 7, machine-readable Quote Slicer interchange.** The committed files are
-  strict JSON, not TypeScript object literals, so the bare-`undefined` pinyin
-  problem must be solved for real.
-- **Item 8, validation at the seam.** JSON files are not type-checked, so the
-  build validates every committed export; the later import script reuses it.
-- **Item 9, Quote ID semantics.** Partly decided: a Quote ID identifies the
-  quote itself and never changes. The remaining questions stay open.
+- **A strict JSON format** ([#16](https://github.com/ebbmango/verbarium/issues/16)), exported by Quote Slicer
+  ([quote-slicer#19](https://github.com/ebbmango/quote-slicer/issues/19),
+  [quote-slicer#20](https://github.com/ebbmango/quote-slicer/issues/20)). The
+  committed files are strict JSON, not TypeScript object literals, so the
+  bare-`undefined` pinyin problem must be solved for real.
+- **Validation at build** ([#17](https://github.com/ebbmango/verbarium/issues/17)). JSON files are not type-checked, so
+  the build validates every committed export; the later import script reuses it.
+- **Quote IDs.** Partly decided: a Quote ID identifies the quote itself and never
+  changes. The remaining questions are [#31](https://github.com/ebbmango/verbarium/issues/31).
 
 ## Phases
 
@@ -104,18 +106,20 @@ phase 2; it is the long pole and it is authoring work, not engineering work.
 migration path. Add reader data: lesson completions now; flashcard review state
 waits for Phase 6, and dictionary content lives in MDX. Wire authentication into
 the web application. New tables start locked, so each user table gets its grant
-and owner policy when created; see `todo.md` item 13.
+and owner policy when created, as `lesson_completion` does.
 
 **Phase 2 — Shared content.** Move lessons and quotations into a shared package
 both clients import, and add the MDX compile plugins the native client needs.
 Put quotations in their final form: a versioned JSON export in Quote Slicer,
 exports committed with their source name and link and validated at build, and
-lessons referencing quotes by Quote ID. Deliver `todo.md` items 7 and 8. Agree
-the portable authoring rules before bulk authoring starts.
+lessons referencing quotes by Quote ID. Deliver
+[#16](https://github.com/ebbmango/verbarium/issues/16) and
+[#17](https://github.com/ebbmango/verbarium/issues/17). Agree the portable
+authoring rules before bulk authoring starts.
 
 **Phase 3 — Multi-lesson web.** Lesson index, routing between lessons, and the
-progress indicator that `todo.md` item 5 defers. `LessonHeader` already receives
-`total` and the CSS already exists.
+course-position indicator. `LessonHeader` already receives `total` and the CSS
+already exists.
 
 **Phase 4 — Lessons 002–020.** Nineteen lessons of prose, plus their quotations
 authored in Quote Slicer. Lesson 001 carries seventeen quotations, so budget
@@ -159,13 +163,15 @@ against the same editorial attention.
 
 The hosted project starts every new table locked, so a missing policy breaks a
 feature rather than exposing data. The remaining risk is granting a user table
-to the API roles without an owner policy; `todo.md` item 13 records the remedy.
+to the API roles without an owner policy; the recipe is in
+[#28](https://github.com/ebbmango/verbarium/issues/28).
 
-The October 2026 target recorded in `todo.md` predates this scope and is not
-achievable from the current state: one lesson, one route, no backend, no
-persistence, one client. The date needs to be reset or the scope cut. `todo.md`
-items 2 and 10 still describe the MVP as desktop-first, which the mobile
-deliverable contradicts; those passages are now stale.
+The October 2026 target predates this scope and is not achievable from the
+current state: one lesson, one route, no backend, no persistence, one client.
+The date needs to be reset or the scope cut.
+[#35](https://github.com/ebbmango/verbarium/issues/35) still describes the MVP
+as desktop-first, which the mobile deliverable contradicts; that passage is now
+stale.
 
 ## Open questions
 
