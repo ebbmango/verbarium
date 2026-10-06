@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { parseQuotationFile, QuotationFileError, quoteIdFromAssetName } from "./quotation-file";
-import { contractExample as example } from "./test/contract-example";
+import { formatQuotationFile, parseQuotationFile, QuotationFileError, quoteIdFromAssetName } from "./quotation-file";
+import { contractExample as example, contractExampleText } from "./test/contract-example";
 
 function problemOf(value: unknown): string {
   try {
@@ -146,6 +146,35 @@ describe("parseQuotationFile", () => {
     expect(problemOf(oneToken)).toBe(
       "alignment.breaks.attestation[0] cannot exist: a side with fewer than two tokens has no gap to break at",
     );
+  });
+});
+
+describe("formatQuotationFile", () => {
+  it("writes the committed layout, which is how the contract's example is written", () => {
+    const file = parseQuotationFile(example(), "L001I-Q01-blocked-breath.json");
+
+    expect(formatQuotationFile(file)).toBe(contractExampleText());
+  });
+
+  it("round-trips through the parser, with or without a source link", () => {
+    const withLink = parseQuotationFile(example(), "x.json");
+    expect(parseQuotationFile(JSON.parse(formatQuotationFile(withLink)), "x.json")).toEqual(withLink);
+
+    const value = example();
+    delete value.sourceLink;
+    const withoutLink = parseQuotationFile(value, "x.json");
+    const text = formatQuotationFile(withoutLink);
+    expect(text).not.toContain("sourceLink");
+    expect(parseQuotationFile(JSON.parse(text), "x.json")).toEqual(withoutLink);
+  });
+
+  it("escapes what JSON needs escaped and nothing else", () => {
+    const value = example();
+    value.provenance = 'Says "so" \\ 𠃑';
+    const text = formatQuotationFile(parseQuotationFile(value, "x.json"));
+
+    expect(text).toContain('"provenance": "Says \\"so\\" \\\\ 𠃑",');
+    expect(JSON.parse(text).provenance).toBe(value.provenance);
   });
 });
 
