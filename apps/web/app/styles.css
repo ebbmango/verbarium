@@ -662,6 +662,33 @@ body::before {
   text-decoration: none;
 }
 
+/* Lesson index */
+
+.lesson-index {
+  width: min(100%, var(--measure-copy));
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.lesson-index li + li {
+  margin-top: 0.4rem;
+}
+
+.lesson-index a {
+  display: grid;
+  gap: 0.2rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid rgb(84 72 52 / 20%);
+  background: rgb(255 252 244 / 55%);
+  text-align: left;
+  text-decoration: none;
+}
+
+.lesson-index a:hover {
+  background: rgb(255 252 244 / 96%);
+}
+
 /* Account */
 
 .account {
@@ -671,7 +698,8 @@ body::before {
   text-align: center;
 }
 
-.account a {
+.account a,
+.landing-link {
   color: var(--green);
 }
 

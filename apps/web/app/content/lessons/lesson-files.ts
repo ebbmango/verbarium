@@ -9,12 +9,15 @@ export function lessonNumberFromFileName(fileName: string): number | null {
   return match ? Number(match[1]) : null;
 }
 
+/** The address of the lesson index. */
+export const lessonIndexPath = "/lessons";
+
 /** The address of a lesson: `/lessons/1`. */
 export function lessonPath(number: number): string {
-  return `/lessons/${number}`;
+  return `${lessonIndexPath}/${number}`;
 }
 
-/** Whether an address is the lessons' corner of the site. */
+/** Whether an address is the lesson index or a lesson. */
 export function isLessonPath(pathname: string): boolean {
-  return pathname === "/lessons" || pathname.startsWith("/lessons/");
+  return pathname === lessonIndexPath || pathname.startsWith(`${lessonIndexPath}/`);
 }
