@@ -26,6 +26,30 @@ export function quoteIdFromAssetName(assetName: string): string | null {
   return quoteAssetNamePattern.exec(assetName)?.[1] ?? null;
 }
 
+/**
+ * The Quote ID of each committed file, by asset name. A file whose name is not
+ * a Quote asset name, or whose Quote ID another file already carries, is a
+ * problem naming that file instead.
+ */
+export function quoteIdsByAssetName(assetNames: string[]): { quoteIds: Map<string, string>; problems: string[] } {
+  const quoteIds = new Map<string, string>();
+  const owners = new Map<string, string>();
+  const problems: string[] = [];
+
+  for (const assetName of assetNames) {
+    const quoteId = quoteIdFromAssetName(assetName);
+    const owner = quoteId === null ? undefined : owners.get(quoteId);
+
+    if (quoteId === null) problems.push(`${assetName}.json: is not a Quote asset name (<Quote ID>-<slug>.json)`);
+    else if (owner) problems.push(`${assetName}.json: repeats Quote ID ${quoteId} of ${owner}.json`);
+    else {
+      owners.set(quoteId, assetName);
+      quoteIds.set(assetName, quoteId);
+    }
+  }
+  return { quoteIds, problems };
+}
+
 /** A file that breaks the contract. The message names the file and the problem. */
 export class QuotationFileError extends Error {
   readonly problem: string;

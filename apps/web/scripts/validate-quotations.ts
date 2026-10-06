@@ -9,7 +9,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { basename, relative, resolve } from "node:path";
 
-import { parseQuotationFile, QuotationFileError, quoteIdFromAssetName } from "../app/quotation-file.ts";
+import { parseQuotationFile, QuotationFileError, quoteIdsByAssetName } from "../app/quotation-file.ts";
 
 const quotesDirectory = resolve(import.meta.dirname, "../app/content/quotes");
 // pnpm runs scripts inside apps/web; INIT_CWD is where the command was typed.
@@ -40,18 +40,7 @@ function label(file: string): string {
 }
 
 function checkNames(paths: string[]) {
-  const owners = new Map<string, string>();
-
-  for (const file of paths) {
-    const quoteId = quoteIdFromAssetName(basename(file, ".json"));
-    if (quoteId === null) {
-      problems.push(`${label(file)}: is not a Quote asset name (<Quote ID>-<slug>.json)`);
-      continue;
-    }
-    const owner = owners.get(quoteId);
-    if (owner) problems.push(`${label(file)}: repeats Quote ID ${quoteId} of ${label(owner)}`);
-    else owners.set(quoteId, file);
-  }
+  problems.push(...quoteIdsByAssetName(paths.map((file) => basename(file, ".json"))).problems);
 }
 
 function checkContent(file: string) {

@@ -32,10 +32,10 @@ A file is one JSON object with these keys:
 | `alignment` | object | `{ "mappings": QuoteMapping[], "breaks": { "attestation": number[], "translation": number[] } }`. |
 
 No other keys are allowed, at any level: an unknown key is a mistake, not an
-extension. The next format version is the place for new keys. Until
-[#19](https://github.com/ebbmango/verbarium/issues/19), lessons pass the
-provenance and the source link as the `<Quote>` props `provenance` and
-`sourceHref`; the file replaces both.
+extension. The next format version is the place for new keys. A lesson refers
+to a quotation by Quote ID, `<Quote id="L001A-Q01" />`, and the provenance and
+source link it shows come from the file; a Quote ID with no file fails the
+build.
 
 A **SourceToken** is `{ "id": integer, "text": string, "type": "character" | "punctuation" | "number" | "symbol", "pinyin"?: string | null }`.
 A **TargetToken** is `{ "id": integer, "text": string, "type": "text" | "hanzi" | "punctuation" | "whitespace" }`.
@@ -211,8 +211,8 @@ It is a test fixture, not a committed quotation: the Dao quotation itself is
 correspondence against the captured export.
 
 All 17 Lesson 1 quotations already satisfied the alignment rules before the
-producer migration. Canonical text snapshots and ID/reference/ownership checks
-guard their content.
+producer migration. Canonical text snapshots guard their content; the contract
+parser checks their structure when the registry loads and when the site builds.
 
 ## Later
 

@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { formatQuotationFile, parseQuotationFile, QuotationFileError, quoteIdFromAssetName } from "./quotation-file";
+import {
+  formatQuotationFile,
+  parseQuotationFile,
+  QuotationFileError,
+  quoteIdFromAssetName,
+  quoteIdsByAssetName,
+} from "./quotation-file";
 import { contractExample as example, contractExampleText } from "./test/contract-example";
 
 function problemOf(value: unknown): string {
@@ -189,5 +195,31 @@ describe("quoteIdFromAssetName", () => {
     expect(quoteIdFromAssetName("L001A-Q01-One-Foundation")).toBeNull();
     expect(quoteIdFromAssetName("L001A-Q01--one")).toBeNull();
     expect(quoteIdFromAssetName("quote-slicer-dao-one")).toBeNull();
+  });
+});
+
+describe("quoteIdsByAssetName", () => {
+  it("maps each file to its Quote ID", () => {
+    const { quoteIds, problems } = quoteIdsByAssetName(["L001A-Q01-one-foundation", "L001A-Q02-dao-one"]);
+
+    expect(problems).toEqual([]);
+    expect(Array.from(quoteIds)).toEqual([
+      ["L001A-Q01-one-foundation", "L001A-Q01"],
+      ["L001A-Q02-dao-one", "L001A-Q02"],
+    ]);
+  });
+
+  it("names files that are misnamed or repeat a Quote ID, and keeps the rest", () => {
+    const { quoteIds, problems } = quoteIdsByAssetName([
+      "L001A-Q01-one-foundation",
+      "quote-slicer-dao-one",
+      "L001A-Q01-again",
+    ]);
+
+    expect(problems).toEqual([
+      "quote-slicer-dao-one.json: is not a Quote asset name (<Quote ID>-<slug>.json)",
+      "L001A-Q01-again.json: repeats Quote ID L001A-Q01 of L001A-Q01-one-foundation.json",
+    ]);
+    expect(Array.from(quoteIds.keys())).toEqual(["L001A-Q01-one-foundation"]);
   });
 });
