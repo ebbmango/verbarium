@@ -11,7 +11,11 @@ The executable relational schema is the declarative SQL under `supabase/schemas/
 ### Quotations
 
 **Quote Slicer export**:
-The alignment payload produced by Quote Slicer: canonical attestation and translation tokens, ID-based many-to-many mappings, and independent sequence-boundary arrays under `alignment.breaks`. Provenance and source URL remain separate Quote props. The exact application contract is `apps/web/app/quote-slicer-export.ts`; see `docs/quotation-contract.md` for invariants.
+The alignment payload produced by Quote Slicer: canonical attestation and translation tokens, ID-based many-to-many mappings, and independent sequence-boundary arrays under `alignment.breaks`. The exact application contract is `apps/web/app/quote-slicer-export.ts`; see `docs/quotation-contract.md` for invariants.
+
+**Quotation file**:
+The committed JSON document that is a quotation's source of truth during the MVP: a format version, the provenance, the source link when there is one, and the Quote Slicer export. One per quotation, named by its Quote asset name. The format is defined in `docs/quotation-contract.md`.
+_Avoid_: Quote JSON, export file
 
 **Quote ID**:
 The permanent public identifier of a quotation itself — one attestation, one translation and their alignment — through which lessons and the dictionary refer to it. It has the form `LNNNT-QNN`, such as `L001A-Q01`: the lesson and subsection where the quotation first appeared, and a two-digit number assigned within that subsection that never changes.
