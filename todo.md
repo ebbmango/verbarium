@@ -159,3 +159,9 @@ Quote Slicer exports pinyin metadata, and the interactive renderer should retain
 **Status:** Deferred; use the current quotation styling without a badge or warning in the MVP.
 
 `LegacyQuote` remains a supported tool for mocking up emerging lesson content before a Quote Slicer export exists. Later, decide whether authors or readers need visual feedback that a quotation is static and provisional. Its absence of highlighting is the only distinction for now.
+
+## 12. Add keyboard access to Mapping exploration
+
+**Status:** Deferred; do not implement now.
+
+The interactive `Quote` currently lets readers activate a Mapping with a pointer or touch. Add a keyboard interaction that lets a keyboard user activate the same Mapping and explore the relationship between attestation and translation tokens. Decide the focus behavior and accessible description before implementation, and preserve the current pointer and touch behavior.
