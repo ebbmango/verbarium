@@ -20,11 +20,13 @@ surfaces in `apps/web/app/routes/home.tsx`. The MVP makes all three real.
 
 ## Decisions
 
-**Mobile is Expo / React Native.** A true native client with app-store
-distribution, not a PWA or a WebView shell. The consequence reaches backwards
-through the whole stack: a native client cannot consume MDX compiled into the
-web bundle, so lesson and quotation content must become runtime data behind a
-stable contract rather than build-time imports. See *Content delivery* below.
+**Mobile is Expo / React Native.** A true native client, not a PWA or a WebView
+shell. For the MVP it runs through Expo for demonstration; app-store publishing
+is outside the MVP and needs no developer accounts. The consequence reaches
+backwards through the whole stack: a native client cannot consume MDX compiled
+into the web bundle, so lesson and quotation content must become runtime data
+behind a stable contract rather than build-time imports. See *Content delivery*
+below.
 
 **Auth and user data are Supabase.** Managed PostgreSQL with authentication and
 row-level security in one service. This matches the `database_type: 'PostgreSQL'`
@@ -32,6 +34,8 @@ target already declared in `schema/verbarium.dbml`, serves the web and native
 clients from one place, and avoids joining user identity across two systems.
 Supabase is reached directly from the browser over HTTPS, so the prerendered
 static deployment remains viable; see *Deployment* below.
+
+**No offline reading in the MVP.** The native client reads content online.
 
 **Lessons are public; progress needs an account.** Anyone can read lessons
 without signing in. Authentication is required only to save progress and
@@ -47,9 +51,9 @@ the lessons and gives full control over what each entry says. It also creates a
 second authoring queue alongside the quotations, which is the main cost of this
 decision.
 
-The Expo, Supabase and hand-authored-dictionary decisions are consequential
-enough to deserve ADRs under `docs/adr/`, per `docs/agents/domain.md`. None has
-been written yet.
+Durable decisions are recorded in Hylia under `Projects/Verbarium/Decisions/`.
+Supabase (Backend Platform) and the future Expo app (Repository Architecture)
+are already there; the hand-authored dictionary decision is not yet.
 
 ## Content delivery
 
@@ -143,5 +147,4 @@ deliverable contradicts; those passages are now stale.
 ## Open questions
 
 - Which flashcard scheduling algorithm — Leitner, SM-2, FSRS, or simpler?
-- Does the native client need offline reading, and if so for which content?
-- Are app-store developer accounts and release process in place?
+  Deferred until the options are studied.
