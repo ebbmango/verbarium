@@ -11,34 +11,39 @@ of the alignment data inside it. The application types are in
 ### Where it lives and what it is called
 
 One file per quotation, under `apps/web/app/content/quotes/`, named by its
-Quote asset name: the Quote ID, a hyphen, a short slug, and `.json`, as in
-`L001I-Q01-blocked-breath.json`. The Quote ID is the file's identity and is
-not repeated inside it: Quote Slicer does not know it (the lesson author
-assigns it when committing), and one place to change is enough.
+Quote asset name: the Quote ID, a hyphen, a slug of lower-case letters and
+digits separated by single hyphens, and `.json`, as in
+`L001I-Q01-blocked-breath.json`. No two files share a Quote ID. The Quote ID
+is the file's identity and is not repeated inside it: Quote Slicer does not
+know it (the author assigns it when committing), and one place to change is
+enough.
 
 ### Fields
 
-A file is one JSON object with these keys, in this order:
+A file is one JSON object with these keys:
 
 | Key | Type | Meaning |
 | --- | --- | --- |
-| `formatVersion` | integer | The version of this format. Currently `1`. A reader rejects any other value. |
-| `provenance` | string, non-empty | The attribution text that identifies the work or context the quotation comes from, as the lesson shows it under the quotation: `"Shuowen Jiezi"`, `"The Analects 16.7"`. |
-| `sourceLink` | string, optional | The URL of the selected online textual witness, absolute and `http` or `https`. Omitted when there is none; never `null` or empty. |
+| `formatVersion` | integer | The version of this format. Currently `1`; the validator rejects any other value. |
+| `provenance` | string, non-empty | The Provenance (see `CONTEXT.md`), as the lesson shows it under the quotation: `"Shuowen Jiezi"`, `"The Analects 16.7"`. |
+| `sourceLink` | string, optional | The Source link: an absolute `http` or `https` URL. Omitted when there is none; never `null` or empty. |
 | `attestation` | object | `{ "tokens": SourceToken[] }`: the source text, tokenized. |
 | `translation` | object | `{ "tokens": TargetToken[] }`: the translation, tokenized. |
 | `alignment` | object | `{ "mappings": QuoteMapping[], "breaks": { "attestation": number[], "translation": number[] } }`. |
 
 No other keys are allowed, at any level: an unknown key is a mistake, not an
-extension. The next format version is the place for new keys.
+extension. The next format version is the place for new keys. Until
+[#19](https://github.com/ebbmango/verbarium/issues/19), lessons pass the
+provenance and the source link as the `<Quote>` props `provenance` and
+`sourceHref`; the file replaces both.
 
 A **SourceToken** is `{ "id": integer, "text": string, "type": "character" | "punctuation" | "number" | "symbol", "pinyin"?: string | null }`.
 A **TargetToken** is `{ "id": integer, "text": string, "type": "text" | "hanzi" | "punctuation" | "whitespace" }`.
 A **QuoteMapping** is `{ "id": string, "sourceTokenIds": integer[], "targetTokenIds": integer[] }`.
 
 There is no separate `text` field on either side: the tokens are the
-canonical, lossless text, reconstructed by concatenating their `text` in
-order (Hylia, Lesson Content Architecture).
+canonical, lossless text (Hylia, Lesson Content Architecture; see *Alignment
+data* below).
 
 ### Pinyin
 
@@ -48,7 +53,8 @@ distinct:
 - **absent**: the character has no annotation (yet);
 - **`null`**: an annotation does not apply (punctuation, numbers, symbols);
 - **a non-empty string**: the annotation, in the tone-number form Quote
-  Slicer emits (`"qi4"`). Its presentation is a later concern
+  Slicer emits (`"qi4"`). The validator checks only that it is a non-empty
+  string; its presentation is a later concern
   ([#32](https://github.com/ebbmango/verbarium/issues/32)).
 
 JSON has no `undefined`, so "unannotated" is expressed by leaving the key
@@ -57,16 +63,16 @@ out, never by writing `null`.
 ### Strictness and layout
 
 The file is strict JSON (RFC 8259), encoded as UTF-8 without a byte order
-mark: no comments, no trailing commas, no `undefined`. Characters outside the
-Basic Multilingual Plane, such as `𠃑`, are written as themselves, not
-escaped.
+mark: no comments, no trailing commas.
 
 Layout is not part of the format: any serialization of the same value is the
-same quotation. The committed files use one layout so that diffs stay small
-and Quote Slicer's export can be committed unchanged: two-space indentation,
-keys in the order given above and `id`, `text`, `type`, `pinyin` inside a
-token, each token and each mapping on one line, arrays of numbers on one
-line, and a final newline.
+same quotation, escaped or not. The committed files use one layout so that
+diffs stay small and the file Quote Slicer writes can be committed unchanged:
+two-space indentation; keys in the order of the table above, and `id`,
+`text`, `pinyin`, `type` inside a token, as Quote Slicer has always written
+them; each token and each mapping on one line; arrays of numbers on one
+line; characters outside the Basic Multilingual Plane, such as `𠃑`, written
+as themselves; a final newline.
 
 ### Example
 
@@ -81,18 +87,18 @@ so it has no `pinyin` key; the punctuation tokens carry `null`.
   "sourceLink": "https://ctext.org/shuo-wen-jie-zi/kao-bu#:~:text=%E4%B8%82%EF%BC%9A%E6%B0%94%E6%AC%B2%E8%88%92%E5%87%BA%E3%80%82%F0%A0%83%91%E4%B8%8A%E7%A4%99%E6%96%BC%E4%B8%80%E4%B9%9F%E3%80%82",
   "attestation": {
     "tokens": [
-      { "id": 0, "text": "气", "type": "character", "pinyin": "qi4" },
-      { "id": 1, "text": "欲", "type": "character", "pinyin": "yu4" },
-      { "id": 2, "text": "舒", "type": "character", "pinyin": "shu1" },
-      { "id": 3, "text": "出", "type": "character", "pinyin": "chu1" },
-      { "id": 4, "text": "。", "type": "punctuation", "pinyin": null },
+      { "id": 0, "text": "气", "pinyin": "qi4", "type": "character" },
+      { "id": 1, "text": "欲", "pinyin": "yu4", "type": "character" },
+      { "id": 2, "text": "舒", "pinyin": "shu1", "type": "character" },
+      { "id": 3, "text": "出", "pinyin": "chu1", "type": "character" },
+      { "id": 4, "text": "。", "pinyin": null, "type": "punctuation" },
       { "id": 5, "text": "𠃑", "type": "character" },
-      { "id": 6, "text": "上", "type": "character", "pinyin": "shang4" },
-      { "id": 7, "text": "礙", "type": "character", "pinyin": "ai4" },
-      { "id": 8, "text": "於", "type": "character", "pinyin": "yu2" },
-      { "id": 9, "text": "一", "type": "character", "pinyin": "yi1" },
-      { "id": 10, "text": "也", "type": "character", "pinyin": "ye3" },
-      { "id": 11, "text": "。", "type": "punctuation", "pinyin": null }
+      { "id": 6, "text": "上", "pinyin": "shang4", "type": "character" },
+      { "id": 7, "text": "礙", "pinyin": "ai4", "type": "character" },
+      { "id": 8, "text": "於", "pinyin": "yu2", "type": "character" },
+      { "id": 9, "text": "一", "pinyin": "yi1", "type": "character" },
+      { "id": 10, "text": "也", "pinyin": "ye3", "type": "character" },
+      { "id": 11, "text": "。", "pinyin": null, "type": "punctuation" }
     ]
   },
   "translation": {
@@ -166,23 +172,31 @@ each side.
 
 ## What a valid file satisfies
 
-The build checks every committed file against these rules, and the same
-checker can be run on any file, such as a fresh Quote Slicer export:
+The build rejects a committed file that breaks one of these rules
+([#17](https://github.com/ebbmango/verbarium/issues/17)), and the same
+checker can be run on any file, such as one Quote Slicer has just written:
 
-1. the file parses as JSON and is an object with exactly the keys above;
+1. the file parses as JSON and is an object with only the keys above,
+   `sourceLink` being the one that may be missing;
 2. `formatVersion` is `1`;
 3. `provenance` is a non-empty string; `sourceLink`, if present, is an
    absolute `http` or `https` URL;
 4. every token has an `id` that is a non-negative safe integer, unique on
    its side, a non-empty `text`, and a `type` from its side's list;
-5. `pinyin` is absent, `null` or a non-empty string, and only on source
-   tokens;
+5. `pinyin` follows the three states under *Pinyin*, and appears only on
+   source tokens;
 6. the canonical text of each side has no leading or trailing whitespace;
 7. every mapping has a non-empty string `id`, unique among the mappings,
    and its token IDs exist on the matching side; no token ID is listed twice
    in one mapping or claimed by two mappings on the same side;
 8. each `breaks` array is sorted, has no duplicates, and every position
    satisfies 0 < b < tokenCount for its side.
+
+The rules say whether a file is well formed, not whether its content is
+right. Nothing in the file says what the text should be, so the content of
+the committed quotations is guarded by their snapshot tests in
+`apps/web/app/content/quotes/`, which fail when a character or a word
+changes.
 
 ## Producer proof
 
@@ -196,16 +210,13 @@ correspondence against the captured export.
 
 All 17 Lesson 1 quotations already satisfied the alignment rules before the
 producer migration. Canonical text snapshots and ID/reference/ownership checks
-guard their content. The blocked-breath missing-space correction is complete.
-The trailing translation space in L001C-Q03 was removed after editorial review.
+guard their content.
 
-## After the MVP
+## Later
 
-The files load into Supabase by an import script
-([#30](https://github.com/ebbmango/verbarium/issues/30)): `provenance`
-becomes a `provenance` row, `sourceLink` the attestation's `witness_url`, and
-the token and alignment arrays go into their `jsonb` columns unchanged. The
-Quote ID stays the public identifier; the remaining questions about it are
-[#31](https://github.com/ebbmango/verbarium/issues/31). Version negotiation,
-responsive break variants and transliteration presentation are not part of
-format version 1.
+The files are the input of the import script that loads quotations into
+Supabase after the MVP ([#30](https://github.com/ebbmango/verbarium/issues/30));
+the Quote ID stays the public identifier, and the remaining questions about
+it are [#31](https://github.com/ebbmango/verbarium/issues/31). Version
+negotiation, responsive break variants and transliteration presentation are
+not part of format version 1.

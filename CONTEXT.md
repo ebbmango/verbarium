@@ -22,7 +22,7 @@ The permanent public identifier of a quotation itself — one attestation, one t
 _Avoid_: Quote reference
 
 **Quote asset name**:
-The repository name for a Quote Slicer export: its Quote ID followed by a short descriptive slug, such as `L001A-Q01-one-foundation`. The Quote ID is authoritative; the slug is a human-readable mnemonic.
+The repository name of a quotation file: its Quote ID followed by a short descriptive slug, such as `L001A-Q01-one-foundation`. The Quote ID is authoritative; the slug is a human-readable mnemonic.
 _Avoid_: Sentence name, source name
 
 **Mapping**:
