@@ -22,9 +22,11 @@ export default function Home() {
   return (
     <main className="lesson-shell">
       <section className="lesson landing">
-        <PageHeading eyebrow="Etymological lessons" title="Verbarium">
-          Reading Literary and Classical Chinese, one character at a time.
-        </PageHeading>
+        <PageHeading
+          eyebrow="Etymological lessons"
+          title="Verbarium"
+          subtitle="Reading Literary and Classical Chinese, one character at a time."
+        />
         <p>
           <Link className="button-primary" to={lessonPath(first.number)}>
             Begin with Lesson {first.number}

@@ -50,7 +50,7 @@ between two characters of the same division. A new division of the lesson
 
 | Component | What it is for |
 | --- | --- |
-| `<LessonHeader number={1} total={177} primitive="一" />` | The lesson's title block. Once per lesson, first. `total` feeds the position indicator ([#24](https://github.com/ebbmango/verbarium/issues/24)). |
+| `<LessonHeader number={1} primitive="一" />` | The lesson's title block, with the course position (Lesson 1 of 177) under the subtitle. Once per lesson, first. |
 | `<CharDisplay character="雨" label="B" />` | Opens a character's section: the big character and its letter. |
 | `<CharacterForms character="雨" description="Old and new form of the character" forms={2} />` | The historical-forms study. `forms` is how many cards; `character` fills the last one. |
 | `<Quote id="L001B-Q01" />` | A quotation by its Quote ID; the quotation file carries the text, provenance and source link. |

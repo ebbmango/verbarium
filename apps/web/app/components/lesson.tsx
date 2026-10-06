@@ -1,5 +1,6 @@
-import type { ComponentPropsWithoutRef, PropsWithChildren } from "react";
+import type { ComponentPropsWithoutRef, PropsWithChildren, ReactNode } from "react";
 
+import { lessonsInCourse } from "../content/lessons";
 import { FinishLesson } from "./finish-lesson";
 import { LegacyQuote, Quote } from "./quote";
 
@@ -10,43 +11,49 @@ type LessonHeaderProps = {
   primitive: string;
 };
 
-type LessonTrackerProps = {
-  number: number;
-  total: number;
-}
-
-export function LessonTracker({ number, total }: LessonTrackerProps) {
+/** The course position: this lesson's number along a line that ends at the course's last. */
+export function CoursePosition({ number }: { number: number }) {
   return (
-    <div className="lesson-progress" aria-label={`Lesson ${number} of ${total}`}>
+    <div className="lesson-progress" role="img" aria-label={`Lesson ${number} of ${lessonsInCourse}`}>
       <span>{number}</span>
-      <span className="progress-line" aria-hidden="true">
-        <span style={{ width: `${(number / total) * 100}%` }} />
+      <span className="progress-line">
+        <span style={{ width: `${(number / lessonsInCourse) * 100}%` }} />
       </span>
-      <span>{total}</span>
+      <span>{lessonsInCourse}</span>
     </div>
-  )
+  );
 }
 
 type PageHeadingProps = PropsWithChildren<{
   eyebrow: string;
   title: string;
+  subtitle: ReactNode;
 }>;
 
-/** The title block a page opens with: the eyebrow, the title, and a subtitle line. */
-export function PageHeading({ children, eyebrow, title }: PageHeadingProps) {
+/** The title block a page opens with: the eyebrow, the title, a subtitle line, and whatever follows them. */
+export function PageHeading({ children, eyebrow, subtitle, title }: PageHeadingProps) {
   return (
     <header className="lesson-heading">
       <p className="eyebrow">{eyebrow}</p>
       <h1>{title}</h1>
-      <p className="lesson-subtitle">{children}</p>
+      <p className="lesson-subtitle">{subtitle}</p>
+      {children}
     </header>
   );
 }
 
 export function LessonHeader({ number, primitive }: LessonHeaderProps) {
   return (
-    <PageHeading eyebrow="Etymological lessons" title={`Lesson ${number}`}>
-      About the primitive <span lang="zh-Hant">{primitive}</span>, a single stroke.
+    <PageHeading
+      eyebrow="Etymological lessons"
+      title={`Lesson ${number}`}
+      subtitle={
+        <>
+          About the primitive <span lang="zh-Hant">{primitive}</span>, a single stroke.
+        </>
+      }
+    >
+      <CoursePosition number={number} />
     </PageHeading>
   );
 }
@@ -175,7 +182,6 @@ export const lessonComponents = {
   FinishLesson,
   LessonComplete,
   LessonHeader,
-  LessonTracker,
   LegacyQuote,
   Quote,
   SectionBreak,

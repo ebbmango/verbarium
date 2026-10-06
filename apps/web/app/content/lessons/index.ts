@@ -2,7 +2,7 @@ import type { ComponentType, ElementType } from "react";
 
 import { lessonNumberFromFileName } from "./lesson-files";
 
-export { isLessonPath, lessonIndexPath, lessonPath } from "./lesson-files";
+export { isLessonPath, lessonIndexPath, lessonPath, lessonsInCourse } from "./lesson-files";
 
 export type Lesson = {
   number: number;

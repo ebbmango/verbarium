@@ -31,6 +31,7 @@ describe("Lesson 1", () => {
   it("keeps its structure: 17 quotations, four divisions under solid rules, five dashed dividers", () => {
     const article = renderLesson();
 
+    expect(screen.getByRole("img", { name: "Lesson 1 of 177" })).toBeInTheDocument();
     expect(article.querySelectorAll("blockquote.lesson-quote")).toHaveLength(17);
     expect(article.querySelectorAll("hr.lesson-divider-dashed")).toHaveLength(5);
 
