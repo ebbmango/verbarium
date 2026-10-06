@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { createRoutesStub } from "react-router";
 import { describe, expect, it } from "vitest";
 
+import { lessonPath, lessons } from "../content/lessons";
 import LessonIndex, { meta } from "./lessons";
 
 describe("the lesson index", () => {
@@ -13,10 +14,11 @@ describe("the lesson index", () => {
     render(<Stub initialEntries={["/lessons"]} />);
 
     expect(screen.getByRole("heading", { level: 1, name: "Lessons" })).toBeInTheDocument();
-    expect(screen.getByText("One lesson so far.")).toBeInTheDocument();
+    expect(screen.getByText(/lessons? so far\./)).toBeInTheDocument();
 
     const links = screen.getAllByRole("link", { name: /^Lesson \d+/ });
-    expect(links.map((link) => link.getAttribute("href"))).toEqual(["/lessons/1"]);
+    expect(links.map((link) => link.getAttribute("href"))).toEqual(lessons.map((lesson) => lessonPath(lesson.number)));
+    expect(links.length).toBeGreaterThan(0);
     expect(links[0]).toHaveTextContent("About the primitive 一, a single stroke.");
   });
 

@@ -24,8 +24,8 @@ export default function LessonIndex() {
           {lessons.map((lesson) => (
             <li key={lesson.number}>
               <Link to={lessonPath(lesson.number)}>
-                <span className="lesson-index-number">Lesson {lesson.number}</span>
-                <span className="lesson-index-description">{lesson.description}</span>
+                <span className="eyebrow">Lesson {lesson.number}</span>
+                <span className="lesson-subtitle">{lesson.description}</span>
               </Link>
             </li>
           ))}

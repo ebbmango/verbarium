@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import Home from "./home";
 
 describe("the home page", () => {
-  it("leads to Lesson 1", () => {
+  it("leads to Lesson 1 and to the index", () => {
     const Stub = createRoutesStub([
       { path: "/", Component: Home },
       { path: "/lessons", Component: () => <p>Lessons</p> },

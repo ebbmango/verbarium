@@ -10,7 +10,7 @@ vi.mock("../lib/supabase", () => import("../test/fake-supabase"));
 beforeEach(resetFakeSupabase);
 
 describe("SiteHeader", () => {
-  it.each(["/", "/lessons", "/lessons/1"])("marks the Lessons tab current at %s and leads to the index", (path) => {
+  it.each(["/lessons", "/lessons/1"])("marks the Lessons tab current at %s and leads to the index", (path) => {
     renderWithSession(<SiteHeader />, path);
 
     const tab = screen.getByRole("link", { name: "Lessons" });
@@ -19,8 +19,8 @@ describe("SiteHeader", () => {
     expect(tab).toHaveAttribute("href", "/lessons");
   });
 
-  it("does not mark the Lessons tab current on the account page", () => {
-    renderWithSession(<SiteHeader />, "/account");
+  it.each(["/", "/account"])("does not mark the Lessons tab current at %s", (path) => {
+    renderWithSession(<SiteHeader />, path);
 
     const tab = screen.getByRole("link", { name: "Lessons" });
     expect(tab).not.toHaveAttribute("aria-current");

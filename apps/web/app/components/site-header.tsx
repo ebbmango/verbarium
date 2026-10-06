@@ -4,9 +4,8 @@ import { isLessonPath, lessonIndexPath } from "../content/lessons";
 import { ProfileButton } from "./profile-button";
 
 export function SiteHeader() {
-  // The Lessons tab is current on the home page and on every lesson.
-  const { pathname } = useLocation();
-  const onLessons = pathname === "/" || isLessonPath(pathname);
+  // The Lessons tab is current on the lesson index and on every lesson.
+  const onLessons = isLessonPath(useLocation().pathname);
 
   return (
     <header className="topbar">

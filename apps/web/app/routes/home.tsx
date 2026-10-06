@@ -31,7 +31,9 @@ export default function Home() {
           </Link>
         </p>
         <p>
-          <Link to={lessonIndexPath}>All lessons</Link>
+          <Link className="landing-link" to={lessonIndexPath}>
+            All lessons
+          </Link>
         </p>
       </section>
     </main>
