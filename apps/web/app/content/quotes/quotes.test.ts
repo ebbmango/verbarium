@@ -1,6 +1,10 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import type { AttestationTranslationAlignment } from "../../quote-slicer-export";
+import { formatQuotationFile, parseQuotationFile } from "../../quotation-file";
+import { lessonQuoteProps } from "../../../scripts/lesson-quote-props";
 import { l001aQ02DaoOne } from "./L001A-Q02-dao-one";
 import { quoteSlicerDaoOne } from "./quote-slicer-dao-one";
 
@@ -95,5 +99,56 @@ describe.each(passages)("%s alignment data", (_quoteId, passage) => {
       attestation: passage.attestation.tokens.map(t => t.text).join(""),
       translation: passage.translation.tokens.map(t => t.text).join(""),
     }).toMatchSnapshot();
+  });
+});
+
+// The quotation files converted from the modules above (#18) must say exactly
+// what the modules and Lesson 1's <Quote> props say, until #19 makes the files
+// the only source.
+describe("quotation files", () => {
+  const sources = import.meta.glob<string>("./L*.json", { eager: true, import: "default", query: "?raw" });
+  const lessonProps = new Map(
+    lessonQuoteProps(readFileSync(join(import.meta.dirname, "../lessons/001.mdx"), "utf8")).map((quote) => [
+      quote.assetName,
+      quote,
+    ]),
+  );
+  const files = Object.entries(sources)
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([path, text]) => {
+      const name = path.replace(/^\.\//, "").replace(/\.json$/, "");
+      return { name, text, file: parseQuotationFile(JSON.parse(text), `${name}.json`) };
+    });
+
+  it("exist for every quotation module, one each", () => {
+    expect(files.map(({ name }) => name)).toEqual(
+      Object.keys(quoteAssets)
+        .map((path) => path.replace(/^\.\//, "").replace(/\.ts$/, ""))
+        .sort((left, right) => left.localeCompare(right)),
+    );
+    expect(files).toHaveLength(17);
+  });
+
+  describe.each(files)("$name.json", ({ name, text, file }) => {
+    it("is written in the committed layout", () => {
+      expect(formatQuotationFile(file)).toBe(text);
+    });
+
+    it("carries the module's alignment data unchanged", () => {
+      const [module] = Object.values(quoteAssets[`./${name}.ts`]);
+
+      // toEqual treats a missing key and an explicit undefined pinyin alike.
+      expect(file.attestation).toEqual(module.attestation);
+      expect(file.translation).toEqual(module.translation);
+      expect(file.alignment).toEqual(module.alignment);
+    });
+
+    it("carries the provenance and source link Lesson 1 passes as props", () => {
+      const props = lessonProps.get(name);
+
+      expect(props).toBeDefined();
+      expect(file.provenance).toBe(props?.provenance);
+      expect(file.sourceLink).toBe(props?.sourceLink);
+    });
   });
 });

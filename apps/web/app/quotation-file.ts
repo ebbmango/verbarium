@@ -50,6 +50,80 @@ export function parseQuotationFile(value: unknown, file: string): QuotationFile 
   }
 }
 
+/**
+ * Writes a quotation file in the committed layout: two-space indentation,
+ * one token and one mapping per line, number arrays on one line, a final
+ * newline. `parseQuotationFile(JSON.parse(formatQuotationFile(file)))` gives
+ * `file` back, and formatting a parsed committed file gives its text back.
+ */
+export function formatQuotationFile(file: QuotationFile): string {
+  const lines = [
+    "{",
+    `  "formatVersion": ${file.formatVersion},`,
+    `  "provenance": ${JSON.stringify(file.provenance)},`,
+    ...(file.sourceLink === undefined ? [] : [`  "sourceLink": ${JSON.stringify(file.sourceLink)},`]),
+    '  "attestation": {',
+    '    "tokens": [',
+    ...oneObjectPerLine(file.attestation.tokens.map(sourceTokenEntries), "      "),
+    "    ]",
+    "  },",
+    '  "translation": {',
+    '    "tokens": [',
+    ...oneObjectPerLine(file.translation.tokens.map(targetTokenEntries), "      "),
+    "    ]",
+    "  },",
+    '  "alignment": {',
+    '    "mappings": [',
+    ...oneObjectPerLine(file.alignment.mappings.map(mappingEntries), "      "),
+    "    ],",
+    '    "breaks": {',
+    `      "attestation": ${numbers(file.alignment.breaks.attestation)},`,
+    `      "translation": ${numbers(file.alignment.breaks.translation)}`,
+    "    }",
+    "  }",
+    "}",
+  ];
+  return `${lines.join("\n")}\n`;
+}
+
+type Entries = Array<[key: string, json: string]>;
+
+function sourceTokenEntries(token: SourceToken): Entries {
+  return [
+    ["id", String(token.id)],
+    ["text", JSON.stringify(token.text)],
+    ...(token.pinyin === undefined ? [] : [["pinyin", JSON.stringify(token.pinyin)] as [string, string]]),
+    ["type", JSON.stringify(token.type)],
+  ];
+}
+
+function targetTokenEntries(token: TargetToken): Entries {
+  return [
+    ["id", String(token.id)],
+    ["text", JSON.stringify(token.text)],
+    ["type", JSON.stringify(token.type)],
+  ];
+}
+
+function mappingEntries(mapping: QuoteMapping): Entries {
+  return [
+    ["id", JSON.stringify(mapping.id)],
+    ["sourceTokenIds", numbers(mapping.sourceTokenIds)],
+    ["targetTokenIds", numbers(mapping.targetTokenIds)],
+  ];
+}
+
+function numbers(values: number[]): string {
+  return `[${values.join(", ")}]`;
+}
+
+function oneObjectPerLine(objects: Entries[], indent: string): string[] {
+  return objects.map((entries, index) => {
+    const body = entries.map(([key, json]) => `"${key}": ${json}`).join(", ");
+    return `${indent}{ ${body} }${index < objects.length - 1 ? "," : ""}`;
+  });
+}
+
 class Problem extends Error {}
 
 function fail(at: string, message: string): never {
