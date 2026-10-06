@@ -82,4 +82,4 @@ _Avoid_: Progress bar, tracker
 
 **Lesson completion**:
 The record that a reader finished a lesson.
-_Avoid_: Progress (also names the course-position indicator in the lesson header)
+_Avoid_: Progress (ambiguous with the course position)

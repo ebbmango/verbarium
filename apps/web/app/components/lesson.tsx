@@ -1,6 +1,6 @@
 import type { ComponentPropsWithoutRef, PropsWithChildren, ReactNode } from "react";
 
-import { lessonsInCourse } from "../content/lessons/lesson-files";
+import { lessonsInCourse } from "../content/lessons";
 import { FinishLesson } from "./finish-lesson";
 import { LegacyQuote, Quote } from "./quote";
 
@@ -9,24 +9,17 @@ export { LegacyQuote, Quote } from "./quote";
 type LessonHeaderProps = {
   number: number;
   primitive: string;
-  /** How many lessons the course has; the position counts up to it. */
-  total?: number;
-};
-
-type LessonTrackerProps = {
-  number: number;
-  total: number;
 };
 
 /** The course position: this lesson's number along a line that ends at the course's last. */
-export function LessonTracker({ number, total }: LessonTrackerProps) {
+export function CoursePosition({ number }: { number: number }) {
   return (
-    <div className="lesson-progress" role="img" aria-label={`Lesson ${number} of ${total}`}>
+    <div className="lesson-progress" role="img" aria-label={`Lesson ${number} of ${lessonsInCourse}`}>
       <span>{number}</span>
-      <span className="progress-line" aria-hidden="true">
-        <span style={{ width: `${(number / total) * 100}%` }} />
+      <span className="progress-line">
+        <span style={{ width: `${(number / lessonsInCourse) * 100}%` }} />
       </span>
-      <span>{total}</span>
+      <span>{lessonsInCourse}</span>
     </div>
   );
 }
@@ -49,7 +42,7 @@ export function PageHeading({ children, eyebrow, subtitle, title }: PageHeadingP
   );
 }
 
-export function LessonHeader({ number, primitive, total = lessonsInCourse }: LessonHeaderProps) {
+export function LessonHeader({ number, primitive }: LessonHeaderProps) {
   return (
     <PageHeading
       eyebrow="Etymological lessons"
@@ -60,7 +53,7 @@ export function LessonHeader({ number, primitive, total = lessonsInCourse }: Les
         </>
       }
     >
-      <LessonTracker number={number} total={total} />
+      <CoursePosition number={number} />
     </PageHeading>
   );
 }
@@ -189,7 +182,6 @@ export const lessonComponents = {
   FinishLesson,
   LessonComplete,
   LessonHeader,
-  LessonTracker,
   LegacyQuote,
   Quote,
   SectionBreak,
