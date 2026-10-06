@@ -1,44 +1,30 @@
 import { describe, expect, it } from "vitest";
 
 import type { AttestationTranslationAlignment } from "../../quote-slicer-export";
-import { l001aQ01OneFoundation } from "./L001A-Q01-one-foundation";
 import { l001aQ02DaoOne } from "./L001A-Q02-dao-one";
 import { quoteSlicerDaoOne } from "./quote-slicer-dao-one";
-import { l001aQ03OriginNumber } from "./L001A-Q03-origin-number";
-import { l001bQ01WaterDescends } from "./L001B-Q01-water-descends";
-import { l001cQ01HeavenHighest } from "./L001C-Q01-heaven-highest";
-import { l001cQ02HeavenAboveMan } from "./L001C-Q02-heaven-above-man";
-import { l001cQ03GovernsBelow } from "./L001C-Q03-governs-below";
-import { l001cQ04MandateFromHeaven } from "./L001C-Q04-mandate-from-heaven";
-import { l001cQ05HeavenAsSuperior } from "./L001C-Q05-heaven-as-superior";
-import { l001dQ01TreeTop } from "./L001D-Q01-tree-top";
-import { l001eQ01DawnLight } from "./L001E-Q01-dawn-light";
-import { l001fQ01StandOnGround } from "./L001F-Q01-stand-on-ground";
-import { l001gQ01TreeBottom } from "./L001G-Q01-tree-bottom";
-import { l001hQ01DoorCrossbar } from "./L001H-Q01-door-crossbar";
-import { l001iQ01BlockedBreath } from "./L001I-Q01-blocked-breath";
-import { l001jQ01SacrificialBlood } from "./L001J-Q01-sacrificial-blood";
-import { l001jQ03VitalEnergy } from "./L001J-Q03-vital-energy";
+
+// Quote asset names enroll curated exports automatically; the producer proof stays explicit.
+const quoteAssets = import.meta.glob<Record<string, AttestationTranslationAlignment>>("./L*.ts", { eager: true });
+const quoteIds = new Set<string>();
+expect(Object.keys(quoteAssets).length, "No Quote assets were discovered").toBeGreaterThan(0);
+
+const curatedPassages = Object.entries(quoteAssets).sort(([left], [right]) => left.localeCompare(right))
+  .map(([path, exports]): [string, AttestationTranslationAlignment] => {
+    const match = /^\.\/(L\d{3}[A-Z]-Q\d{2})-[a-z0-9]+(?:-[a-z0-9]+)*\.ts$/.exec(path);
+    if (!match) throw new Error(`Invalid Quote asset name: ${path}`);
+    const quoteId = match[1];
+    if (quoteIds.has(quoteId)) throw new Error(`Duplicate Quote ID ${quoteId}: ${path}`);
+    quoteIds.add(quoteId);
+
+    const quotes = Object.values(exports);
+    expect(quotes, `${path} must export exactly one Quote Slicer export`).toHaveLength(1);
+    return [quoteId, quotes[0]];
+  });
 
 const passages: Array<[string, AttestationTranslationAlignment]> = [
   ["Quote Slicer browser export", quoteSlicerDaoOne],
-  ["L001A-Q01", l001aQ01OneFoundation],
-  ["L001A-Q02", l001aQ02DaoOne],
-  ["L001A-Q03", l001aQ03OriginNumber],
-  ["L001B-Q01", l001bQ01WaterDescends],
-  ["L001C-Q01", l001cQ01HeavenHighest],
-  ["L001C-Q02", l001cQ02HeavenAboveMan],
-  ["L001C-Q03", l001cQ03GovernsBelow],
-  ["L001C-Q04", l001cQ04MandateFromHeaven],
-  ["L001C-Q05", l001cQ05HeavenAsSuperior],
-  ["L001D-Q01", l001dQ01TreeTop],
-  ["L001E-Q01", l001eQ01DawnLight],
-  ["L001F-Q01", l001fQ01StandOnGround],
-  ["L001G-Q01", l001gQ01TreeBottom],
-  ["L001H-Q01", l001hQ01DoorCrossbar],
-  ["L001I-Q01", l001iQ01BlockedBreath],
-  ["L001J-Q01", l001jQ01SacrificialBlood],
-  ["L001J-Q03", l001jQ03VitalEnergy],
+  ...curatedPassages,
 ];
 
 it("consumes the producer export with unchanged canonical content, metadata, and correspondence", () => {
@@ -70,6 +56,13 @@ describe.each(passages)("%s alignment data", (_quoteId, passage) => {
     expect(translationTokens.every((token) => !("line" in token))).toBe(true);
     expectValidBreaks(passage.alignment.breaks.attestation, attestationTokens.length);
     expectValidBreaks(passage.alignment.breaks.translation, translationTokens.length);
+  });
+
+  it("has no accidental outer canonical whitespace in curated content", () => {
+    for (const side of [passage.attestation, passage.translation]) {
+      const canonicalText = side.tokens.map(token => token.text).join("");
+      expect(canonicalText).toBe(canonicalText.trim());
+    }
   });
 
   it("maps only token IDs present on the corresponding side", () => {
