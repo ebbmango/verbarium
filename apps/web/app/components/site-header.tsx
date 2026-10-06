@@ -1,5 +1,7 @@
 import { Link, NavLink } from "react-router";
 
+import { ProfileButton } from "./profile-button";
+
 function navTabClassName({ isActive }: { isActive: boolean }) {
   return isActive ? "nav-tab nav-tab-active" : "nav-tab";
 }
@@ -26,9 +28,7 @@ export function SiteHeader() {
         </a>
       </nav>
 
-      <button className="profile-button" type="button" aria-label="Open profile">
-        EB
-      </button>
+      <ProfileButton />
     </header>
   );
 }
