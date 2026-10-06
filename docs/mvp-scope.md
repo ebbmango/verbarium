@@ -70,8 +70,9 @@ and Storage).
 
 ## Content delivery
 
-Lesson content is MDX imported at build time; quotations are typed `.ts` modules
-imported the same way. Both serve the native client too. The Expo app compiles
+Lesson content is MDX imported at build time; quotations are quotation files
+(JSON) imported the same way and referenced by Quote ID. Both serve the native
+client too. The Expo app compiles
 the same MDX at build time with the official `@mdx-js/mdx` compiler and a native
 component map, and the quotation modules are plain data it can import directly.
 Lessons therefore stay bundled for the MVP. The reasoning and the compile

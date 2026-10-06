@@ -1,13 +1,15 @@
 import { act, fireEvent, render, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { quotationById } from "../content/quotes";
 // Run the Dao renderer/interaction regressions against the unchanged producer export.
 import { quoteSlicerDaoOne as l001aQ02DaoOne } from "../content/quotes/quote-slicer-dao-one";
-import { l001aQ03OriginNumber } from "../content/quotes/L001A-Q03-origin-number";
-import { l001cQ01HeavenHighest } from "../content/quotes/L001C-Q01-heaven-highest";
-import { l001iQ01BlockedBreath } from "../content/quotes/L001I-Q01-blocked-breath";
 import type { AttestationTranslationAlignment } from "../quote-slicer-export";
-import { LegacyQuote, Quote } from "./quote";
+import { LegacyQuote, Quote, QuoteView } from "./quote";
+
+const l001aQ03OriginNumber = quotationById("L001A-Q03");
+const l001cQ01HeavenHighest = quotationById("L001C-Q01");
+const l001iQ01BlockedBreath = quotationById("L001I-Q01");
 
 function textWithAuthoredBreaks(element: Element): string {
   return Array.from(element.childNodes, (node) => {
@@ -56,12 +58,39 @@ describe("LegacyQuote", () => {
 });
 
 describe("Quote", () => {
+  it("shows the quotation file for its Quote ID, with that file's provenance and source link", () => {
+    const { container } = render(<Quote id="L001A-Q03" />);
+    const quotation = container.querySelector("blockquote.lesson-quote") as Element;
+
+    expect(quotation.children[0].textContent).toBe("一者，數之始也，物之極也。");
+    const sourceLink = within(quotation.children[2] as HTMLElement).getByRole("link", {
+      name: "Wang Bi’s notes on the Dao De Jing",
+    });
+    expect(sourceLink).toHaveAttribute("href", "https://ctext.org/dao-de-zhen-jing-zhu#n90518");
+  });
+
+  it("shows the provenance without a link when the file has no source link", () => {
+    const { container } = render(<Quote id="L001B-Q01" />);
+    const provenance = container.querySelector("blockquote.lesson-quote")?.children[2] as HTMLElement;
+
+    expect(provenance).toHaveTextContent("Shuowen Jiezi");
+    expect(within(provenance).queryByRole("link")).not.toBeInTheDocument();
+  });
+
+  it("fails loudly for a Quote ID no file carries", () => {
+    expect(() => render(<Quote id="L001A-Q09" />)).toThrow(
+      'Unknown Quote ID "L001A-Q09": no file in app/content/quotes is named L001A-Q09-<slug>.json',
+    );
+  });
+});
+
+describe("QuoteView", () => {
   it("rebuilds a passage from its aligned token sequences", () => {
     const { container } = render(
-      <Quote
+      <QuoteView
         provenance="Wang Bi’s notes on the Dao De Jing"
         quote={l001aQ03OriginNumber}
-        sourceHref="https://ctext.org/dao-de-zhen-jing-zhu#n90518"
+        sourceLink="https://ctext.org/dao-de-zhen-jing-zhu#n90518"
       />,
     );
 
@@ -92,10 +121,10 @@ describe("Quote", () => {
 
   it("rebuilds the migrated passage with alignment-owned line breaks", () => {
     const { container } = render(
-      <Quote
+      <QuoteView
         provenance="Shuowen Jiezi"
         quote={l001aQ02DaoOne}
-        sourceHref="https://ctext.org/shuo-wen-jie-zi/yi-bu#n26162"
+        sourceLink="https://ctext.org/shuo-wen-jie-zi/yi-bu#n26162"
       />,
     );
 
@@ -115,7 +144,7 @@ describe("Quote", () => {
   });
 
   it("preserves boundary whitespace with or without an editorial break", () => {
-    const { container, rerender } = render(<Quote quote={l001iQ01BlockedBreath} />);
+    const { container, rerender } = render(<QuoteView quote={l001iQ01BlockedBreath} />);
     const target = container.querySelector("blockquote.lesson-quote")?.children[1] as Element;
 
     expect(textWithAuthoredBreaks(target)).toBe(
@@ -130,7 +159,7 @@ describe("Quote", () => {
       },
     } satisfies AttestationTranslationAlignment;
 
-    rerender(<Quote quote={passageWithoutBreak} />);
+    rerender(<QuoteView quote={passageWithoutBreak} />);
 
     const unbrokenTarget = container.querySelector("blockquote.lesson-quote")?.children[1] as Element;
     expect(textWithAuthoredBreaks(unbrokenTarget)).toBe(
@@ -139,7 +168,7 @@ describe("Quote", () => {
   });
 
   it("marks only translated Chinese characters as non-italic", () => {
-    const { container } = render(<Quote quote={l001cQ01HeavenHighest} />);
+    const { container } = render(<QuoteView quote={l001cQ01HeavenHighest} />);
     const target = container.querySelector("blockquote.lesson-quote")?.children[1] as Element;
     const hanzi = token(target, 0);
     const translatedText = token(target, 2);
@@ -173,7 +202,7 @@ describe("Quote", () => {
       },
     } satisfies AttestationTranslationAlignment;
 
-    const { container } = render(<Quote provenance="An unlinked textual witness" quote={multilineQuote} />);
+    const { container } = render(<QuoteView provenance="An unlinked textual witness" quote={multilineQuote} />);
     const quotation = container.querySelector("blockquote.lesson-quote");
     const source = quotation?.children[0];
     const target = quotation?.children[1];
@@ -188,7 +217,7 @@ describe("Quote", () => {
   it("activates every member of a many-to-many mapping after the cold delay", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
+    const { container } = render(<QuoteView quote={l001aQ02DaoOne} />);
     const quotation = container.querySelector("blockquote.lesson-quote");
     const source = quotation?.children[0] as Element;
     const target = quotation?.children[1] as Element;
@@ -213,7 +242,7 @@ describe("Quote", () => {
   it("activates an unsorted mapping from the target without changing rendered order", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
+    const { container } = render(<QuoteView quote={l001aQ02DaoOne} />);
     const quotation = container.querySelector("blockquote.lesson-quote");
     const source = quotation?.children[0] as Element;
     const target = quotation?.children[1] as Element;
@@ -232,7 +261,7 @@ describe("Quote", () => {
   it("does not restart pending activation or flicker active color within one mapping", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
+    const { container } = render(<QuoteView quote={l001aQ02DaoOne} />);
     const source = container.querySelector("blockquote.lesson-quote")?.children[0] as Element;
     const firstMember = token(source, 15);
     const secondMember = token(source, 16);
@@ -269,7 +298,7 @@ describe("Quote", () => {
       },
     } satisfies AttestationTranslationAlignment;
 
-    const sourceRender = render(<Quote quote={oneSidedQuote} />);
+    const sourceRender = render(<QuoteView quote={oneSidedQuote} />);
     const sourceParagraph = sourceRender.container.querySelector("blockquote")?.children[0] as Element;
     const targetParagraph = sourceRender.container.querySelector("blockquote")?.children[1] as Element;
 
@@ -281,7 +310,7 @@ describe("Quote", () => {
 
     sourceRender.unmount();
 
-    const targetRender = render(<Quote quote={oneSidedQuote} />);
+    const targetRender = render(<QuoteView quote={oneSidedQuote} />);
     const nextSourceParagraph = targetRender.container.querySelector("blockquote")?.children[0] as Element;
     const nextTargetParagraph = targetRender.container.querySelector("blockquote")?.children[1] as Element;
 
@@ -295,7 +324,7 @@ describe("Quote", () => {
   it("clears immediately when the pointer enters an unmapped source or target token", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
+    const { container } = render(<QuoteView quote={l001aQ02DaoOne} />);
     const quotation = container.querySelector("blockquote") as Element;
     const source = quotation.children[0] as Element;
     const target = quotation.children[1] as Element;
@@ -321,7 +350,7 @@ describe("Quote", () => {
   it("cancels pending work and clears active color when either paragraph is left", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
+    const { container } = render(<QuoteView quote={l001aQ02DaoOne} />);
     const quotation = container.querySelector("blockquote") as Element;
     const source = quotation.children[0] as Element;
     const target = quotation.children[1] as Element;
@@ -345,7 +374,7 @@ describe("Quote", () => {
   it("retains active mapping A until mapping B activates after the warm delay", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
+    const { container } = render(<QuoteView quote={l001aQ02DaoOne} />);
     const quotation = container.querySelector("blockquote") as Element;
     const source = quotation.children[0] as Element;
     const target = quotation.children[1] as Element;
@@ -370,7 +399,7 @@ describe("Quote", () => {
   it("uses the warm delay only during the 500 ms grace period", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
+    const { container } = render(<QuoteView quote={l001aQ02DaoOne} />);
     const source = container.querySelector("blockquote")?.children[0] as Element;
     const mappingA = token(source, 1);
     const mappingB = token(source, 2);
@@ -398,7 +427,7 @@ describe("Quote", () => {
   it("retains the active mapping across target whitespace and an internal gap", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
+    const { container } = render(<QuoteView quote={l001aQ02DaoOne} />);
     const target = container.querySelector("blockquote")?.children[1] as Element;
     const targetOne = token(target, 4);
 
@@ -429,12 +458,12 @@ describe("Quote", () => {
         ],
       },
     } satisfies AttestationTranslationAlignment;
-    const quoteRender = render(<Quote quote={l001aQ02DaoOne} />);
+    const quoteRender = render(<QuoteView quote={l001aQ02DaoOne} />);
     const originalSource = quoteRender.container.querySelector("blockquote")?.children[0] as Element;
 
     fireEvent.pointerEnter(token(originalSource, 1));
     act(() => vi.advanceTimersByTime(400));
-    quoteRender.rerender(<Quote quote={replacementQuote} />);
+    quoteRender.rerender(<QuoteView quote={replacementQuote} />);
     act(() => vi.advanceTimersByTime(100));
 
     const replacementSource = quoteRender.container.querySelector("blockquote")?.children[0] as Element;
@@ -449,7 +478,7 @@ describe("Quote", () => {
 
     quoteRender.unmount();
 
-    const pendingRender = render(<Quote quote={l001aQ02DaoOne} />);
+    const pendingRender = render(<QuoteView quote={l001aQ02DaoOne} />);
     const pendingSource = pendingRender.container.querySelector("blockquote")?.children[0] as Element;
     fireEvent.pointerEnter(token(pendingSource, 1));
     expect(vi.getTimerCount()).toBe(1);
@@ -463,7 +492,7 @@ describe("Quote", () => {
 
     const { container } = render(
       <div>
-        <Quote quote={l001aQ02DaoOne} />
+        <QuoteView quote={l001aQ02DaoOne} />
         <button type="button">Outside the quotation</button>
       </div>,
     );
@@ -499,8 +528,8 @@ describe("Quote", () => {
   it("keeps touch selection exclusive across quotations", () => {
     const { container } = render(
       <>
-        <Quote quote={l001aQ03OriginNumber} />
-        <Quote quote={l001aQ02DaoOne} />
+        <QuoteView quote={l001aQ03OriginNumber} />
+        <QuoteView quote={l001aQ02DaoOne} />
       </>,
     );
     const quotations = container.querySelectorAll("blockquote");
@@ -520,7 +549,7 @@ describe("Quote", () => {
   it("cancels hover work, resets warmth, and guards synthetic pointer events after touch", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
+    const { container } = render(<QuoteView quote={l001aQ02DaoOne} />);
     const source = container.querySelector("blockquote")?.children[0] as Element;
     const mappingA = token(source, 1);
     const mappingB = token(source, 2);
@@ -551,12 +580,12 @@ describe("Quote", () => {
   it("replaces and removes document touch coordination with the quotation lifecycle", () => {
     const addEventListener = vi.spyOn(document, "addEventListener");
     const removeEventListener = vi.spyOn(document, "removeEventListener");
-    const quoteRender = render(<Quote quote={l001aQ02DaoOne} />);
+    const quoteRender = render(<QuoteView quote={l001aQ02DaoOne} />);
     const firstTouchListener = addEventListener.mock.calls.find(([type]) => type === "touchstart")?.[1];
 
     expect(firstTouchListener).toBeDefined();
 
-    quoteRender.rerender(<Quote quote={{ ...l001aQ02DaoOne }} />);
+    quoteRender.rerender(<QuoteView quote={{ ...l001aQ02DaoOne }} />);
     const touchListeners = addEventListener.mock.calls.filter(([type]) => type === "touchstart");
     const replacementTouchListener = touchListeners.at(-1)?.[1];
 
@@ -570,7 +599,7 @@ describe("Quote", () => {
   it("changes only active text color and removes its presentation immediately on clear", () => {
     vi.useFakeTimers();
 
-    const { container } = render(<Quote quote={l001aQ02DaoOne} />);
+    const { container } = render(<QuoteView quote={l001aQ02DaoOne} />);
     const source = container.querySelector("blockquote")?.children[0] as Element;
     const activeToken = token(source, 1);
     const restingToken = token(source, 0);
