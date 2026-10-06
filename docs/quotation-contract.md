@@ -172,9 +172,11 @@ each side.
 
 ## What a valid file satisfies
 
-The build rejects a committed file that breaks one of these rules
-([#17](https://github.com/ebbmango/verbarium/issues/17)), and the same
-checker can be run on any file, such as one Quote Slicer has just written:
+The build rejects a committed file that breaks one of these rules, and the
+same checker runs on any file, such as one Quote Slicer has just written:
+`pnpm --filter @verbarium/web validate-quotations path/to/file.json` (from
+the repository root; without a path it checks every committed file, including
+their names).
 
 1. the file parses as JSON and is an object with only the keys above,
    `sourceLink` being the one that may be missing;
