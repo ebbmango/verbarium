@@ -64,21 +64,21 @@ export function formatQuotationFile(file: QuotationFile): string {
     ...(file.sourceLink === undefined ? [] : [`  "sourceLink": ${JSON.stringify(file.sourceLink)},`]),
     '  "attestation": {',
     '    "tokens": [',
-    ...oneObjectPerLine(file.attestation.tokens.map(sourceTokenEntries), "      "),
+    ...oneObjectPerLine(file.attestation.tokens.map(sourceTokenEntries)),
     "    ]",
     "  },",
     '  "translation": {',
     '    "tokens": [',
-    ...oneObjectPerLine(file.translation.tokens.map(targetTokenEntries), "      "),
+    ...oneObjectPerLine(file.translation.tokens.map(targetTokenEntries)),
     "    ]",
     "  },",
     '  "alignment": {',
     '    "mappings": [',
-    ...oneObjectPerLine(file.alignment.mappings.map(mappingEntries), "      "),
+    ...oneObjectPerLine(file.alignment.mappings.map(mappingEntries)),
     "    ],",
     '    "breaks": {',
-    `      "attestation": ${numbers(file.alignment.breaks.attestation)},`,
-    `      "translation": ${numbers(file.alignment.breaks.translation)}`,
+    `      "attestation": ${numberArray(file.alignment.breaks.attestation)},`,
+    `      "translation": ${numberArray(file.alignment.breaks.translation)}`,
     "    }",
     "  }",
     "}",
@@ -108,19 +108,19 @@ function targetTokenEntries(token: TargetToken): Entries {
 function mappingEntries(mapping: QuoteMapping): Entries {
   return [
     ["id", JSON.stringify(mapping.id)],
-    ["sourceTokenIds", numbers(mapping.sourceTokenIds)],
-    ["targetTokenIds", numbers(mapping.targetTokenIds)],
+    ["sourceTokenIds", numberArray(mapping.sourceTokenIds)],
+    ["targetTokenIds", numberArray(mapping.targetTokenIds)],
   ];
 }
 
-function numbers(values: number[]): string {
+function numberArray(values: number[]): string {
   return `[${values.join(", ")}]`;
 }
 
-function oneObjectPerLine(objects: Entries[], indent: string): string[] {
+function oneObjectPerLine(objects: Entries[]): string[] {
   return objects.map((entries, index) => {
     const body = entries.map(([key, json]) => `"${key}": ${json}`).join(", ");
-    return `${indent}{ ${body} }${index < objects.length - 1 ? "," : ""}`;
+    return `      { ${body} }${index < objects.length - 1 ? "," : ""}`;
   });
 }
 

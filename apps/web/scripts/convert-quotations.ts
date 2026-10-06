@@ -10,11 +10,11 @@ import { pathToFileURL } from "node:url";
 
 import type { AttestationTranslationAlignment } from "../app/quote-slicer-export";
 import { formatQuotationFile, parseQuotationFile, quotationFormatVersion } from "../app/quotation-file.ts";
-import { lessonQuoteProps } from "./lesson-quote-props.ts";
+import { lessonQuoteProps } from "../app/test/lesson-quote-props.ts";
 
 const quotesDirectory = resolve(import.meta.dirname, "../app/content/quotes");
 const lesson = readFileSync(resolve(import.meta.dirname, "../app/content/lessons/001.mdx"), "utf8");
-const props = new Map(lessonQuoteProps(lesson).map((quote) => [quote.assetName, quote]));
+const props = lessonQuoteProps(lesson);
 
 for (const name of readdirSync(quotesDirectory).filter((file) => /^L.*\.ts$/.test(file)).sort()) {
   const assetName = basename(name, ".ts");
@@ -28,17 +28,14 @@ for (const name of readdirSync(quotesDirectory).filter((file) => /^L.*\.ts$/.tes
   if (exported.length !== 1) throw new Error(`${name} must export exactly one quotation`);
   const data = exported[0];
 
-  // JSON has no undefined: an unannotated character simply has no pinyin key.
+  // The parser drops a pinyin key whose value is undefined: JSON has no
+  // undefined, and an unannotated character simply has no pinyin key.
   const file = parseQuotationFile(
     {
       formatVersion: quotationFormatVersion,
       provenance: quote.provenance,
       ...(quote.sourceLink === undefined ? {} : { sourceLink: quote.sourceLink }),
-      attestation: {
-        tokens: data.attestation.tokens.map(({ pinyin, ...token }) =>
-          pinyin === undefined ? token : { ...token, pinyin },
-        ),
-      },
+      attestation: data.attestation,
       translation: data.translation,
       alignment: data.alignment,
     },
