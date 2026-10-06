@@ -44,11 +44,6 @@ component.
 between two characters of the same division. A new division of the lesson
 (*First*, *Second*, …) is a `SectionBreak`, which carries its own solid rule.
 
-Three of these replacements are built by
-[#21](https://github.com/ebbmango/verbarium/issues/21), which also brings
-Lesson 1 in line: `ClosingLine`, the `---` mapping to the dashed divider,
-and the solid rule inside `SectionBreak`.
-
 ## The components
 
 | Component | What it is for |
@@ -69,6 +64,10 @@ Numbers go in braces (`lesson={1}`, `forms={3}`), text in quotes.
 
 - A blank line separates paragraphs. Wrapping a paragraph over several lines
   is fine: the web collapses the wraps and the phone build will too.
+- Put a component's text on its own lines, as Lesson 1 does for
+  `<SectionBreak>` and `<Commentary>`: markdown then makes it a paragraph,
+  and the build marks its Chinese. Text written on the tag's own line is
+  handed to the component as it is, which is what `<ClosingLine>` wants.
 - Comments `{/* … */}` vanish from both builds; Lesson 1 keeps each
   quotation's text above its `<Quote>` that way. Apart from comments and
   numeric props, a lesson contains no braces: no variables, no imports.

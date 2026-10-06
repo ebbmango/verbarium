@@ -101,13 +101,22 @@ type SectionBreakProps = PropsWithChildren<{
   ordinal: string;
 }>;
 
+/** A numbered division of the lesson, under the solid rule that opens it. */
 export function SectionBreak({ children, ordinal }: SectionBreakProps) {
   return (
-    <section className="category-break">
-      <span>{ordinal}</span>
-      {children}
-    </section>
+    <>
+      <hr className="lesson-divider lesson-divider-solid" />
+      <section className="category-break">
+        <span>{ordinal}</span>
+        {children}
+      </section>
+    </>
   );
+}
+
+/** The dashed divider between two characters: what markdown's `---` becomes. */
+export function LessonDivider() {
+  return <hr className="lesson-divider lesson-divider-dashed" />;
 }
 
 export function Commentary({ children }: PropsWithChildren) {
@@ -131,15 +140,26 @@ export function LessonComplete({ children }: PropsWithChildren) {
   return <footer className="lesson-complete">{children}</footer>;
 }
 
+/** The vertical line of Chinese that closes a lesson. */
+export function ClosingLine({ children }: PropsWithChildren) {
+  return (
+    <blockquote className="lesson-closing-quote" lang="zh-Hant">
+      {children}
+    </blockquote>
+  );
+}
+
 function LessonParagraph(props: ComponentPropsWithoutRef<"p">) {
   return <p {...props} />;
 }
 
 export const lessonComponents = {
+  hr: LessonDivider,
   p: LessonParagraph,
   CharDisplay,
   CharacterFocus,
   CharacterForms,
+  ClosingLine,
   Commentary,
   FinishLesson,
   LessonComplete,
