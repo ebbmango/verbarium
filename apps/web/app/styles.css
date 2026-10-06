@@ -203,7 +203,8 @@ body::before {
 }
 
 .lesson-manuscript > p,
-.account p {
+.account p,
+.landing p {
   width: min(100%, var(--measure-copy));
   margin: 1.4rem auto 0;
   color: #565850;
@@ -648,6 +649,17 @@ body::before {
 .button-primary:disabled {
   cursor: progress;
   opacity: 0.6;
+}
+
+/* Home */
+
+.landing .lesson-heading {
+  margin-bottom: 3rem;
+}
+
+.landing .button-primary {
+  display: inline-block;
+  text-decoration: none;
 }
 
 /* Account */

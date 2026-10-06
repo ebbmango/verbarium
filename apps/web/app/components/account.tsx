@@ -3,6 +3,7 @@ import type { FormEvent, PropsWithChildren } from "react";
 import { useState } from "react";
 import { Link } from "react-router";
 
+import { lessonPath } from "../content/lessons";
 import { describeAuthError } from "../lib/auth-errors";
 import { useSession } from "../lib/session";
 import { supabase } from "../lib/supabase";
@@ -176,7 +177,7 @@ function SignedIn({ email }: { email: string | undefined }) {
       </p>
       <AuthErrorMessage error={error} />
       <p>
-        <Link to="/">Back to Lesson 1</Link>
+        <Link to={lessonPath(1)}>Back to Lesson 1</Link>
       </p>
     </AccountSection>
   );

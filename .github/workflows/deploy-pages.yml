@@ -48,14 +48,7 @@ jobs:
       - name: Prepare GitHub Pages artifact
         env:
           VERBARIUM_BASE_PATH: ${{ steps.pages.outputs.base_path }}
-        run: |
-          artifact_directory=apps/web/build/client
-          if [[ -n "${VERBARIUM_BASE_PATH}" ]]; then
-            cp "${artifact_directory}/index.html" "${artifact_directory}/404.html"
-            cp "${artifact_directory}${VERBARIUM_BASE_PATH}/index.html" "${artifact_directory}/index.html"
-          else
-            cp "${artifact_directory}/__spa-fallback.html" "${artifact_directory}/404.html"
-          fi
+        run: apps/web/scripts/prepare-pages.sh apps/web/build/client "${VERBARIUM_BASE_PATH}"
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v5

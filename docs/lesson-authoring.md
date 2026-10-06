@@ -1,7 +1,9 @@
 # Lesson authoring rules
 
-Lessons are MDX files under `apps/web/app/content/lessons/`, one per lesson
-(`001.mdx`). The web app compiles them with a component map, and the phone
+Lessons are MDX files under `apps/web/app/content/lessons/`, one per lesson,
+named by the lesson's number: `001.mdx` is Lesson 1, served at `/lessons/1`.
+The number in the file name is the one `<LessonHeader number={…}>` shows; a
+file named any other way fails the build. The web app compiles them with a component map, and the phone
 app (Phase 7, [#29](https://github.com/ebbmango/verbarium/issues/29)) will
 compile the same files with a native component map. Whatever the native
 renderer cannot show has to be rewritten later, so these rules keep every

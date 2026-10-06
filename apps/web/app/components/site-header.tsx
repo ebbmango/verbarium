@@ -1,12 +1,13 @@
-import { Link, NavLink } from "react-router";
+import { Link, useLocation } from "react-router";
 
+import { isLessonPath } from "../content/lessons";
 import { ProfileButton } from "./profile-button";
 
-function navTabClassName({ isActive }: { isActive: boolean }) {
-  return isActive ? "nav-tab nav-tab-active" : "nav-tab";
-}
-
 export function SiteHeader() {
+  // The Lessons tab is current on the home page and on every lesson.
+  const { pathname } = useLocation();
+  const onLessons = pathname === "/" || isLessonPath(pathname);
+
   return (
     <header className="topbar">
       <Link className="brand" to="/" aria-label="Verbarium home">
@@ -17,9 +18,9 @@ export function SiteHeader() {
       </Link>
 
       <nav className="primary-nav" aria-label="Primary navigation">
-        <NavLink className={navTabClassName} end to="/">
+        <Link aria-current={onLessons ? "page" : undefined} className={onLessons ? "nav-tab nav-tab-active" : "nav-tab"} to="/">
           Lessons
-        </NavLink>
+        </Link>
         <a className="nav-tab" href="#characters">
           Characters
         </a>
