@@ -68,3 +68,21 @@ Table Alignment {
 
   Note: 'Exactly one Alignment exists per Attestation/Translation pair, identified by the composite primary key. mappings and breaks are structured Alignment-owned payloads kept intact for faithful reconstruction rather than normalized into child tables. Passage identity is implied by the referenced entities rather than duplicated here. Multiple alternative alignments for the same pair are deferred until needed.'
 }
+
+Table auth.users {
+  id uuid [pk]
+
+  Note: 'Managed by Supabase Auth. Verbarium keeps no user table of its own; rows owned by a reader reference this.'
+}
+
+Table LessonCompletion {
+  user_id uuid [not null, ref: > auth.users.id]
+  lesson smallint [not null]
+  completed_at timestamptz [not null, default: `now()`]
+
+  indexes {
+    (user_id, lesson) [pk]
+  }
+
+  Note: 'Records that a reader finished a lesson. Lessons are MDX documents rather than rows, so lesson is its number, 1 to 177, rather than a reference.'
+}
