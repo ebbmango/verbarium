@@ -97,8 +97,8 @@ phase 2; it is the long pole and it is authoring work, not engineering work.
 **Phase 1 — Persistence foundation.** Provision Supabase. Extend
 `schema/verbarium.dbml` with `User`, the flashcard review entities, and the
 dictionary entities. Establish a migration path. Wire authentication into the
-web application. Row Level Security is deliberately deferred here; see `todo.md`
-item 13.
+web application. New tables start locked, so each user table gets its grant and
+owner policy when created; see `todo.md` item 13.
 
 **Phase 2 — Shared content.** Move lessons and quotations into a shared package
 both clients import, and add the MDX compile plugins the native client needs.
@@ -150,9 +150,9 @@ The authoring volume dominates the schedule and no engineering decision reduces
 it. Two independent authoring queues — quotations and dictionary entries — run
 against the same editorial attention.
 
-Row Level Security is deferred for the thesis deadline, which leaves user tables
-open rather than merely weakly protected. `todo.md` item 13 records the exposure
-and the remedy.
+The hosted project starts every new table locked, so a missing policy breaks a
+feature rather than exposing data. The remaining risk is granting a user table
+to the API roles without an owner policy; `todo.md` item 13 records the remedy.
 
 The October 2026 target recorded in `todo.md` predates this scope and is not
 achievable from the current state: one lesson, one route, no backend, no
