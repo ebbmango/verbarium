@@ -226,7 +226,8 @@ body::before {
 .quote-source,
 .character-forms figcaption span,
 .form-label,
-.account-form label {
+.account-form label,
+.lesson-finished {
   font-family: var(--font-ui);
   font-weight: 750;
   letter-spacing: 0.16em;
@@ -626,6 +627,24 @@ body::before {
   background: #b8343a;
 }
 
+/* Padding, not margin: a margin would collapse into the last quotation's. */
+.lesson-finish {
+  padding-top: 70px;
+}
+
+.lesson-finished {
+  margin: 0;
+  color: var(--green);
+  font-size: 0.74rem;
+}
+
+.lesson-finish-error {
+  margin: 0.8rem 0 0;
+  color: var(--red);
+  font-size: 0.9rem;
+}
+
+.lesson-complete button:disabled,
 .button-primary:disabled {
   cursor: progress;
   opacity: 0.6;

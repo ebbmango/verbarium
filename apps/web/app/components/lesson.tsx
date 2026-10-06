@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef, PropsWithChildren } from "react";
 
+import { FinishLesson } from "./finish-lesson";
 import { LegacyQuote, Quote } from "./quote";
 
 export { LegacyQuote, Quote } from "./quote";
@@ -140,6 +141,7 @@ export const lessonComponents = {
   CharacterFocus,
   CharacterForms,
   Commentary,
+  FinishLesson,
   LessonComplete,
   LessonHeader,
   LessonTracker,

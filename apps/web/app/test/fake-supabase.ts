@@ -20,7 +20,23 @@ export const auth = {
   },
 };
 
-export const supabase = { auth };
+/** Answers for the one query shape the app uses: select…eq…maybeSingle, and insert. */
+export const db = {
+  maybeSingle: vi.fn(),
+  insert: vi.fn(),
+};
+
+export const supabase = {
+  auth,
+  from: (table: string) => ({
+    select: (columns: string) => ({
+      eq: (column: string, value: unknown) => ({
+        maybeSingle: () => db.maybeSingle({ table, columns, column, value }),
+      }),
+    }),
+    insert: (row: Record<string, unknown>) => db.insert({ table, row }),
+  }),
+};
 
 /** Forgets every listener and gives each auth call its happy-path answer. */
 export function resetFakeSupabase() {
@@ -29,6 +45,8 @@ export function resetFakeSupabase() {
   auth.signInWithPassword.mockReset().mockResolvedValue({ data: { session: {} }, error: null });
   auth.signUp.mockReset().mockResolvedValue({ data: { session: {} }, error: null });
   auth.signOut.mockReset().mockResolvedValue({ error: null });
+  db.maybeSingle.mockReset().mockResolvedValue({ data: null, error: null });
+  db.insert.mockReset().mockResolvedValue({ error: null });
 }
 
 export function listenerCount() {
@@ -36,7 +54,7 @@ export function listenerCount() {
 }
 
 export function sessionFor(email: string): Session {
-  return { user: { email } } as Session;
+  return { user: { id: `id-${email}`, email } } as Session;
 }
 
 /** Plays an auth event to every listener, as Supabase would in the browser. */
