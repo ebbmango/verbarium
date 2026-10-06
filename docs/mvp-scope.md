@@ -49,9 +49,17 @@ the lessons and gives full control over what each entry says. It also creates a
 second authoring queue alongside the quotations, which is the main cost of this
 decision.
 
+**Quotations move into Supabase during the MVP.** Dictionary senses link to
+example passages through a database join, so passages must be in the database by
+Phase 5; moving them in Phase 2 avoids converting several hundred quotation
+assets after bulk authoring. Quote Slicer's JSON exports are committed to the
+repository as the source of truth, and the database is loaded from them. A Quote
+ID identifies the quote itself and never changes.
+
 Durable decisions are recorded in Hylia under `Projects/Verbarium/Decisions/`.
-Supabase (Backend Platform) and the future Expo app (Repository Architecture)
-are already there; the hand-authored dictionary decision is not yet.
+Supabase (Backend Platform), the future Expo app (Repository Architecture) and
+quotation storage (Quote Identity and Storage) are already there; the
+hand-authored dictionary decision is not yet.
 
 ## Content delivery
 
@@ -68,17 +76,17 @@ keeps them portable: markdown and semantic components rather than raw HTML tags,
 `className` or `style`. Every lesson written with raw markup is a lesson to
 rewrite for the native client.
 
-`todo.md` items 7, 8 and 9 are no longer forced by the native client, which can
-import TypeScript directly. They become required when quotations move from
-repository modules into Supabase, as Hylia's content architecture intends:
+`todo.md` items 7, 8 and 9 are not forced by the native client, which can import
+TypeScript directly. They are forced by moving quotations into Supabase during
+the MVP (see *Decisions*), and belong to Phase 2:
 
 - **Item 7, machine-readable Quote Slicer interchange.** Database storage needs
   strict JSON, not TypeScript object literals. The bare-`undefined` pinyin
   problem must be solved for real.
-- **Item 8, ingestion validation at the seam.** Once exports arrive from
-  Supabase rather than from the repository, type-checking no longer guards them.
-- **Item 9, Quote ID semantics.** Database-backed quotations make identity
-  permanence a live question rather than a working convention.
+- **Item 8, ingestion validation at the seam.** The import script is the seam.
+  JSON files are not type-checked, so it validates every export before writing.
+- **Item 9, Quote ID semantics.** Partly decided: a Quote ID identifies the
+  quote itself and never changes. The remaining questions stay open.
 
 ## Phases
 
@@ -94,7 +102,10 @@ item 13.
 
 **Phase 2 — Shared content.** Move lessons and quotations into a shared package
 both clients import, and add the MDX compile plugins the native client needs.
-Agree the portable authoring rules before bulk authoring starts.
+Move quotations into Supabase: a versioned JSON export in Quote Slicer, exports
+committed as the source of truth, a validating import script, and lessons
+referencing quotes by Quote ID. Deliver `todo.md` items 7, 8 and 9. Agree the
+portable authoring rules before bulk authoring starts.
 
 **Phase 3 — Multi-lesson web.** Lesson index, routing between lessons, and the
 progress indicator that `todo.md` item 5 defers. `LessonHeader` already receives

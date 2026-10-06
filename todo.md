@@ -111,7 +111,7 @@ Coordinate the long-term answer with Quote Slicer's export contract and Verbariu
 
 ## 7. Establish a machine-readable Quote Slicer interchange
 
-**Status:** Deferred cross-repository work; use typed `.ts` data modules in Verbarium for now.
+**Status:** MVP, Phase 2. Quotations move into Supabase during the MVP, with committed JSON exports as their source of truth (Hylia, `Projects/Verbarium/Decisions/Quote Identity and Storage.md`). Keep using typed `.ts` data modules until then.
 
 Quote Slicer's display formatter can emit bare `undefined` for unannotated pinyin. Bare `undefined` is valid in a TypeScript object literal but invalid in JSON. A strict JSON export should omit that optional `pinyin` property; `null` should remain available for the distinct “not applicable” state.
 
@@ -120,12 +120,12 @@ Define and coordinate:
 - a strict machine-export path in Quote Slicer;
 - schema/version compatibility and validation in Verbarium;
 - an explicit migration procedure for every breaking export-model change, coordinated across Quote Slicer, persisted quote data, and Verbarium;
-- eventual export of the selected provenance/source link;
-- the boundary between an authoring export and the future database record.
+- export of the provenance and source link, which the committed JSON must carry because it is the source of truth;
+- the import from committed JSON files into the database.
 
 ## 8. Validate Quote Slicer exports at the ingestion seam
 
-**Status:** Deferred; explicitly outside the first interactive-renderer implementation.
+**Status:** MVP, Phase 2. The import script that loads committed JSON exports into Supabase is the ingestion seam; JSON files are not type-checked, so it validates every export before writing.
 
 TypeScript checks the field shapes of imported exports. Content tests now check duplicate token/mapping IDs, dangling references, overlapping ownership, valid boundary positions, and exact canonical reconstruction. Before exports arrive from a database or another runtime source, add ingestion validation and decide versioning separately.
 
@@ -133,20 +133,17 @@ Keep validation at the ingestion seam so the quote renderer can operate on trust
 
 ## 9. Finalize Quote ID semantics
 
-**Status:** Deferred to the database-backed quote-reference architecture; record an ADR before implementation.
+**Status:** Partly decided (Hylia, `Projects/Verbarium/Decisions/Quote Identity and Storage.md`). A Quote ID identifies the quote itself: one attestation, one translation and their alignment, not one appearance in a lesson. A reused quote keeps its ID, numbers never change, and the author allocates the ID by naming the export file.
 
-The working public format is `LNNNT-QNN`, for example `L001A-Q01`: lesson number, subsection tag, and per-subsection quote number. Quote asset names append a short descriptive slug, for example `L001A-Q01-one-foundation`. Before treating the ID as permanent, decide:
+The working public format is `LNNNT-QNN`, for example `L001A-Q01`: lesson number, subsection tag, and per-subsection quote number. Quote asset names append a short descriptive slug, for example `L001A-Q01-one-foundation`. Still open:
 
-- whether it identifies a source passage, a complete source–translation–alignment aggregate, or one lesson occurrence;
-- whether its quote number is an immutable accession number or the quotation's current display order;
-- what happens when a quotation is inserted, reordered, moved, reused, retired, or replaced;
+- what happens when a quotation is retired or replaced;
 - whether the subsection tag is specifically the lesson's `A`–`J`-style character-study label;
 - whether the one-letter tag, `001`–`177` lesson range, and `01`–`99` quote range are permanent limits;
 - how untagged quotations are identified;
-- which system allocates IDs and prevents collisions;
 - which textual, translation, and alignment edits preserve the same ID.
 
-Local quote assets use working Quote IDs for authoring and navigation. Their database identity and lifecycle semantics remain deferred.
+In the database, the Quote ID becomes a unique readable column on `alignment`.
 
 ## 10. Add transliteration presentation
 
