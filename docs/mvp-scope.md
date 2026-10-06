@@ -82,7 +82,8 @@ Architecture.md`, under *Native rendering*.
 What must be settled before lessons 002–020 are authored is the discipline that
 keeps them portable: markdown and semantic components rather than raw HTML tags,
 `className` or `style`. Every lesson written with raw markup is a lesson to
-rewrite for the native client.
+rewrite for the native client. The rules are written down in
+`docs/lesson-authoring.md`.
 
 The quotation work is not forced by the native client, which can import the
 files directly. Phase 2 puts quotations in their final form anyway:
