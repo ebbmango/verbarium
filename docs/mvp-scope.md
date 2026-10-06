@@ -108,14 +108,11 @@ waits for Phase 6, and dictionary content lives in MDX. Wire authentication into
 the web application. New tables start locked, so each user table gets its grant
 and owner policy when created, as `lesson_completion` does.
 
-**Phase 2 — Shared content.** Move lessons and quotations into a shared package
-both clients import, and add the MDX compile plugins the native client needs.
-Put quotations in their final form: a versioned JSON export in Quote Slicer,
-exports committed with their source name and link and validated at build, and
-lessons referencing quotes by Quote ID. Deliver
-[#16](https://github.com/ebbmango/verbarium/issues/16) and
-[#17](https://github.com/ebbmango/verbarium/issues/17). Agree the portable
-authoring rules before bulk authoring starts.
+**Phase 2 — Content in final form.** Put quotations in their final form: a
+written JSON format, validation at build, Lesson 1's 17 quotations converted,
+and lessons referencing quotes by Quote ID; Quote Slicer exports the format for
+new quotations. Write down the portable authoring rules before bulk authoring
+starts, and bring Lesson 1 in line with them.
 
 **Phase 3 — Multi-lesson web.** Lesson index, routing between lessons, and the
 course-position indicator. `LessonHeader` already receives `total` and the CSS
@@ -132,8 +129,10 @@ flashcards; routes and presentation. Second authoring queue.
 **Phase 6 — Flashcards.** Review scheduling model and per-user review state,
 keyed by the headword's written string, then the review interface.
 
-**Phase 7 — Expo application.** Native lessons, dictionary and flashcards, built
-on the shared content package from Phase 2.
+**Phase 7 — Expo application.** A shared package holding lessons and quotations
+for both clients, the MDX compile plugins the native client needs, then native
+lessons, dictionary and flashcards. Both pieces wait until here because only the
+native client needs them.
 
 ## Deployment
 
