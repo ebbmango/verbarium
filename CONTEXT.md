@@ -4,15 +4,17 @@ Verbarium is a reading environment for Literary and Classical Chinese. Its lesso
 
 ## Data model authority
 
-The evolving relational schema is defined in `schema/verbarium.dbml`. That file is the source of truth for what the current data model is. Hylia preserves the durable design reasoning behind it. Terms below that describe the existing Quote Slicer implementation should not override schema decisions once a concept has been modeled in DBML.
+The executable relational schema is the declarative SQL under `supabase/schemas/`; `schema/verbarium.dbml` is a reference diagram kept in step with it. Hylia preserves the durable design reasoning behind both. Terms below that describe the existing Quote Slicer implementation should not override schema decisions once a concept has been modeled in the schema.
 
 ## Language
+
+### Quotations
 
 **Quote Slicer export**:
 The alignment payload produced by Quote Slicer: canonical attestation and translation tokens, ID-based many-to-many mappings, and independent sequence-boundary arrays under `alignment.breaks`. Provenance and source URL remain separate Quote props. The exact application contract is `apps/web/app/quote-slicer-export.ts`; see `docs/quotation-contract.md` for invariants.
 
 **Quote ID**:
-The public identifier through which lesson content refers to a quotation. It has the form `LNNNT-QNN`, such as `L001A-Q01`: a zero-padded three-digit lesson number, a subsection tag letter, and a zero-padded two-digit quote number assigned within that subsection.
+The permanent public identifier of a quotation itself — one attestation, one translation and their alignment — through which lessons and the dictionary refer to it. It has the form `LNNNT-QNN`, such as `L001A-Q01`: the lesson and subsection where the quotation first appeared, and a two-digit number assigned within that subsection that never changes.
 _Avoid_: Quote reference
 
 **Quote asset name**:
@@ -30,3 +32,38 @@ _Avoid_: Source link
 **Source link**:
 The URL of the selected online textual witness for a quotation.
 _Avoid_: Provenance link
+
+### Dictionary
+
+**Dictionary page**:
+The MDX document for one headword: its entries, readings and senses, with the writing around them.
+_Avoid_: Dictionary entry (an entry is one lexical treatment within a page)
+
+**Headword**:
+The written Traditional Chinese string a dictionary entry is filed under: one character such as `一`, or several such as `君子`. The written string itself is its identity.
+_Avoid_: Glyph
+
+**Entry**:
+One lexical treatment of a headword, grouping the readings and senses that belong together. A headword standing for genuinely different words has several entries.
+_Avoid_: Article
+
+**Reading**:
+One modern Mandarin pronunciation of an entry, written in Hanyu Pinyin with tone marks, such as `xuè`.
+_Avoid_: Pinyin
+
+**Sense**:
+One meaning of an entry, which passages can illustrate as examples.
+_Avoid_: Meaning
+
+**Usage note**:
+A free-text qualification of where, when or in what context a sense is used, such as a period, region, genre or register.
+
+### Readers
+
+**Reader**:
+A person reading Verbarium. Anyone can read lessons; a signed-in reader's lesson completions are saved.
+_Avoid_: User, learner
+
+**Lesson completion**:
+The record that a reader finished a lesson.
+_Avoid_: Progress (also names the course-position indicator in the lesson header)
