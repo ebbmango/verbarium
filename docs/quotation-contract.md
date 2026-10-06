@@ -32,5 +32,5 @@ breaks and mapping correspondence against the captured export.
 
 All 17 existing assets already used this contract before the producer migration.
 Canonical text snapshots and ID/reference/ownership checks guard their content.
-The blocked-breath missing-space correction is complete. The separate trailing
-translation space in L001C-Q03 is preserved pending editorial review.
+The blocked-breath missing-space correction is complete. The trailing translation
+space in L001C-Q03 was removed after editorial review.
