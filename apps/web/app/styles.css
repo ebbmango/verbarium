@@ -179,6 +179,7 @@ body::before {
   font-family: var(--font-ui);
   font-size: 0.72rem;
   font-weight: 750;
+  text-decoration: none;
 }
 
 .profile-button:hover {

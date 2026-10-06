@@ -1,10 +1,9 @@
 import type { AuthError } from "@supabase/supabase-js";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { createRoutesStub } from "react-router";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { SessionProvider } from "../lib/session";
 import { auth, emit, resetFakeSupabase, sessionFor } from "../test/fake-supabase";
+import { renderWithSession } from "../test/render-with-session";
 import { AccountPanel } from "./account";
 
 vi.mock("../lib/supabase", () => import("../test/fake-supabase"));
@@ -14,19 +13,7 @@ function authError(code: string | undefined, message: string, name = "AuthApiErr
 }
 
 function renderAccount() {
-  const Stub = createRoutesStub([
-    {
-      path: "/account",
-      Component: () => (
-        <SessionProvider>
-          <AccountPanel />
-        </SessionProvider>
-      ),
-    },
-    { path: "/", Component: () => <p>Lesson 1</p> },
-  ]);
-
-  return render(<Stub initialEntries={["/account"]} />);
+  return renderWithSession(<AccountPanel />, "/account");
 }
 
 function fillCredentials(email: string, password: string) {
