@@ -22,11 +22,9 @@ surfaces in `apps/web/app/routes/home.tsx`. The MVP makes all three real.
 
 **Mobile is Expo / React Native.** A true native client, not a PWA or a WebView
 shell. For the MVP it runs through Expo for demonstration; app-store publishing
-is outside the MVP and needs no developer accounts. The consequence reaches
-backwards through the whole stack: a native client cannot consume MDX compiled
-into the web bundle, so lesson and quotation content must become runtime data
-behind a stable contract rather than build-time imports. See *Content delivery*
-below.
+is outside the MVP and needs no developer accounts. The native client cannot
+reuse the web's compiled lesson bundle; it compiles the same MDX itself. See
+*Content delivery* below.
 
 **Auth and user data are Supabase.** Managed PostgreSQL with authentication and
 row-level security in one service. This matches the `database_type: 'PostgreSQL'`
@@ -57,17 +55,24 @@ are already there; the hand-authored dictionary decision is not yet.
 
 ## Content delivery
 
-This is the sequencing problem that governs the rest of the plan.
+Lesson content is MDX imported at build time; quotations are typed `.ts` modules
+imported the same way. Both serve the native client too. The Expo app compiles
+the same MDX at build time with the official `@mdx-js/mdx` compiler and a native
+component map, and the quotation modules are plain data it can import directly.
+Lessons therefore stay bundled for the MVP. The reasoning and the compile
+requirements are in Hylia, `Projects/Verbarium/Decisions/Lesson Content
+Architecture.md`, under *Native rendering*.
 
-Lesson content is currently an MDX module imported at build time. Quotations are
-typed `.ts` modules imported the same way. Both work for a single web client and
-neither works for a native one. Whatever replaces them must be settled *before*
-lessons 002–020 are authored, because migrating the content model after the fact
-means reworking twenty lessons and several hundred quotation assets.
+What must be settled before lessons 002–020 are authored is the discipline that
+keeps them portable: markdown and semantic components rather than raw HTML tags,
+`className` or `style`. Every lesson written with raw markup is a lesson to
+rewrite for the native client.
 
-Three `todo.md` items are therefore no longer deferred — the MVP promotes them:
+`todo.md` items 7, 8 and 9 are no longer forced by the native client, which can
+import TypeScript directly. They become required when quotations move from
+repository modules into Supabase, as Hylia's content architecture intends:
 
-- **Item 7, machine-readable Quote Slicer interchange.** A native client needs
+- **Item 7, machine-readable Quote Slicer interchange.** Database storage needs
   strict JSON, not TypeScript object literals. The bare-`undefined` pinyin
   problem must be solved for real.
 - **Item 8, ingestion validation at the seam.** Once exports arrive from
@@ -87,9 +92,9 @@ dictionary entities. Establish a migration path. Wire authentication into the
 web application. Row Level Security is deliberately deferred here; see `todo.md`
 item 13.
 
-**Phase 2 — Content delivery seam.** Settle how lessons and quotations reach a
-client at runtime. Deliver `todo.md` items 7, 8 and 9. This phase gates bulk
-authoring.
+**Phase 2 — Shared content.** Move lessons and quotations into a shared package
+both clients import, and add the MDX compile plugins the native client needs.
+Agree the portable authoring rules before bulk authoring starts.
 
 **Phase 3 — Multi-lesson web.** Lesson index, routing between lessons, and the
 progress indicator that `todo.md` item 5 defers. `LessonHeader` already receives
@@ -105,8 +110,8 @@ and presentation. Second authoring queue.
 **Phase 6 — Flashcards.** Review scheduling model and per-user review state,
 then the review interface.
 
-**Phase 7 — Expo application.** Shared packages for domain types and content
-access, then native lessons, dictionary and flashcards.
+**Phase 7 — Expo application.** Native lessons, dictionary and flashcards, built
+on the shared content package from Phase 2.
 
 ## Deployment
 
