@@ -22,7 +22,7 @@ export function Layout({ children }: { children: ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <SessionProvider>{children}</SessionProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -31,11 +31,7 @@ export function Layout({ children }: { children: ReactNode }) {
 }
 
 export default function App() {
-  return (
-    <SessionProvider>
-      <Outlet />
-    </SessionProvider>
-  );
+  return <Outlet />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

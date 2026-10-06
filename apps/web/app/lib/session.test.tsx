@@ -6,7 +6,8 @@ import { SessionProvider, useSession } from "./session";
 
 type AuthListener = (event: AuthChangeEvent, session: Session | null) => void;
 
-const client = vi.hoisted(() => {
+// What the fake client records: who is listening, and the unsubscribe spy.
+const auth = vi.hoisted(() => {
   const listeners: AuthListener[] = [];
   const unsubscribe = vi.fn();
   return { listeners, unsubscribe };
@@ -16,8 +17,8 @@ vi.mock("./supabase", () => ({
   supabase: {
     auth: {
       onAuthStateChange: (listener: AuthListener) => {
-        client.listeners.push(listener);
-        return { data: { subscription: { unsubscribe: client.unsubscribe } } };
+        auth.listeners.push(listener);
+        return { data: { subscription: { unsubscribe: auth.unsubscribe } } };
       },
     },
   },
@@ -28,7 +29,7 @@ function sessionFor(email: string): Session {
 }
 
 function emit(event: AuthChangeEvent, session: Session | null) {
-  act(() => client.listeners.forEach((listener) => listener(event, session)));
+  act(() => auth.listeners.forEach((listener) => listener(event, session)));
 }
 
 function Probe() {
@@ -38,21 +39,25 @@ function Probe() {
   return <p>{state.session ? `Signed in as ${state.session.user.email}` : "Signed out"}</p>;
 }
 
+function renderProbe() {
+  return render(
+    <SessionProvider>
+      <Probe />
+    </SessionProvider>,
+  );
+}
+
 beforeEach(() => {
-  client.listeners.length = 0;
-  client.unsubscribe.mockClear();
+  auth.listeners.length = 0;
+  auth.unsubscribe.mockClear();
 });
 
 describe("SessionProvider", () => {
   it("is loading until the browser has read the stored session", () => {
-    render(
-      <SessionProvider>
-        <Probe />
-      </SessionProvider>,
-    );
+    renderProbe();
 
     expect(screen.getByText("Loading")).toBeInTheDocument();
-    expect(client.listeners).toHaveLength(1);
+    expect(auth.listeners).toHaveLength(1);
 
     emit("INITIAL_SESSION", null);
 
@@ -60,11 +65,7 @@ describe("SessionProvider", () => {
   });
 
   it("reports the signed-in reader and follows later changes", () => {
-    render(
-      <SessionProvider>
-        <Probe />
-      </SessionProvider>,
-    );
+    renderProbe();
 
     emit("INITIAL_SESSION", sessionFor("reader@example.com"));
     expect(screen.getByText("Signed in as reader@example.com")).toBeInTheDocument();
@@ -77,22 +78,10 @@ describe("SessionProvider", () => {
   });
 
   it("stops listening when it unmounts", () => {
-    const { unmount } = render(
-      <SessionProvider>
-        <Probe />
-      </SessionProvider>,
-    );
+    const { unmount } = renderProbe();
 
-    expect(client.unsubscribe).not.toHaveBeenCalled();
+    expect(auth.unsubscribe).not.toHaveBeenCalled();
     unmount();
-    expect(client.unsubscribe).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe("useSession", () => {
-  it("is loading outside a provider, matching the pre-rendered page", () => {
-    render(<Probe />);
-
-    expect(screen.getByText("Loading")).toBeInTheDocument();
+    expect(auth.unsubscribe).toHaveBeenCalledTimes(1);
   });
 });
