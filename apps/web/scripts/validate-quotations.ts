@@ -12,11 +12,13 @@ import { basename, relative, resolve } from "node:path";
 import { parseQuotationFile, QuotationFileError, quoteIdFromAssetName } from "../app/quotation-file.ts";
 
 const quotesDirectory = resolve(import.meta.dirname, "../app/content/quotes");
+// pnpm runs scripts inside apps/web; INIT_CWD is where the command was typed.
+const invokedFrom = process.env.INIT_CWD ?? process.cwd();
 const given = process.argv.slice(2);
 const problems: string[] = [];
 
 const files = given.length > 0
-  ? given.map((path) => resolve(path))
+  ? given.map((path) => resolve(invokedFrom, path))
   : readdirSync(quotesDirectory)
       .filter((name) => name.endsWith(".json"))
       .sort()
@@ -33,7 +35,7 @@ if (problems.length > 0) {
 console.log(`${files.length} quotation file(s) valid`);
 
 function label(file: string): string {
-  const fromHere = relative(process.cwd(), file);
+  const fromHere = relative(invokedFrom, file);
   return fromHere && !fromHere.startsWith("..") ? fromHere : file;
 }
 

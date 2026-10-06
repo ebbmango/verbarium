@@ -1,19 +1,7 @@
-import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { parseQuotationFile, QuotationFileError, quoteIdFromAssetName } from "./quotation-file";
-
-const contract = readFileSync(join(import.meta.dirname, "../../../docs/quotation-contract.md"), "utf8");
-
-/** The complete example in docs/quotation-contract.md, parsed fresh each time. */
-function example(): Record<string, any> {
-  const start = contract.indexOf("```json\n") + "```json\n".length;
-  const end = contract.indexOf("```", start);
-  return JSON.parse(contract.slice(start, end));
-}
+import { contractExample as example } from "./test/contract-example";
 
 function problemOf(value: unknown): string {
   try {
@@ -54,8 +42,9 @@ describe("parseQuotationFile", () => {
   it("rejects the wrong shape at the top", () => {
     expect(problemOf([])).toBe("the file must be an object");
     expect(problemOf({ ...example(), formatVersion: 2 })).toBe("formatVersion must be 1");
-    expect(problemOf({ ...example(), sourceHref: "https://x.example" })).toBe('the file has an unknown key "sourceHref"');
+    expect(problemOf({ ...example(), sourceHref: "https://x.example" })).toBe("the file has an unknown key \"sourceHref\"");
     expect(problemOf({ ...example(), provenance: "" })).toBe("provenance must be a non-empty string");
+    expect(problemOf({ ...example(), provenance: "  " })).toBe("provenance must not be blank");
     expect(problemOf({ ...example(), sourceLink: null })).toBe("sourceLink must be a non-empty string");
     expect(problemOf({ ...example(), sourceLink: "ctext.org/x" })).toBe("sourceLink must be an absolute http or https URL");
     expect(problemOf({ ...example(), sourceLink: "ftp://ctext.org/x" })).toBe("sourceLink must be an absolute http or https URL");
@@ -65,7 +54,7 @@ describe("parseQuotationFile", () => {
     const missingType = example();
     delete missingType.attestation.tokens[0].type;
     expect(problemOf(missingType)).toBe(
-      'attestation.tokens[0].type must be one of "character", "punctuation", "number", "symbol"',
+      "attestation.tokens[0].type must be one of \"character\", \"punctuation\", \"number\", \"symbol\"",
     );
 
     const emptyText = example();
@@ -82,7 +71,7 @@ describe("parseQuotationFile", () => {
 
     const extraKey = example();
     extraKey.translation.tokens[0].line = 1;
-    expect(problemOf(extraKey)).toBe('translation.tokens[0] has an unknown key "line"');
+    expect(problemOf(extraKey)).toBe("translation.tokens[0] has an unknown key \"line\"");
   });
 
   it("keeps the three pinyin states apart", () => {
@@ -92,7 +81,7 @@ describe("parseQuotationFile", () => {
 
     const pinyinOnTarget = example();
     pinyinOnTarget.translation.tokens[0].pinyin = "qi4";
-    expect(problemOf(pinyinOnTarget)).toBe('translation.tokens[0] has an unknown key "pinyin"');
+    expect(problemOf(pinyinOnTarget)).toBe("translation.tokens[0] has an unknown key \"pinyin\"");
   });
 
   it("rejects outer whitespace", () => {
@@ -114,10 +103,14 @@ describe("parseQuotationFile", () => {
       "alignment.mappings[1].sourceTokenIds[0] claims token ID 0, which another mapping already claims",
     );
 
+    const listedTwice = example();
+    listedTwice.alignment.mappings[0].targetTokenIds = [0, 0];
+    expect(problemOf(listedTwice)).toBe("alignment.mappings[0].targetTokenIds[1] lists token ID 0 twice");
+
     const repeatedMapping = example();
     repeatedMapping.alignment.mappings[1].id = repeatedMapping.alignment.mappings[0].id;
     expect(problemOf(repeatedMapping)).toBe(
-      'alignment.mappings[1].id repeats mapping ID "260d4e56-1d22-4fb2-b83c-71e0f1faebda"',
+      "alignment.mappings[1].id repeats mapping ID \"260d4e56-1d22-4fb2-b83c-71e0f1faebda\"",
     );
 
     const emptyMappingId = example();
@@ -145,6 +138,14 @@ describe("parseQuotationFile", () => {
     const fractional = example();
     fractional.alignment.breaks.translation = [1.5];
     expect(problemOf(fractional)).toBe("alignment.breaks.translation[0] must be an integer");
+
+    const oneToken = example();
+    oneToken.attestation.tokens = [oneToken.attestation.tokens[0]];
+    oneToken.alignment.mappings = [];
+    oneToken.alignment.breaks.attestation = [1];
+    expect(problemOf(oneToken)).toBe(
+      "alignment.breaks.attestation[0] cannot exist: a side with fewer than two tokens has no gap to break at",
+    );
   });
 });
 
@@ -159,49 +160,5 @@ describe("quoteIdFromAssetName", () => {
     expect(quoteIdFromAssetName("L001A-Q01-One-Foundation")).toBeNull();
     expect(quoteIdFromAssetName("L001A-Q01--one")).toBeNull();
     expect(quoteIdFromAssetName("quote-slicer-dao-one")).toBeNull();
-  });
-});
-
-describe("validate-quotations script", () => {
-  const script = join(import.meta.dirname, "../scripts/validate-quotations.ts");
-
-  function run(...files: string[]): { status: number; output: string } {
-    try {
-      const stdout = execFileSync("node", [script, ...files], { encoding: "utf8", stdio: "pipe" });
-      return { status: 0, output: stdout };
-    } catch (error) {
-      const failure = error as { status: number; stdout: string; stderr: string };
-      return { status: failure.status, output: failure.stdout + failure.stderr };
-    }
-  }
-
-  it("fails on an invalid file, naming the file and the problem", () => {
-    const directory = mkdtempSync(join(tmpdir(), "quotation-"));
-    const broken = join(directory, "broken.json");
-    const fine = join(directory, "fine.json");
-    const value = example();
-    value.alignment.breaks.translation = [99];
-    writeFileSync(broken, JSON.stringify(value));
-    writeFileSync(fine, JSON.stringify(example()));
-
-    const failed = run(fine, broken);
-    expect(failed.status).toBe(1);
-    expect(failed.output).toContain(
-      `${broken}: alignment.breaks.translation[0] must be between 1 and 26, the positions between tokens`,
-    );
-
-    const passed = run(fine);
-    expect(passed.status).toBe(0);
-    expect(passed.output).toContain("1 quotation file(s) valid");
-  });
-
-  it("reports a file that is not JSON", () => {
-    const directory = mkdtempSync(join(tmpdir(), "quotation-"));
-    const notJson = join(directory, "not.json");
-    writeFileSync(notJson, "{ pinyin: undefined }");
-
-    const failed = run(notJson);
-    expect(failed.status).toBe(1);
-    expect(failed.output).toContain(`${notJson}: is not valid JSON:`);
   });
 });

@@ -28,13 +28,11 @@ export function quoteIdFromAssetName(assetName: string): string | null {
 
 /** A file that breaks the contract. The message names the file and the problem. */
 export class QuotationFileError extends Error {
-  readonly file: string;
   readonly problem: string;
 
   constructor(file: string, problem: string) {
     super(`${file}: ${problem}`);
     this.name = "QuotationFileError";
-    this.file = file;
     this.problem = problem;
   }
 }
@@ -69,6 +67,7 @@ function parseFile(value: unknown): QuotationFile {
     fail("formatVersion", `must be ${quotationFormatVersion}`);
   }
   const provenance = expectText(file.provenance, "provenance");
+  if (provenance.trim() === "") fail("provenance", "must not be blank");
   const sourceLink = "sourceLink" in file ? expectLink(file.sourceLink, "sourceLink") : undefined;
 
   const attestation = expectObject(file.attestation, "attestation", ["tokens"]);
@@ -117,14 +116,18 @@ function expectText(value: unknown, at: string): string {
 
 function expectLink(value: unknown, at: string): string {
   const link = expectText(value, at);
-  let url: URL;
-  try {
-    url = new URL(link);
-  } catch {
-    return fail(at, "must be an absolute http or https URL");
+  if (protocolOf(link) !== "http:" && protocolOf(link) !== "https:") {
+    fail(at, "must be an absolute http or https URL");
   }
-  if (url.protocol !== "http:" && url.protocol !== "https:") fail(at, "must be an absolute http or https URL");
   return link;
+}
+
+function protocolOf(link: string): string | null {
+  try {
+    return new URL(link).protocol;
+  } catch {
+    return null;
+  }
 }
 
 function expectId(value: unknown, at: string): number {
@@ -141,28 +144,34 @@ function expectOneOf<Allowed extends string>(value: unknown, at: string, allowed
   return value as Allowed;
 }
 
-function parseSourceToken(value: unknown, at: string): SourceToken {
-  const token = expectObject(value, at, ["id", "text", "pinyin", "type"]);
-  const parsed: SourceToken = {
-    id: expectId(token.id, `${at}.id`),
-    text: expectText(token.text, `${at}.text`),
-    type: expectOneOf(token.type, `${at}.type`, sourceTokenTypes),
+function parseToken<Type extends string>(
+  value: unknown,
+  at: string,
+  types: readonly Type[],
+  otherKeys: readonly string[] = [],
+): { id: number; text: string; type: Type; raw: Record<string, unknown> } {
+  const raw = expectObject(value, at, ["id", "text", "type", ...otherKeys]);
+  return {
+    id: expectId(raw.id, `${at}.id`),
+    text: expectText(raw.text, `${at}.text`),
+    type: expectOneOf(raw.type, `${at}.type`, types),
+    raw,
   };
+}
 
-  if (token.pinyin === undefined) return parsed;
-  if (token.pinyin !== null && (typeof token.pinyin !== "string" || token.pinyin.length === 0)) {
+function parseSourceToken(value: unknown, at: string): SourceToken {
+  const { raw, ...token } = parseToken(value, at, sourceTokenTypes, ["pinyin"]);
+
+  if (raw.pinyin === undefined) return token;
+  if (raw.pinyin !== null && (typeof raw.pinyin !== "string" || raw.pinyin.length === 0)) {
     fail(`${at}.pinyin`, "must be absent, null or a non-empty string");
   }
-  return { ...parsed, pinyin: token.pinyin as string | null };
+  return { ...token, pinyin: raw.pinyin as string | null };
 }
 
 function parseTargetToken(value: unknown, at: string): TargetToken {
-  const token = expectObject(value, at, ["id", "text", "type"]);
-  return {
-    id: expectId(token.id, `${at}.id`),
-    text: expectText(token.text, `${at}.text`),
-    type: expectOneOf(token.type, `${at}.type`, targetTokenTypes),
-  };
+  const { raw: _raw, ...token } = parseToken(value, at, targetTokenTypes);
+  return token;
 }
 
 function expectTokens<Token extends { id: number; text: string }>(
@@ -184,17 +193,22 @@ function expectTokens<Token extends { id: number; text: string }>(
   return tokens;
 }
 
+/** One side of the alignment, as the mappings see it: its token IDs and the ones already claimed. */
+type Side = { tokenIds: Set<number>; claimed: Set<number> };
+
+function sideOf(tokens: Array<{ id: number }>): Side {
+  return { tokenIds: new Set(tokens.map((token) => token.id)), claimed: new Set() };
+}
+
 function expectMappings(
   value: unknown,
   at: string,
   sourceTokens: SourceToken[],
   targetTokens: TargetToken[],
 ): QuoteMapping[] {
-  const sourceIds = new Set(sourceTokens.map((token) => token.id));
-  const targetIds = new Set(targetTokens.map((token) => token.id));
+  const source = sideOf(sourceTokens);
+  const target = sideOf(targetTokens);
   const mappingIds = new Set<string>();
-  const claimedSource = new Set<number>();
-  const claimedTarget = new Set<number>();
 
   return expectArray(value, at).map((entry, index) => {
     const here = `${at}[${index}]`;
@@ -205,31 +219,38 @@ function expectMappings(
 
     return {
       id,
-      sourceTokenIds: expectMembers(mapping.sourceTokenIds, `${here}.sourceTokenIds`, sourceIds, claimedSource),
-      targetTokenIds: expectMembers(mapping.targetTokenIds, `${here}.targetTokenIds`, targetIds, claimedTarget),
+      sourceTokenIds: expectMappingTokenIds(mapping.sourceTokenIds, `${here}.sourceTokenIds`, source),
+      targetTokenIds: expectMappingTokenIds(mapping.targetTokenIds, `${here}.targetTokenIds`, target),
     };
   });
 }
 
-function expectMembers(value: unknown, at: string, tokenIds: Set<number>, claimed: Set<number>): number[] {
+function expectMappingTokenIds(value: unknown, at: string, side: Side): number[] {
+  const listed = new Set<number>();
+
   return expectArray(value, at).map((member, index) => {
     const id = expectId(member, `${at}[${index}]`);
-    if (!tokenIds.has(id)) fail(`${at}[${index}]`, `points at a token ID that does not exist (${id})`);
-    if (claimed.has(id)) fail(`${at}[${index}]`, `claims token ID ${id}, which another mapping already claims`);
-    claimed.add(id);
+    if (!side.tokenIds.has(id)) fail(`${at}[${index}]`, `points at a token ID that does not exist (${id})`);
+    if (listed.has(id)) fail(`${at}[${index}]`, `lists token ID ${id} twice`);
+    if (side.claimed.has(id)) fail(`${at}[${index}]`, `claims token ID ${id}, which another mapping already claims`);
+    listed.add(id);
+    side.claimed.add(id);
     return id;
   });
 }
 
 function expectBreaks(value: unknown, at: string, tokenCount: number): number[] {
+  let previous = 0;
+
   return expectArray(value, at).map((position, index) => {
-    if (typeof position !== "number" || !Number.isInteger(position)) fail(`${at}[${index}]`, "must be an integer");
+    const here = `${at}[${index}]`;
+    if (typeof position !== "number" || !Number.isInteger(position)) fail(here, "must be an integer");
+    if (tokenCount < 2) fail(here, "cannot exist: a side with fewer than two tokens has no gap to break at");
     if (position <= 0 || position >= tokenCount) {
-      fail(`${at}[${index}]`, `must be between 1 and ${tokenCount - 1}, the positions between tokens`);
+      fail(here, `must be between 1 and ${tokenCount - 1}, the positions between tokens`);
     }
-    if (index > 0 && position <= (value as number[])[index - 1]) {
-      fail(`${at}[${index}]`, "must be larger than the position before it");
-    }
+    if (position <= previous) fail(here, "must be larger than the position before it");
+    previous = position;
     return position;
   });
 }
