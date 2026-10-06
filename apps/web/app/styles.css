@@ -56,6 +56,9 @@ button {
 }
 
 .lesson-complete button:focus-visible,
+.button-primary:focus-visible,
+.account-switch:focus-visible,
+.account-form input:focus-visible,
 .profile-button:focus-visible,
 .nav-tab:focus-visible,
 .brand:focus-visible {
@@ -198,7 +201,8 @@ body::before {
   text-align: center;
 }
 
-.lesson-manuscript > p {
+.lesson-manuscript > p,
+.account p {
   width: min(100%, var(--measure-copy));
   margin: 1.4rem auto 0;
   color: #565850;
@@ -220,7 +224,8 @@ body::before {
 .note-title,
 .quote-source,
 .character-forms figcaption span,
-.form-label {
+.form-label,
+.account-form label {
   font-family: var(--font-ui);
   font-weight: 750;
   letter-spacing: 0.16em;
@@ -235,7 +240,8 @@ body::before {
   font-size: 0.68rem;
 }
 
-.lesson-heading h1 {
+.lesson-heading h1,
+.account h1 {
   font-size: clamp(2rem, 5vw, 2.65rem);
   font-weight: 500;
   letter-spacing: -0.035em;
@@ -600,7 +606,8 @@ body::before {
   line-height: 1.65;
 }
 
-.lesson-complete button {
+.lesson-complete button,
+.button-primary {
   margin: 0;
   padding: 0.8rem 1.5rem;
   border: 0;
@@ -613,8 +620,80 @@ body::before {
   letter-spacing: 0.02em;
 }
 
-.lesson-complete button:hover {
+.lesson-complete button:hover,
+.button-primary:hover {
   background: #b8343a;
+}
+
+.button-primary:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+/* Account */
+
+.account {
+  width: min(100%, var(--measure-copy));
+  margin: 0 auto;
+  font-family: var(--font-manuscript);
+  text-align: center;
+}
+
+.account a {
+  color: var(--green);
+}
+
+.account-form {
+  display: grid;
+  gap: 1.1rem;
+  width: min(100%, 22rem);
+  margin: 2.5rem auto 0;
+  text-align: left;
+}
+
+.account-form label {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--muted);
+  font-size: 0.62rem;
+}
+
+.account-form input {
+  padding: 0.7rem 0.85rem;
+  border: 1px solid rgb(84 72 52 / 24%);
+  background: rgb(255 252 244 / 72%);
+  color: var(--ink);
+  font-family: var(--font-manuscript);
+  font-size: 1rem;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.account-form .account-error {
+  margin: 0;
+}
+
+.account-form .button-primary {
+  justify-self: center;
+  margin-top: 0.4rem;
+}
+
+.account-error {
+  color: var(--red);
+}
+
+.account-switch {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--green);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.account-note {
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 /* Responsive adjustments */
@@ -668,7 +747,8 @@ body::before {
     display: none;
   }
 
-  .lesson-manuscript > p {
+  .lesson-manuscript > p,
+  .account p {
     font-size: 0.91rem;
     line-height: 1.82;
   }
