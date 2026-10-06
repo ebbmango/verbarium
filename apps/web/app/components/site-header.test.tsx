@@ -10,13 +10,13 @@ vi.mock("../lib/supabase", () => import("../test/fake-supabase"));
 beforeEach(resetFakeSupabase);
 
 describe("SiteHeader", () => {
-  it.each(["/", "/lessons/1"])("marks the Lessons tab current at %s", (path) => {
+  it.each(["/", "/lessons", "/lessons/1"])("marks the Lessons tab current at %s and leads to the index", (path) => {
     renderWithSession(<SiteHeader />, path);
 
     const tab = screen.getByRole("link", { name: "Lessons" });
     expect(tab).toHaveAttribute("aria-current", "page");
     expect(tab).toHaveClass("nav-tab-active");
-    expect(tab).toHaveAttribute("href", "/");
+    expect(tab).toHaveAttribute("href", "/lessons");
   });
 
   it("does not mark the Lessons tab current on the account page", () => {
