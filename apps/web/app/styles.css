@@ -412,7 +412,7 @@ body::before {
   text-align: center;
 }
 
-.category-break span {
+.category-break > span {
   color: var(--red);
   font-family: var(--font-ui);
   font-size: 0.61rem;
