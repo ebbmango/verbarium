@@ -15,16 +15,21 @@ function buildFor(basePath: string): string {
     const pages = join(root, basePath);
     mkdirSync(join(pages, "account"), { recursive: true });
     mkdirSync(join(pages, "lessons", "1"), { recursive: true });
+    mkdirSync(join(pages, "dictionary", "%E8%A1%80"), { recursive: true });
     writeFileSync(join(root, "index.html"), "fallback");
     writeFileSync(join(pages, "index.html"), "home");
     writeFileSync(join(pages, "account", "index.html"), "account");
     writeFileSync(join(pages, "lessons", "1", "index.html"), "lesson 1");
+    writeFileSync(join(pages, "dictionary", "%E8%A1%80", "index.html"), "血");
   } else {
     mkdirSync(join(root, "lessons", "1"), { recursive: true });
+    mkdirSync(join(root, "dictionary", "%E8%A1%80"), { recursive: true });
     writeFileSync(join(root, "__spa-fallback.html"), "fallback");
     writeFileSync(join(root, "index.html"), "home");
     writeFileSync(join(root, "lessons", "1", "index.html"), "lesson 1");
+    writeFileSync(join(root, "dictionary", "%E8%A1%80", "index.html"), "血");
   }
+  writeFileSync(join(root, "assets", "100%.css"), "css");
   return root;
 }
 
@@ -39,7 +44,10 @@ describe("prepare-pages.sh", () => {
     expect(read(root, "404.html")).toBe("fallback");
     expect(read(root, "account/index.html")).toBe("account");
     expect(read(root, "lessons/1/index.html")).toBe("lesson 1");
+    expect(read(root, "dictionary/血/index.html")).toBe("血");
+    expect(() => read(root, "dictionary/%E8%A1%80/index.html")).toThrow();
     expect(read(root, "assets/app.js")).toBe("js");
+    expect(read(root, "assets/100%.css")).toBe("css");
     expect(() => read(root, "verbarium/index.html")).toThrow();
   });
 
@@ -50,5 +58,7 @@ describe("prepare-pages.sh", () => {
     expect(read(root, "index.html")).toBe("home");
     expect(read(root, "404.html")).toBe("fallback");
     expect(read(root, "lessons/1/index.html")).toBe("lesson 1");
+    expect(read(root, "dictionary/血/index.html")).toBe("血");
+    expect(read(root, "assets/100%.css")).toBe("css");
   });
 });

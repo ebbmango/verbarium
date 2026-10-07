@@ -31,7 +31,7 @@ export function CoursePosition({ number }: { number: number }) {
 
 type PageHeadingProps = PropsWithChildren<{
   eyebrow: string;
-  title: string;
+  title: ReactNode;
   subtitle: ReactNode;
 }>;
 

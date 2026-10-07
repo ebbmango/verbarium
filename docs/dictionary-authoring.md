@@ -1,11 +1,11 @@
 # Dictionary authoring rules
 
 Dictionary pages are MDX files under `apps/web/app/content/dictionary/`, one
-per headword, named by it: `血.mdx` is the page for 血. They follow the
-[lesson authoring rules](lesson-authoring.md): no raw HTML tags, no
-`className` or `style`, Chinese typed as plain characters. On top of those, a
-page writes what it says about its headword with components the build reads
-to make the dictionary's index, search and flashcards, so it checks them.
+per headword, named by it: `血.mdx` is the page for 血, at `/dictionary/血`.
+They follow the [lesson authoring rules](lesson-authoring.md): no raw HTML
+tags, no `className` or `style`, Chinese typed as plain characters. On top of
+those, a page writes what it says about its headword with components the build
+reads to make the dictionary's index, search and flashcards, so it checks them.
 
 ## A page
 
@@ -22,9 +22,11 @@ to make the dictionary's index, search and flashcards, so it checks them.
 </Entry>
 ```
 
-The page has no header: its file name is its headword. Readings and senses go
-inside their `<Entry>`, not inside a `<Sense>`; prose may come before, between
-and after entries.
+You write no header: the page shows its headword, from the file name, and its
+glosses above the entries. Readings and senses go inside their `<Entry>`, not
+inside a `<Sense>`; prose may come before, between and after entries. Write each
+reading on its own line, as above: the page sets an entry's readings side by
+side.
 
 ## The components
 
@@ -32,7 +34,7 @@ and after entries.
 | --- | --- |
 | `<Entry>…</Entry>` | One treatment of the headword: the readings and senses that belong together. A headword standing for genuinely different words, such as 行, has one entry per word. A page has at least one. |
 | `<Reading pinyin="xuè" />` | One modern Mandarin pronunciation, in lower-case pinyin with its tone mark. Pronunciations sharing the same senses are readings of one entry, as 血's are. An entry has at least one. |
-| `<Sense gloss="blood">…</Sense>` | One meaning. The gloss is the short English the index, search and flashcards show; the paragraphs inside explain the sense, with any usage note (a period, region or register it belongs to). An entry has at least one. |
+| `<Sense gloss="blood">…</Sense>` | One meaning. The gloss is its short English: the sense's heading, its part of the line of glosses under the headword, and what the index, search and flashcards show. The paragraphs inside explain the sense, with any usage note (a period, region or register it belongs to). An entry has at least one. |
 | `<Quote id="L001J-Q01" />` | A quotation by its Quote ID. Inside a `<Sense>`, it is an example of that sense. |
 
 ## What the build checks

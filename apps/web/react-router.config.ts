@@ -15,9 +15,14 @@ const lessonPaths = readdirSync(new URL("./app/content/lessons", import.meta.url
   .filter((number): number is number => number !== null)
   .map(lessonPath);
 
+// And every dictionary page: 血.mdx is /dictionary/血.
+const dictionaryPaths = readdirSync(new URL("./app/content/dictionary", import.meta.url))
+  .filter((name) => name.endsWith(".mdx") && !name.startsWith(".")) // as the registry's glob
+  .map((name) => `/dictionary/${name.replace(/\.mdx$/, "")}`);
+
 export default {
   basename: basePath,
-  // The static routes, as before, plus one page per lesson.
-  prerender: ({ getStaticPaths }) => [...getStaticPaths(), ...lessonPaths],
+  // The static routes, as before, plus one page per lesson and per dictionary page.
+  prerender: ({ getStaticPaths }) => [...getStaticPaths(), ...lessonPaths, ...dictionaryPaths],
   ssr: false,
 } satisfies Config;
