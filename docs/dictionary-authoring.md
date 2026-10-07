@@ -22,8 +22,9 @@ to make the dictionary's index, search and flashcards, so it checks them.
 </Entry>
 ```
 
-The page has no header: its file name is its headword. Prose may come
-before, between and after entries.
+The page has no header: its file name is its headword. Readings and senses go
+inside their `<Entry>`, not inside a `<Sense>`; prose may come before, between
+and after entries.
 
 ## The components
 
@@ -31,16 +32,22 @@ before, between and after entries.
 | --- | --- |
 | `<Entry>…</Entry>` | One treatment of the headword: the readings and senses that belong together. A headword standing for genuinely different words, such as 行, has one entry per word. A page has at least one. |
 | `<Reading pinyin="xuè" />` | One modern Mandarin pronunciation, in lower-case pinyin with its tone mark. Pronunciations sharing the same senses are readings of one entry, as 血's are. An entry has at least one. |
-| `<Sense gloss="blood">…</Sense>` | One meaning. The gloss is the short English the index, search and flashcards show; the paragraphs inside explain the meaning, with any usage note (a period, region or register it belongs to). An entry has at least one. |
+| `<Sense gloss="blood">…</Sense>` | One meaning. The gloss is the short English the index, search and flashcards show; the paragraphs inside explain the sense, with any usage note (a period, region or register it belongs to). An entry has at least one. |
 | `<Quote id="L001J-Q01" />` | A quotation by its Quote ID. Inside a `<Sense>`, it is an example of that sense. |
 
 ## What the build checks
 
-The build fails, naming the page's file, when:
+A page that breaks a rule fails to compile, naming its file. The tests compile
+every committed page, so a broken page also stops the deploy. It fails when:
 
-- the file name is not the headword in Chinese characters;
+- the file name is not the headword in Chinese characters, or is a look-alike
+  such as the radical `⾎` copied from a PDF instead of `血`;
 - the page has no `<Entry>`, or an entry has no `<Reading>` or no `<Sense>`;
-- a `pinyin` is not lower-case pinyin with its tone mark: `xuè`, not
-  `xue4`, `xue` or `Xuè`;
+- a `<Reading>` or `<Sense>` is outside an `<Entry>` or inside a `<Sense>`, or
+  an `<Entry>` is inside another;
+- a `pinyin` is not one lower-case pinyin syllable with its tone mark where
+  pinyin puts it: `xuè`, not `xue4`, `xue`, `Xuè` or `xùe`. A neutral-tone
+  reading (了 `le`) is not supported yet;
 - a `<Sense>` has no `gloss`;
-- a `<Quote>` names a Quote ID that no quotation file carries.
+- a `<Quote>` writes its Quote ID in braces, or names one that no quotation
+  file carries.

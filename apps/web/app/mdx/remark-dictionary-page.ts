@@ -12,17 +12,13 @@ import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 
 import { quoteIdFromAssetName } from "../quotation-file.ts";
-import { attributeValue, exportConst, findComponents, type MdastNode } from "./mdx-tree.ts";
+import { attributeValue, exportConst, type MdastNode } from "./mdx-tree.ts";
 
-export type DictionaryPageData = {
-  headword: string;
-  entries: Array<{ readings: string[]; senses: Array<{ gloss: string; quoteIds: string[] }> }>;
-};
+export type DictionaryPageData = { headword: string; entries: EntryData[] };
+type EntryData = { readings: string[]; senses: SenseData[] };
+type SenseData = { gloss: string; quoteIds: string[] };
 
-const toneMarked = "āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ";
-// ponytail: checks the letters and that a tone is marked, not each syllable;
-// enough for one-character headwords, check syllables once longer ones arrive.
-const tonedPinyin = new RegExp(`^[a-zü${toneMarked}]*[${toneMarked}][a-zü${toneMarked}]*$`, "u");
+type Fail = (problem: string) => never;
 
 export default function remarkDictionaryPage() {
   return (tree: MdastNode, file: { path?: string }) => {
@@ -30,7 +26,7 @@ export default function remarkDictionaryPage() {
     if (!/[\\/]content[\\/]dictionary[\\/][^\\/]+$/.test(path)) return;
 
     const fileName = path.split(/[\\/]/).at(-1) ?? "";
-    const fail = (problem: string): never => {
+    const fail: Fail = (problem) => {
       throw new Error(`${fileName}: ${problem}`);
     };
 
@@ -38,43 +34,92 @@ export default function remarkDictionaryPage() {
     if (!/^\p{Script=Han}+$/u.test(headword)) {
       fail("a dictionary page is named by its headword in Chinese characters, as in 血.mdx");
     }
+    // A radical or compatibility form, as PDFs give, looks like the character but is another one.
+    const character = headword.normalize("NFKC");
+    if (headword !== character) fail(`${headword} only looks like ${character}: name the page ${character}.mdx`);
 
-    const entries = findComponents(tree, "Entry").map((entry) => ({
-      readings: findComponents(entry, "Reading").map((reading) => readPinyin(reading, fail)),
-      senses: findComponents(entry, "Sense").map((sense) => ({
-        gloss: readGloss(sense, fail),
-        quoteIds: findComponents(sense, "Quote").map((quote) => String(attributeValue(quote, "id"))),
-      })),
-    }));
-    if (entries.length === 0) fail("a dictionary page has at least one <Entry>");
-    for (const { readings, senses } of entries) {
-      if (readings.length === 0) fail('every <Entry> has at least one <Reading pinyin="…" />');
-      if (senses.length === 0) fail('every <Entry> has at least one <Sense gloss="…">');
-    }
-
-    const committed = new Set(
+    const committedQuoteIds = new Set(
       readdirSync(join(dirname(path), "../quotes")).map((name) => quoteIdFromAssetName(name.replace(/\.json$/, ""))),
     );
-    for (const quote of findComponents(tree, "Quote")) {
-      const id = attributeValue(quote, "id");
-      if (typeof id !== "string" || !committed.has(id)) fail(`<Quote id="${String(id)}"> has no quotation file`);
-    }
+    const entries: EntryData[] = [];
+
+    // Walks the page in document order, knowing the <Entry> and <Sense> each component is in.
+    const read = (node: MdastNode, entry?: EntryData, sense?: SenseData): void => {
+      for (const child of node.children ?? []) {
+        const component = child.type.startsWith("mdxJsx") ? child.name : undefined;
+
+        if (component === "Entry") {
+          if (entry) return fail("an <Entry> cannot hold another <Entry>");
+          const next: EntryData = { readings: [], senses: [] };
+          entries.push(next);
+          read(child, next);
+        } else if (component === "Reading" || component === "Sense") {
+          if (!entry || sense) return fail(`a <${component}> goes inside an <Entry> and outside any <Sense>`);
+          if (component === "Reading") {
+            entry.readings.push(readPinyin(child, fail));
+          } else {
+            const next: SenseData = { gloss: readGloss(child, fail), quoteIds: [] };
+            entry.senses.push(next);
+            read(child, entry, next);
+          }
+        } else {
+          if (component === "Quote") sense?.quoteIds.push(readQuoteId(child, committedQuoteIds, fail));
+          read(child, entry, sense);
+        }
+      }
+    };
+    read(tree);
+
+    if (entries.length === 0) fail("a dictionary page has at least one <Entry>, and this one has none");
+    entries.forEach(({ readings, senses }, index) => {
+      if (readings.length === 0) fail(`every <Entry> has a <Reading pinyin="…" />, and entry ${index + 1} has none`);
+      if (senses.length === 0) fail(`every <Entry> has a <Sense gloss="…">, and entry ${index + 1} has none`);
+    });
 
     tree.children?.push(exportConst("dictionaryPage", { headword, entries } satisfies DictionaryPageData));
   };
 }
 
-function readPinyin(reading: MdastNode, fail: (problem: string) => never): string {
+// Combining grave, acute, macron and caron: the four tone marks.
+const toneMarks = /[̀́̄̌]/g;
+// ponytail: one syllable with a tone mark; a neutral-tone reading (了 le) or the
+// several syllables of a multi-character headword fail. Allow them when a page needs one.
+const syllable =
+  /^(?:[bpmfdtnlgkhjqxrzcsyw]|[zcs]h)?(?:a(?:i|o|ng?)?|o(?:u|ng)?|e(?:i|r|ng?)?|i(?:a(?:o|ng?)?|e|u|ng?|ong)?|u(?:a(?:i|ng?)?|o|i|n|e)?|ü(?:e|an|n)?)$/;
+
+function readPinyin(reading: MdastNode, fail: Fail): string {
   const value = attributeValue(reading, "pinyin");
   const pinyin = typeof value === "string" ? value.normalize("NFC") : "";
-  return tonedPinyin.test(pinyin)
+  return isTonedSyllable(pinyin)
     ? pinyin
     : fail(`a <Reading> writes its pinyin in quotes with the tone mark, as in pinyin="xuè"${typeof value === "string" ? `, not "${value}"` : ""}`);
 }
 
-function readGloss(sense: MdastNode, fail: (problem: string) => never): string {
+/** One pinyin syllable with one tone mark where pinyin puts it: on a or e, on the o of ou, or else on the last vowel. */
+function isTonedSyllable(pinyin: string): boolean {
+  const letters = pinyin.normalize("NFD");
+  const [mark, ...more] = letters.match(toneMarks) ?? [];
+  const toneless = letters.replace(toneMarks, "").normalize("NFC");
+  const vowel = /[ae]/.exec(toneless) ?? /o(?=u)/.exec(toneless) ?? /[iouü](?!.*[iouü])/.exec(toneless);
+
+  return (
+    mark !== undefined &&
+    more.length === 0 &&
+    syllable.test(toneless) &&
+    vowel !== null &&
+    `${toneless.slice(0, vowel.index + 1)}${mark}${toneless.slice(vowel.index + 1)}`.normalize("NFC") === pinyin
+  );
+}
+
+function readGloss(sense: MdastNode, fail: Fail): string {
   const value = attributeValue(sense, "gloss");
   return typeof value === "string" && value.trim() !== ""
     ? value
     : fail('a <Sense> needs a gloss written in quotes, as in gloss="blood"');
+}
+
+function readQuoteId(quote: MdastNode, committedQuoteIds: Set<string | null>, fail: Fail): string {
+  const id = attributeValue(quote, "id");
+  if (typeof id !== "string") return fail('a <Quote> writes its Quote ID in quotes, as in id="L001J-Q01"');
+  return committedQuoteIds.has(id) ? id : fail(`<Quote id="${id}"> has no quotation file`);
 }
