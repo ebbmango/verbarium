@@ -7,6 +7,7 @@ describe("lessons", () => {
   it("lists every committed lesson by the number in its file name, in order", () => {
     expect(lessons.map((lesson) => lesson.number)).toEqual([1]);
     expect(lessons[0].subtitle).toBe("About the primitive 一, a single stroke.");
+    expect(lessons[0].characters).toEqual(["一", "雨", "天", "末", "旦", "立", "本", "閂", "丂", "血"]);
     expect(typeof lessons[0].Content).toBe("function");
   });
 
@@ -42,8 +43,16 @@ describe("lessonFromModule", () => {
     expect(lessonFromModule("002.mdx", { default: Content, lessonHeader: { number: 2, subtitle: "About 二." } })).toEqual({
       number: 2,
       subtitle: "About 二.",
+      characters: [],
       Content,
     });
+    expect(
+      lessonFromModule("002.mdx", {
+        default: Content,
+        lessonHeader: { number: 2, subtitle: "About 二." },
+        displayedCharacters: ["二"],
+      }).characters,
+    ).toEqual(["二"]);
   });
 
   it("refuses a lesson whose header is missing or numbered differently from its file", () => {

@@ -47,6 +47,9 @@ describe("the dictionary page", () => {
     // Chinese in a gloss is marked, under the headword and in the sense alike.
     expect(screen.getAllByText("衁").map((run) => run.getAttribute("lang"))).toEqual(["zh-Hant", "zh-Hant"]);
     expect(screen.getByText("The blood of people and animals.").closest(".dictionary-sense")).not.toBeNull();
+    // Lesson 1 displays 血.
+    expect(screen.getByRole("link", { name: "Lesson 1" })).toHaveAttribute("href", "/lessons/1");
+    expect(screen.getByRole("link", { name: "Lesson 1" }).closest("p")).toHaveTextContent("Taught in Lesson 1");
     expect(document.querySelectorAll(".dictionary-sense blockquote.lesson-quote")).toHaveLength(1);
   });
 
