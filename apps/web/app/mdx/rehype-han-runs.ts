@@ -9,7 +9,7 @@
  * to that component.
  */
 
-import { splitHanRuns } from "./han-runs.ts";
+import { splitHanRuns } from "../lib/han-runs.ts";
 
 /** The slice of a hast or MDX tree this plugin needs to know. */
 export type HastNode = {

@@ -2,20 +2,15 @@ import type { ComponentPropsWithoutRef, PropsWithChildren, ReactNode } from "rea
 import { Fragment } from "react";
 
 import { lessonsInCourse } from "../content/lessons";
-import { splitHanRuns } from "../mdx/han-runs";
+import type { LessonHeaderData } from "../mdx/remark-lesson-header";
+import { splitHanRuns } from "../lib/han-runs";
 import { FinishLesson } from "./finish-lesson";
 import { LegacyQuote, Quote } from "./quote";
 
 export { LegacyQuote, Quote } from "./quote";
 
-type LessonHeaderProps = {
-  number: number;
-  /** The lesson's own subtitle; its Chinese is marked here, as the build marks prose. */
-  subtitle: string;
-};
-
-/** Text from a prop, with its Chinese marked as Chinese. */
-export function MarkedText({ text }: { text: string }) {
+/** Text a component gets in a prop, with its Chinese marked the way the build marks prose. */
+export function HanMarkedText({ text }: { text: string }) {
   return splitHanRuns(text).map((run, index) => (
     <Fragment key={index}>{run.chinese ? <span lang="zh-Hant">{run.text}</span> : run.text}</Fragment>
   ));
@@ -52,9 +47,10 @@ export function PageHeading({ children, eyebrow, subtitle, title }: PageHeadingP
   );
 }
 
-export function LessonHeader({ number, subtitle }: LessonHeaderProps) {
+/** A lesson's title block. Its number and subtitle are also read at compile time (app/mdx/remark-lesson-header.ts). */
+export function LessonHeader({ number, subtitle }: LessonHeaderData) {
   return (
-    <PageHeading eyebrow="Etymological lessons" title={`Lesson ${number}`} subtitle={<MarkedText text={subtitle} />}>
+    <PageHeading eyebrow="Etymological lessons" title={`Lesson ${number}`} subtitle={<HanMarkedText text={subtitle} />}>
       <CoursePosition number={number} />
     </PageHeading>
   );

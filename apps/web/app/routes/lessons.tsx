@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-import { MarkedText, PageHeading } from "~/components/lesson";
+import { HanMarkedText, PageHeading } from "~/components/lesson";
 import { lessonPath, lessons } from "~/content/lessons";
 
 import type { Route } from "./+types/lessons";
@@ -28,7 +28,7 @@ export default function LessonIndex() {
               <Link to={lessonPath(lesson.number)}>
                 <span className="eyebrow">Lesson {lesson.number}</span>
                 <span className="lesson-subtitle">
-                  <MarkedText text={lesson.subtitle} />
+                  <HanMarkedText text={lesson.subtitle} />
                 </span>
               </Link>
             </li>
