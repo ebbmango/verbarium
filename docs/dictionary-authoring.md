@@ -28,6 +28,14 @@ inside a `<Sense>`; prose may come before, between and after entries. Write each
 reading on its own line, as above: the page sets an entry's readings side by
 side.
 
+Every Chinese character a lesson writes outside its quotations needs a page:
+the characters it teaches and the ones its prose names as their parts. To list
+the ones that have none yet, lesson by lesson:
+
+```bash
+pnpm missing-dictionary-pages
+```
+
 ## The components
 
 | Component | What it is for |
