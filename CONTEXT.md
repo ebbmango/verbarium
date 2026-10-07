@@ -43,6 +43,10 @@ _Avoid_: Provenance link
 The MDX document for one headword: its entries, readings and senses, with the writing around them, written as `docs/dictionary-authoring.md` describes.
 _Avoid_: Dictionary entry (an entry is one lexical treatment within a page)
 
+**Dictionary address**:
+The URL of a dictionary page, `/dictionary/<headword>`, such as `/dictionary/血` for `血.mdx`.
+_Avoid_: Dictionary route, dictionary URL
+
 **Headword**:
 The written Traditional Chinese string a dictionary entry is filed under: one character such as `一`, or several such as `君子`. The written string itself is its identity.
 _Avoid_: Glyph

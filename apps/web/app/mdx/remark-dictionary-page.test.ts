@@ -1,20 +1,10 @@
-import mdx from "@mdx-js/rollup";
 import { join } from "node:path";
-import * as runtime from "react/jsx-runtime";
 import { describe, expect, it } from "vitest";
 
-import { mdxOptions } from "./options";
-
-// Compiles a page as the build does, then runs it to read what it exports.
-const transform = mdx({ ...mdxOptions, outputFormat: "function-body" }).transform as (
-  source: string,
-  path: string,
-) => Promise<{ code: string }>;
-const dictionary = join(import.meta.dirname, "../content/dictionary");
+import { compileDictionaryPage, dictionaryDirectory as dictionary } from "../test/compile-dictionary-page";
 
 async function compile(source: string, path = join(dictionary, "血.mdx")) {
-  const { code } = await transform(source, path);
-  return new Function(code)(runtime).dictionaryPage;
+  return (await compileDictionaryPage(source, path)).dictionaryPage;
 }
 
 const page = `Prose may come before, between and after the entries.
@@ -53,13 +43,13 @@ describe("remarkDictionaryPage", () => {
 
   it("reads readings written on one line, and accepts the tone mark wherever pinyin puts it", async () => {
     const oneLine = '<Entry>\n  <Reading pinyin="xuè" /> or <Reading pinyin="xiě" />\n  <Sense gloss="blood" />\n</Entry>';
-    expect((await compile(oneLine)).entries[0].readings).toEqual(["xuè", "xiě"]);
+    expect((await compile(oneLine))?.entries[0].readings).toEqual(["xuè", "xiě"]);
 
     for (const pinyin of ["jiǒng", "zhōu", "guī", "huò", "nǚ", "lüè", "ér", "shuāng"]) {
-      expect((await compile(page.replace("xuè", pinyin))).entries[0].readings[0]).toBe(pinyin);
+      expect((await compile(page.replace("xuè", pinyin)))?.entries[0].readings[0]).toBe(pinyin);
     }
     // A tone mark typed as a separate combining character is read as the one character.
-    expect((await compile(page.replace("xuè", "xuè"))).entries[0].readings[0]).toBe("xuè");
+    expect((await compile(page.replace("xuè", "xue\u0300")))?.entries[0].readings[0]).toBe("xuè");
   });
 
   it("leaves MDX outside the dictionary alone", async () => {

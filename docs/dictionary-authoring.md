@@ -1,11 +1,12 @@
 # Dictionary authoring rules
 
 Dictionary pages are MDX files under `apps/web/app/content/dictionary/`, one
-per headword, named by it: `血.mdx` is the page for 血. They follow the
-[lesson authoring rules](lesson-authoring.md): no raw HTML tags, no
-`className` or `style`, Chinese typed as plain characters. On top of those, a
-page writes what it says about its headword with components the build reads
-to make the dictionary's index, search and flashcards, so it checks them.
+per headword, named by it: `血.mdx` is the page for 血, at `/dictionary/血`.
+They follow the [lesson authoring rules](lesson-authoring.md): no raw HTML
+tags, no `className` or `style`, Chinese typed as plain characters. On top of
+those, a page writes what it says about its headword with components the build
+reads to make the dictionary's index, search and flashcards, so it checks them.
+Lesson components such as `<Commentary>` and `<CharacterForms>` work here too.
 
 ## A page
 

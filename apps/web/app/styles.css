@@ -203,6 +203,7 @@ body::before {
 }
 
 .lesson-manuscript > p,
+.dictionary-sense > p,
 .account p,
 .landing p {
   width: min(100%, var(--measure-copy));
@@ -651,6 +652,39 @@ body::before {
   opacity: 0.6;
 }
 
+/* Dictionary pages */
+
+.lesson-heading .dictionary-headword {
+  font-family: var(--font-han-display);
+  font-size: clamp(5.4rem, 14vw, 7.35rem);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.dictionary-entry + .dictionary-entry {
+  margin-top: 6rem;
+}
+
+.dictionary-reading {
+  font-size: 1.35rem;
+  font-style: italic;
+}
+
+.dictionary-reading + .dictionary-reading::before {
+  content: " · ";
+  color: var(--faint);
+}
+
+.dictionary-sense {
+  margin-top: 3.5rem;
+}
+
+.dictionary-gloss {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
 /* Home */
 
 .landing .lesson-heading {
@@ -805,6 +839,7 @@ body::before {
   }
 
   .lesson-manuscript > p,
+  .dictionary-sense > p,
   .account p {
     font-size: 0.91rem;
     line-height: 1.82;
