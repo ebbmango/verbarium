@@ -72,6 +72,10 @@ _Avoid_: User, learner
 The URL of a lesson, `/lessons/N`, where N is the lesson's number: the number in its file name, `001.mdx` for Lesson 1.
 _Avoid_: Lesson route, lesson URL
 
+**Lesson subtitle**:
+The one line a lesson writes on its header to say what it is about, such as "About the primitive 一, a single stroke." The lesson index and the page description show the same line.
+_Avoid_: Lesson description, tagline
+
 **Lesson index**:
 The page at `/lessons` listing every committed lesson in course order, each linking to its lesson address.
 _Avoid_: Lesson list, table of contents

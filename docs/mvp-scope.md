@@ -117,8 +117,7 @@ new quotations. Write down the portable authoring rules before bulk authoring
 starts, and bring Lesson 1 in line with them.
 
 **Phase 3 — Multi-lesson web.** Lesson index, routing between lessons, and the
-course-position indicator. `LessonHeader` already receives `total` and the CSS
-already exists.
+course-position indicator. `LessonHeader` shows the course position.
 
 **Phase 4 — Lessons 002–020.** Nineteen lessons of prose, plus their quotations
 authored in Quote Slicer. Lesson 001 carries seventeen quotations, so budget

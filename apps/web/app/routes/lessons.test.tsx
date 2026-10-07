@@ -20,6 +20,7 @@ describe("the lesson index", () => {
     expect(links.map((link) => link.getAttribute("href"))).toEqual(lessons.map((lesson) => lessonPath(lesson.number)));
     expect(links.length).toBeGreaterThan(0);
     expect(links[0]).toHaveTextContent("About the primitive 一, a single stroke.");
+    expect(links[0].querySelector('[lang="zh-Hant"]')).toHaveTextContent("一");
   });
 
   it("is titled as the lesson index", () => {
