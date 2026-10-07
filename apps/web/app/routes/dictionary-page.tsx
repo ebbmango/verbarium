@@ -38,7 +38,7 @@ export default function DictionaryPage() {
     );
   }
 
-  const taughtIn = lessons.filter((lesson) => lesson.characters.includes(page.headword));
+  const displayedIn = lessons.filter((lesson) => lesson.displayedCharacters.includes(page.headword));
 
   return (
     <main className="lesson-shell">
@@ -52,10 +52,10 @@ export default function DictionaryPage() {
           }
           subtitle={<HanMarkedText text={glossesOf(page)} />}
         >
-          {taughtIn.length > 0 && (
+          {displayedIn.length > 0 && (
             <p className="dictionary-lessons">
-              Taught in{" "}
-              {taughtIn.map((lesson, index) => (
+              Displayed in{" "}
+              {displayedIn.map((lesson, index) => (
                 <Fragment key={lesson.number}>
                   {index > 0 && ", "}
                   <Link to={lessonPath(lesson.number)}>Lesson {lesson.number}</Link>

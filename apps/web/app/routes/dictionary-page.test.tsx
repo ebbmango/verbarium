@@ -49,7 +49,7 @@ describe("the dictionary page", () => {
     expect(screen.getByText("The blood of people and animals.").closest(".dictionary-sense")).not.toBeNull();
     // Lesson 1 displays 血.
     expect(screen.getByRole("link", { name: "Lesson 1" })).toHaveAttribute("href", "/lessons/1");
-    expect(screen.getByRole("link", { name: "Lesson 1" }).closest("p")).toHaveTextContent("Taught in Lesson 1");
+    expect(screen.getByRole("link", { name: "Lesson 1" }).closest("p")).toHaveTextContent("Displayed in Lesson 1");
     expect(document.querySelectorAll(".dictionary-sense blockquote.lesson-quote")).toHaveLength(1);
   });
 

@@ -11,7 +11,7 @@
  * Other MDX, such as dictionary pages, is left alone.
  */
 
-import { lessonNumberFromFileName } from "../content/lessons/lesson-files.ts";
+import { lessonNumberFromPath } from "../content/lessons/lesson-files.ts";
 import { attributeValue, exportConst, findComponents, type MdastNode } from "./mdx-tree.ts";
 
 export type LessonHeaderData = { number: number; subtitle: string };
@@ -20,7 +20,7 @@ export default function remarkLessonHeader() {
   return (tree: MdastNode, file: { path?: string }) => {
     const path = file.path ?? "";
     const fileName = path.split(/[\\/]/).at(-1) ?? "";
-    const lessonNumber = /[\\/]content[\\/]lessons[\\/][^\\/]+$/.test(path) ? lessonNumberFromFileName(fileName) : null;
+    const lessonNumber = lessonNumberFromPath(path);
     const fail = (problem: string): never => {
       throw new Error(`${fileName || "This lesson"}: ${problem}`);
     };

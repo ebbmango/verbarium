@@ -59,9 +59,10 @@ export function LessonHeader({ number, subtitle }: LessonHeaderData) {
   );
 }
 
-/** A character the lesson displays, linking to its dictionary page when it has one. */
+/** A character the lesson displays, linking to its dictionary page when it has one; a look-alike form links to its character's. */
 function DisplayedCharacter({ character }: { character: string }) {
-  return hasDictionaryPage(character) ? <Link to={dictionaryPath(character)}>{character}</Link> : character;
+  const headword = character.normalize("NFKC");
+  return hasDictionaryPage(headword) ? <Link to={dictionaryPath(headword)}>{character}</Link> : character;
 }
 
 type CharDisplayProps = {
@@ -154,7 +155,7 @@ export function Commentary({ children }: PropsWithChildren) {
 
 export function CharacterFocus({ character }: { character: string }) {
   return (
-    <div className="character-focus" lang="zh-Hant" aria-label={character}>
+    <div className="character-focus" lang="zh-Hant">
       <DisplayedCharacter character={character} />
     </div>
   );

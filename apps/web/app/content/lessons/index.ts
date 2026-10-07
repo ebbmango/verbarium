@@ -10,7 +10,7 @@ export type Lesson = {
   /** The lesson's subtitle, as its own LessonHeader writes it; also the page description. */
   subtitle: string;
   /** The characters it displays with CharDisplay and CharacterFocus. */
-  characters: string[];
+  displayedCharacters: string[];
   Content: ComponentType<{ components?: Record<string, ElementType> }>;
 };
 
@@ -26,7 +26,7 @@ export function lessonFromModule(fileName: string, module: LessonModule): Lesson
   if (header.number !== number) {
     throw new Error(`${fileName} is Lesson ${number}, but its <LessonHeader> says number={${header.number}}`);
   }
-  return { number, subtitle: header.subtitle, characters: module.displayedCharacters ?? [], Content: module.default };
+  return { number, subtitle: header.subtitle, displayedCharacters: module.displayedCharacters ?? [], Content: module.default };
 }
 
 // Every committed lesson, by its file name: 001.mdx is Lesson 1.
