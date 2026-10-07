@@ -16,8 +16,8 @@ The MVP is five deliverables:
 4. **Dictionary pages.** A page per character, with hand-authored entries.
 5. **Mobile app.** A native client alongside the web application.
 
-Lessons, Characters and Flashcards are already declared as the three navigation
-surfaces in `apps/web/app/components/site-header.tsx`. The MVP makes all three real.
+Lessons, Dictionary and Flashcards are the three navigation surfaces in
+`apps/web/app/components/site-header.tsx`. The MVP makes all three real.
 
 ## Decisions
 

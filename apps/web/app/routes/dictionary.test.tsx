@@ -36,28 +36,32 @@ describe("the dictionary index", () => {
     expect(screen.getByText("3 characters so far.")).toBeInTheDocument();
     expect(listed()).toEqual(["/dictionary/天", "/dictionary/血", "/dictionary/一"]);
     expect(screen.getByRole("link", { name: /血/ })).toHaveTextContent("血xuèblood");
+    expect(screen.getByText("血")).toHaveAttribute("lang", "zh-Hant");
+    expect(screen.getByRole("status")).toBeEmptyDOMElement();
   });
 
   it.each([
     ["血", ["/dictionary/血"]],
     ["xue", ["/dictionary/血"]],
     ["sky", ["/dictionary/天"]],
+    ["sky the", ["/dictionary/天"]],
     ["", ["/dictionary/天", "/dictionary/血", "/dictionary/一"]],
   ])("finds pages for the search %j", (search, expected) => {
     renderIndex();
-    fireEvent.change(screen.getByRole("searchbox", { name: "Search by character, pinyin or meaning" }), {
+    fireEvent.change(screen.getByRole("searchbox", { name: "Search by character, pinyin or English" }), {
       target: { value: search },
     });
 
     expect(listed()).toEqual(expected);
   });
 
-  it("says when nothing matches", () => {
+  it("says when nothing matches, marking any Chinese in the search", () => {
     renderIndex();
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: " water " } });
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: " 水 " } });
 
     expect(listed()).toEqual([]);
-    expect(screen.getByText("No character matches “water”.")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("No character matches “水”.");
+    expect(screen.getByText("水")).toHaveAttribute("lang", "zh-Hant");
   });
 
   it("is titled and described as the dictionary", () => {

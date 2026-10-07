@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 
 import { HanMarkedText, PageHeading } from "~/components/lesson";
-import { dictionaryPages, dictionaryPath, glossesOf, matchesSearch } from "~/content/dictionary";
+import { byReading, dictionaryPages, dictionaryPath, glossesOf, matchesSearch } from "~/content/dictionary";
 
 import type { Route } from "./+types/dictionary";
 
@@ -13,12 +13,7 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-const firstReading = (page: (typeof dictionaryPages)[number]) => page.entries[0].readings[0];
-
-// In pinyin order, as a dictionary is.
-const pagesInOrder = [...dictionaryPages].sort(
-  (left, right) => firstReading(left).localeCompare(firstReading(right), "en") || left.headword.localeCompare(right.headword),
-);
+const pagesInOrder = [...dictionaryPages].sort(byReading);
 
 /** The dictionary index: every page, each linking to its address, and a search through them. */
 export default function DictionaryIndex() {
@@ -33,12 +28,12 @@ export default function DictionaryIndex() {
           title="Characters"
           subtitle={dictionaryPages.length === 1 ? "One character so far." : `${dictionaryPages.length} characters so far.`}
         />
-        <form className="dictionary-search" role="search" onSubmit={(event) => event.preventDefault()}>
+        <div className="dictionary-search" role="search">
           <label>
-            Search by character, pinyin or meaning
+            Search by character, pinyin or English
             <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} />
           </label>
-        </form>
+        </div>
         <ul className="lesson-index dictionary-index">
           {found.map((page) => (
             <li key={page.headword}>
@@ -56,7 +51,11 @@ export default function DictionaryIndex() {
             </li>
           ))}
         </ul>
-        {found.length === 0 && <p>No character matches “{search.trim()}”.</p>}
+        <p role="status">
+          {found.length === 0 && search.trim() !== "" && (
+            <HanMarkedText text={`No character matches “${search.trim()}”.`} />
+          )}
+        </p>
       </section>
     </main>
   );
