@@ -96,6 +96,10 @@ _Avoid_: Lesson list, table of contents
 The indicator in a lesson's header showing where the lesson stands in the course: its number along a line that ends at the course's last lesson, 177 in Wieger's course.
 _Avoid_: Progress bar, tracker
 
+**Displayed character**:
+A character a lesson shows on its own, with `<CharDisplay>` or `<CharacterFocus>`. It links to its dictionary page, and that page names the lessons that display it.
+_Avoid_: Taught character, lesson character
+
 **Lesson completion**:
 The record that a reader finished a lesson.
 _Avoid_: Progress (ambiguous with the course position)

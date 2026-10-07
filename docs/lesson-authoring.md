@@ -52,12 +52,12 @@ between two characters of the same division. A new division of the lesson
 | Component | What it is for |
 | --- | --- |
 | `<LessonHeader number={1} subtitle="About the primitive 一, a single stroke." />` | The lesson's title block: the title, your subtitle, and the course position (Lesson 1 of 177). Once per lesson, first. The subtitle is plain text in quotes; it is also the lesson's line in the lesson index and the page description. To put a double quote in it, write the subtitle between single quotes: `subtitle='About "one" stroke.'`. |
-| `<CharDisplay character="雨" label="B" />` | Opens a character's section: the big character and its letter. |
+| `<CharDisplay character="雨" label="B" />` | Opens a character's section: the big character and its letter. The character links to its dictionary page once it has one, and that page names this lesson. |
 | `<CharacterForms character="雨" description="Old and new form of the character" forms={2} />` | The historical-forms study. `forms` is how many cards; `character` fills the last one. |
 | `<Quote id="L001B-Q01" />` | A quotation by its Quote ID; the quotation file carries the text, provenance and source link. |
 | `<SectionBreak ordinal="First">…</SectionBreak>` | One of the lesson's numbered divisions; its text is a paragraph. |
 | `<Commentary>…</Commentary>` | An aside of paragraphs; may contain `<CharacterForms>`. |
-| `<CharacterFocus character="丂" />` | One large character standing alone in the prose. |
+| `<CharacterFocus character="丂" />` | One large character standing alone in the prose; linked like `CharDisplay`'s. |
 | `<LessonComplete>` with `<FinishLesson lesson={1} />` and `<ClosingLine>…</ClosingLine>` | The end of the lesson: the button that records the completion, then the vertical closing line. Lessons after Lesson 1 close with `盡 人 事  聽 天 命`, spaces included: they are the gaps between the words ([#25](https://github.com/ebbmango/verbarium/issues/25)). |
 
 Props may contain Chinese (`character="一"`); the component marks it.

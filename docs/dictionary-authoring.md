@@ -22,8 +22,9 @@ reads to make the dictionary's index, search and flashcards, so it checks them.
 </Entry>
 ```
 
-You write no header: the page shows its headword, from the file name, and its
-glosses above the entries. Readings and senses go inside their `<Entry>`, not
+You write no header: the page shows its headword, from the file name, its
+glosses, and the lessons that display it with `<CharDisplay>` or
+`<CharacterFocus>` ("Displayed in Lesson 1"), above the entries. Readings and senses go inside their `<Entry>`, not
 inside a `<Sense>`; prose may come before, between and after entries. Write each
 reading on its own line, as above: the page sets an entry's readings side by
 side.
