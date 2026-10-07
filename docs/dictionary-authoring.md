@@ -44,7 +44,7 @@ pnpm missing-dictionary-pages
 | `<Entry>…</Entry>` | One treatment of the headword: the readings and senses that belong together. A headword standing for genuinely different words, such as 行, has one entry per word. A page has at least one. |
 | `<Reading pinyin="xuè" />` | One modern Mandarin pronunciation, in lower-case pinyin with its tone mark. Pronunciations sharing the same senses are readings of one entry, as 血's are. An entry has at least one. |
 | `<Sense gloss="blood">…</Sense>` | One meaning. The gloss is its short English: the sense's heading, its part of the line of glosses under the headword, and what the index, search and flashcards show. The paragraphs inside explain the sense, with any usage note (a period, region or register it belongs to). An entry has at least one. |
-| `<Quote id="L001J-Q01" />` | A quotation by its Quote ID. Inside a `<Sense>`, it is an example of that sense. |
+| `<Quote id="L001J-Q01" />` | A quotation by its Quote ID. Inside a `<Sense>`, it illustrates that sense: a passage using it, or a classical definition of it. |
 
 ## What the build checks
 
