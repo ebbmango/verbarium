@@ -29,8 +29,8 @@ reading on its own line, as above: the page sets an entry's readings side by
 side.
 
 Every Chinese character a lesson writes outside its quotations needs a page:
-the characters it teaches and the components its prose names. To list the
-ones that have none yet, lesson by lesson:
+the characters it teaches and the ones its prose names as their parts. To list
+the ones that have none yet, lesson by lesson:
 
 ```bash
 pnpm missing-dictionary-pages
