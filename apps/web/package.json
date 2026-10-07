@@ -5,6 +5,7 @@
   "scripts": {
     "build": "node scripts/validate-quotations.ts && react-router build",
     "dev": "react-router dev",
+    "missing-dictionary-pages": "node scripts/missing-dictionary-pages.ts",
     "start": "react-router-serve ./build/server/index.js",
     "test": "vitest run",
     "typecheck": "react-router typegen && tsc",
