@@ -1,10 +1,10 @@
 import type { PropsWithChildren } from "react";
 
-import { lessonComponents } from "./lesson";
+import { HanMarkedText, lessonComponents, Quote } from "./lesson";
 
 /** One treatment of the headword: its readings, then its senses. */
 export function Entry({ children }: PropsWithChildren) {
-  return <section className="dictionary-entry">{children}</section>;
+  return <section className="lexical-entry">{children}</section>;
 }
 
 /** One pronunciation of the entry, in pinyin; an entry's readings share a line. */
@@ -16,11 +16,13 @@ export function Reading({ pinyin }: { pinyin: string }) {
 export function Sense({ children, gloss }: PropsWithChildren<{ gloss: string }>) {
   return (
     <section className="dictionary-sense">
-      <h2 className="dictionary-gloss">{gloss}</h2>
+      <h2 className="dictionary-gloss">
+        <HanMarkedText text={gloss} />
+      </h2>
       {children}
     </section>
   );
 }
 
-/** What a dictionary page is written with: the lesson components, and its own. */
-export const dictionaryComponents = { ...lessonComponents, Entry, Reading, Sense };
+/** What a dictionary page is written with: markdown as in lessons, quotations, and its own components. */
+export const dictionaryComponents = { hr: lessonComponents.hr, p: lessonComponents.p, Quote, Entry, Reading, Sense };

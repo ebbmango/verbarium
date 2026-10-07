@@ -17,7 +17,7 @@ const lessonPaths = readdirSync(new URL("./app/content/lessons", import.meta.url
 
 // And every dictionary page: 血.mdx is /dictionary/血.
 const dictionaryPaths = readdirSync(new URL("./app/content/dictionary", import.meta.url))
-  .filter((name) => name.endsWith(".mdx"))
+  .filter((name) => name.endsWith(".mdx") && !name.startsWith(".")) // as the registry's glob
   .map((name) => `/dictionary/${name.replace(/\.mdx$/, "")}`);
 
 export default {

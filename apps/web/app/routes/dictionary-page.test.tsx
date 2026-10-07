@@ -2,12 +2,14 @@ import { render, screen } from "@testing-library/react";
 import { createRoutesStub } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 
-import DictionaryPageRoute, { meta } from "./dictionary-page";
+import DictionaryPage, { meta } from "./dictionary-page";
 
 // No page is committed yet, so the registry holds one compiled the way the build compiles them.
-vi.mock("../content/dictionary", async () => {
+vi.mock("../content/dictionary", async (importOriginal) => {
   const { compileDictionaryPage } = await import("../test/compile-dictionary-page");
-  const page = await compileDictionaryPage(`<Entry>
+  const page = await compileDictionaryPage(`Prose before the entry.
+
+<Entry>
   <Reading pinyin="xuè" />
   <Reading pinyin="xiě" />
 
@@ -17,14 +19,14 @@ vi.mock("../content/dictionary", async () => {
     <Quote id="L001J-Q01" />
   </Sense>
 
-  <Sense gloss="related by birth" />
+  <Sense gloss="variant of 衁" />
 </Entry>
 `);
-  return { dictionaryPages: [{ ...page.dictionaryPage, Content: page.default }] };
+  return { ...(await importOriginal<object>()), dictionaryPages: [{ ...page.dictionaryPage, Content: page.default }] };
 });
 
 function renderDictionaryAt(path: string) {
-  const Stub = createRoutesStub([{ path: "/dictionary/:headword", Component: DictionaryPageRoute }]);
+  const Stub = createRoutesStub([{ path: "/dictionary/:headword", Component: DictionaryPage }]);
   return render(<Stub initialEntries={[path]} />);
 }
 
@@ -32,14 +34,18 @@ describe("the dictionary page", () => {
   it.each(["/dictionary/血", "/dictionary/%E8%A1%80"])("serves 血's page at %s", (path) => {
     renderDictionaryAt(path);
 
-    expect(screen.getByRole("heading", { level: 1, name: "血" })).toHaveAttribute("lang", "zh-Hant");
-    expect(screen.getByText("blood; related by birth")).toHaveClass("lesson-subtitle");
+    const heading = screen.getByRole("heading", { level: 1, name: "血" });
+    expect(heading.querySelector(".dictionary-headword")).toHaveAttribute("lang", "zh-Hant");
+    expect(heading.nextElementSibling).toHaveClass("lesson-subtitle");
+    expect(heading.nextElementSibling).toHaveTextContent("blood; variant of 衁");
     expect(screen.getByText("xuè")).toHaveClass("dictionary-reading");
     expect(screen.getByText("xiě")).toHaveClass("dictionary-reading");
-    expect(screen.getAllByRole("heading", { level: 2 }).map((heading) => heading.textContent)).toEqual([
+    expect(screen.getAllByRole("heading", { level: 2 }).map((gloss) => gloss.textContent)).toEqual([
       "blood",
-      "related by birth",
+      "variant of 衁",
     ]);
+    // Chinese in a gloss is marked, under the headword and in the sense alike.
+    expect(screen.getAllByText("衁").map((run) => run.getAttribute("lang"))).toEqual(["zh-Hant", "zh-Hant"]);
     expect(screen.getByText("The blood of people and animals.").closest(".dictionary-sense")).not.toBeNull();
     expect(document.querySelectorAll(".dictionary-sense blockquote.lesson-quote")).toHaveLength(1);
   });
@@ -47,7 +53,7 @@ describe("the dictionary page", () => {
   it("titles the page after its headword and describes it by its glosses", () => {
     expect(meta({ params: { headword: "血" } } as never)).toEqual([
       { title: "血 · Verbarium" },
-      { name: "description", content: "blood; related by birth" },
+      { name: "description", content: "blood; variant of 衁" },
     ]);
   });
 

@@ -1,11 +1,9 @@
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { compileDictionaryPage, dictionaryDirectory as dictionary } from "../test/compile-dictionary-page";
+import { compileDictionaryPage, dictionaryDirectory } from "../test/compile-dictionary-page";
 
-async function compile(source: string, path = join(dictionary, "血.mdx")) {
-  return (await compileDictionaryPage(source, path)).dictionaryPage;
-}
+const compile = async (source: string, path?: string) => (await compileDictionaryPage(source, path)).dictionaryPage;
 
 const page = `Prose may come before, between and after the entries.
 
@@ -57,10 +55,10 @@ describe("remarkDictionaryPage", () => {
   });
 
   it("names the page and the problem", async () => {
-    await expect(compile(page, join(dictionary, "blood.mdx"))).rejects.toThrow(
+    await expect(compile(page, join(dictionaryDirectory, "blood.mdx"))).rejects.toThrow(
       "blood.mdx: a dictionary page is named by its headword in Chinese characters, as in 血.mdx",
     );
-    await expect(compile(page, join(dictionary, "⾎.mdx"))).rejects.toThrow(
+    await expect(compile(page, join(dictionaryDirectory, "⾎.mdx"))).rejects.toThrow(
       "⾎.mdx: ⾎ only looks like 血: name the page 血.mdx",
     );
     await expect(compile("Only prose.")).rejects.toThrow(

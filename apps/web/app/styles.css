@@ -203,6 +203,7 @@ body::before {
 }
 
 .lesson-manuscript > p,
+.lexical-entry > p,
 .dictionary-sense > p,
 .account p,
 .landing p {
@@ -321,7 +322,8 @@ body::before {
   font-weight: 400;
 }
 
-.study-character {
+.study-character,
+.dictionary-headword {
   margin: 0.75rem 0 0;
   font-family: var(--font-han-display);
   font-size: clamp(5.4rem, 14vw, 7.35rem);
@@ -654,15 +656,12 @@ body::before {
 
 /* Dictionary pages */
 
-.lesson-heading .dictionary-headword {
-  font-family: var(--font-han-display);
-  font-size: clamp(5.4rem, 14vw, 7.35rem);
-  font-weight: 400;
-  letter-spacing: 0;
+.lexical-entry {
+  margin-top: 6rem;
 }
 
-.dictionary-entry + .dictionary-entry {
-  margin-top: 6rem;
+.lesson-heading + .lexical-entry {
+  margin-top: 0;
 }
 
 .dictionary-reading {
@@ -670,9 +669,8 @@ body::before {
   font-style: italic;
 }
 
-.dictionary-reading + .dictionary-reading::before {
-  content: " · ";
-  color: var(--faint);
+.dictionary-reading + .dictionary-reading {
+  margin-left: 1em;
 }
 
 .dictionary-sense {
@@ -839,6 +837,7 @@ body::before {
   }
 
   .lesson-manuscript > p,
+  .lexical-entry > p,
   .dictionary-sense > p,
   .account p {
     font-size: 0.91rem;
