@@ -9,9 +9,7 @@
  * to that component.
  */
 
-/** Han characters with the CJK punctuation blocks; a run must contain Han. */
-const hanRun = /[\p{Script=Han}　-〿＀-￯]+/gu;
-const han = /\p{Script=Han}/u;
+import { splitHanRuns } from "./han-runs.ts";
 
 /** The slice of a hast or MDX tree this plugin needs to know. */
 export type HastNode = {
@@ -53,23 +51,12 @@ function isMarkedChinese(node: HastNode): boolean {
 }
 
 function wrapHanRuns(text: HastNode): HastNode[] {
-  const value = text.value ?? "";
-  const parts: HastNode[] = [];
-  let consumed = 0;
+  const runs = splitHanRuns(text.value ?? "");
+  if (!runs.some((run) => run.chinese)) return [text];
 
-  for (const run of value.matchAll(hanRun)) {
-    if (!han.test(run[0])) continue;
-    if (run.index > consumed) parts.push({ type: "text", value: value.slice(consumed, run.index) });
-    parts.push({
-      type: "element",
-      tagName: "span",
-      properties: { lang: "zh-Hant" },
-      children: [{ type: "text", value: run[0] }],
-    });
-    consumed = run.index + run[0].length;
-  }
-
-  if (parts.length === 0) return [text];
-  if (consumed < value.length) parts.push({ type: "text", value: value.slice(consumed) });
-  return parts;
+  return runs.map((run) =>
+    run.chinese
+      ? { type: "element", tagName: "span", properties: { lang: "zh-Hant" }, children: [{ type: "text", value: run.text }] }
+      : { type: "text", value: run.text },
+  );
 }

@@ -12,7 +12,7 @@ function lessonFor(param: string | undefined) {
 export function meta({ params }: Route.MetaArgs) {
   const lesson = lessonFor(params.number);
   if (!lesson) return [{ title: "Lesson not found · Verbarium" }];
-  return [{ title: `Lesson ${lesson.number} · Verbarium` }, { name: "description", content: lesson.description }];
+  return [{ title: `Lesson ${lesson.number} · Verbarium` }, { name: "description", content: lesson.subtitle }];
 }
 
 export default function LessonPage() {

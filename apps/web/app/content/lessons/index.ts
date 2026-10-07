@@ -1,33 +1,38 @@
 import type { ComponentType, ElementType } from "react";
 
+import type { LessonHeaderData } from "../../mdx/remark-lesson-header";
 import { lessonNumberFromFileName } from "./lesson-files";
 
 export { isLessonPath, lessonIndexPath, lessonPath, lessonsInCourse } from "./lesson-files";
 
 export type Lesson = {
   number: number;
-  /** What the lesson is about, for the page's description: its header's subtitle. */
-  description: string;
+  /** The lesson's subtitle, as its own LessonHeader writes it; also the page description. */
+  subtitle: string;
   Content: ComponentType<{ components?: Record<string, ElementType> }>;
 };
 
-// Each lesson's subtitle, as its LessonHeader shows it. Lessons cannot carry
-// their own metadata (the authoring rules keep code out of them), so it lives here.
-const descriptions: Record<number, string> = {
-  1: "About the primitive 一, a single stroke.",
-};
+export type LessonModule = { default: Lesson["Content"]; lessonHeader?: LessonHeaderData };
+
+/** One lesson from its file: the number comes from the file name and must match its header's. */
+export function lessonFromModule(fileName: string, module: LessonModule): Lesson {
+  const number = lessonNumberFromFileName(fileName);
+  if (number === null) throw new Error(`${fileName} is not named by its lesson number (NNN.mdx)`);
+
+  const header = module.lessonHeader;
+  if (!header) throw new Error(`${fileName} has no <LessonHeader>`);
+  if (header.number !== number) {
+    throw new Error(`${fileName} is Lesson ${number}, but its <LessonHeader> says number={${header.number}}`);
+  }
+  return { number, subtitle: header.subtitle, Content: module.default };
+}
 
 // Every committed lesson, by its file name: 001.mdx is Lesson 1.
-const modules = import.meta.glob<{ default: Lesson["Content"] }>("./*.mdx", { eager: true });
+const modules = import.meta.glob<LessonModule>("./*.mdx", { eager: true });
 
 /** The committed lessons in course order. */
 export const lessons: Lesson[] = Object.entries(modules)
-  .map(([path, module]) => {
-    const fileName = path.replace(/^\.\//, "");
-    const number = lessonNumberFromFileName(fileName);
-    if (number === null) throw new Error(`${fileName} is not named by its lesson number (NNN.mdx)`);
-    return { number, description: descriptions[number] ?? `Lesson ${number} of Verbarium's etymological lessons.`, Content: module.default };
-  })
+  .map(([path, module]) => lessonFromModule(path.replace(/^\.\//, ""), module))
   .sort((left, right) => left.number - right.number);
 
 lessons.forEach((lesson, index) => {

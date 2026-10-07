@@ -2,8 +2,8 @@
 
 Lessons are MDX files under `apps/web/app/content/lessons/`, one per lesson,
 named by the lesson's number: `001.mdx` is Lesson 1, served at `/lessons/1`.
-The number in the file name is the one `<LessonHeader number={…}>` shows; a
-file named any other way fails the build. The web app compiles them with a component map, and the phone
+The number in the file name must be the one `<LessonHeader number={…}>` shows;
+a file named any other way, or a header with another number, fails the build. The web app compiles them with a component map, and the phone
 app (Phase 7, [#29](https://github.com/ebbmango/verbarium/issues/29)) will
 compile the same files with a native component map. Whatever the native
 renderer cannot show has to be rewritten later, so these rules keep every
@@ -50,7 +50,7 @@ between two characters of the same division. A new division of the lesson
 
 | Component | What it is for |
 | --- | --- |
-| `<LessonHeader number={1} primitive="一" />` | The lesson's title block, with the course position (Lesson 1 of 177) under the subtitle. Once per lesson, first. |
+| `<LessonHeader number={1} subtitle="About the primitive 一, a single stroke." />` | The lesson's title block: the title, your subtitle, and the course position (Lesson 1 of 177). Once per lesson, first. The subtitle is plain text in quotes; it is also the lesson's line in the lesson index and the page description. |
 | `<CharDisplay character="雨" label="B" />` | Opens a character's section: the big character and its letter. |
 | `<CharacterForms character="雨" description="Old and new form of the character" forms={2} />` | The historical-forms study. `forms` is how many cards; `character` fills the last one. |
 | `<Quote id="L001B-Q01" />` | A quotation by its Quote ID; the quotation file carries the text, provenance and source link. |
