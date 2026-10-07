@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import * as lessonOne from "../content/lessons/001.mdx";
-import remarkLessonHeader, { type MdastNode } from "./remark-lesson-header";
+import type { MdastNode } from "./mdx-tree";
+import remarkLessonHeader from "./remark-lesson-header";
 
 const lessonFile = "/repo/apps/web/app/content/lessons/002.mdx";
 

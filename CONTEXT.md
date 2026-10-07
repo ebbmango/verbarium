@@ -40,7 +40,7 @@ _Avoid_: Provenance link
 ### Dictionary
 
 **Dictionary page**:
-The MDX document for one headword: its entries, readings and senses, with the writing around them.
+The MDX document for one headword: its entries, readings and senses, with the writing around them, written as `docs/dictionary-authoring.md` describes.
 _Avoid_: Dictionary entry (an entry is one lexical treatment within a page)
 
 **Headword**:
@@ -58,6 +58,10 @@ _Avoid_: Pinyin
 **Sense**:
 One meaning of an entry, which passages can illustrate as examples.
 _Avoid_: Meaning
+
+**Gloss**:
+The short English rendering of a sense, such as "blood", that the dictionary index, search and flashcards show; the sense's own writing explains it.
+_Avoid_: Definition, translation
 
 **Usage note**:
 A free-text qualification of where, when or in what context a sense is used, such as a period, region, genre or register.
