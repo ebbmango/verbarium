@@ -10,7 +10,15 @@ export function headwordFromFileName(fileName: string): string | null {
   return fileName.endsWith(".mdx") && !fileName.startsWith(".") ? fileName.slice(0, -".mdx".length) : null;
 }
 
+/** The address of the dictionary index. */
+export const dictionaryIndexPath = "/dictionary";
+
 /** The address of a dictionary page: `/dictionary/血`. */
 export function dictionaryPath(headword: string): string {
-  return `/dictionary/${headword}`;
+  return `${dictionaryIndexPath}/${headword}`;
+}
+
+/** Whether an address is the dictionary index or a dictionary page. */
+export function isDictionaryPath(pathname: string): boolean {
+  return pathname === dictionaryIndexPath || pathname.startsWith(`${dictionaryIndexPath}/`);
 }

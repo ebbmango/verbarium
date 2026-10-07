@@ -4,9 +4,10 @@ import { lessonByNumber, lessonFromModule, lessons } from "./index";
 import { isLessonPath, lessonNumberFromFileName, lessonPath } from "./lesson-files";
 
 describe("lessons", () => {
-  it("lists every committed lesson by the number in its file name, in order", () => {
+  it("lists every committed lesson by the number in its file name, in order, with what it displays", () => {
     expect(lessons.map((lesson) => lesson.number)).toEqual([1]);
     expect(lessons[0].subtitle).toBe("About the primitive 一, a single stroke.");
+    expect(lessons[0].displayedCharacters).toEqual(["一", "雨", "天", "末", "旦", "立", "本", "閂", "丂", "血"]);
     expect(typeof lessons[0].Content).toBe("function");
   });
 
@@ -38,12 +39,20 @@ describe("lesson files", () => {
 describe("lessonFromModule", () => {
   const Content = () => null;
 
-  it("takes the number from the file name and the subtitle from the lesson's header", () => {
+  it("takes the number from the file name, the subtitle from the header and the displayed characters from the lesson", () => {
     expect(lessonFromModule("002.mdx", { default: Content, lessonHeader: { number: 2, subtitle: "About 二." } })).toEqual({
       number: 2,
       subtitle: "About 二.",
+      displayedCharacters: [],
       Content,
     });
+    expect(
+      lessonFromModule("002.mdx", {
+        default: Content,
+        lessonHeader: { number: 2, subtitle: "About 二." },
+        displayedCharacters: ["二"],
+      }).displayedCharacters,
+    ).toEqual(["二"]);
   });
 
   it("refuses a lesson whose header is missing or numbered differently from its file", () => {

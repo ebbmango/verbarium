@@ -1,6 +1,9 @@
 import type { ComponentPropsWithoutRef, PropsWithChildren, ReactNode } from "react";
 import { Fragment } from "react";
+import { Link } from "react-router";
 
+import { dictionaryPath } from "../content/dictionary/dictionary-files";
+import { hasDictionaryPage } from "../content/dictionary/headwords";
 import { lessonsInCourse } from "../content/lessons";
 import type { LessonHeaderData } from "../mdx/remark-lesson-header";
 import { splitHanRuns } from "../lib/han-runs";
@@ -56,6 +59,12 @@ export function LessonHeader({ number, subtitle }: LessonHeaderData) {
   );
 }
 
+/** A character the lesson displays, linking to its dictionary page when it has one; a look-alike form links to its character's. */
+function DisplayedCharacter({ character }: { character: string }) {
+  const headword = character.normalize("NFKC");
+  return hasDictionaryPage(headword) ? <Link to={dictionaryPath(headword)}>{character}</Link> : character;
+}
+
 type CharDisplayProps = {
   character: string;
   label: string;
@@ -68,7 +77,7 @@ export function CharDisplay({ character, label }: CharDisplayProps) {
     <div className="char-display">
       <span className="section-marker">{label}</span>
       <h2 className="study-character" id={headingId} lang="zh-Hant">
-        {character}
+        <DisplayedCharacter character={character} />
       </h2>
     </div>
   );
@@ -146,8 +155,8 @@ export function Commentary({ children }: PropsWithChildren) {
 
 export function CharacterFocus({ character }: { character: string }) {
   return (
-    <div className="character-focus" lang="zh-Hant" aria-label={character}>
-      {character}
+    <div className="character-focus" lang="zh-Hant">
+      <DisplayedCharacter character={character} />
     </div>
   );
 }

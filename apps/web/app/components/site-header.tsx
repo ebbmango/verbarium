@@ -1,11 +1,22 @@
+import type { PropsWithChildren } from "react";
 import { Link, useLocation } from "react-router";
 
+// Not the registry: that would bundle every dictionary page into the header.
+import { dictionaryIndexPath, isDictionaryPath } from "../content/dictionary/dictionary-files";
 import { isLessonPath, lessonIndexPath } from "../content/lessons";
 import { ProfileButton } from "./profile-button";
 
+function NavTab({ children, current, to }: PropsWithChildren<{ current: boolean; to: string }>) {
+  return (
+    <Link aria-current={current ? "page" : undefined} className={current ? "nav-tab nav-tab-active" : "nav-tab"} to={to}>
+      {children}
+    </Link>
+  );
+}
+
 export function SiteHeader() {
-  // The Lessons tab is current on the lesson index and on every lesson.
-  const onLessons = isLessonPath(useLocation().pathname);
+  // A tab is current on its index and on every page under it.
+  const { pathname } = useLocation();
 
   return (
     <header className="topbar">
@@ -17,16 +28,12 @@ export function SiteHeader() {
       </Link>
 
       <nav className="primary-nav" aria-label="Primary navigation">
-        <Link
-          aria-current={onLessons ? "page" : undefined}
-          className={onLessons ? "nav-tab nav-tab-active" : "nav-tab"}
-          to={lessonIndexPath}
-        >
+        <NavTab current={isLessonPath(pathname)} to={lessonIndexPath}>
           Lessons
-        </Link>
-        <a className="nav-tab" href="#characters">
-          Characters
-        </a>
+        </NavTab>
+        <NavTab current={isDictionaryPath(pathname)} to={dictionaryIndexPath}>
+          Dictionary
+        </NavTab>
         <a className="nav-tab" href="#flashcards">
           Flashcards
         </a>

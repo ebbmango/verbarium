@@ -9,6 +9,12 @@ export function lessonNumberFromFileName(fileName: string): number | null {
   return match ? Number(match[1]) : null;
 }
 
+/** The lesson number of a lesson file's path (`…/content/lessons/001.mdx` is 1), or null for any other file. */
+export function lessonNumberFromPath(path: string): number | null {
+  const match = /[\\/]content[\\/]lessons[\\/]([^\\/]+)$/.exec(path);
+  return match ? lessonNumberFromFileName(match[1]) : null;
+}
+
 /** Wieger's course has this many lessons; the course position counts up to it. */
 export const lessonsInCourse = 177;
 
