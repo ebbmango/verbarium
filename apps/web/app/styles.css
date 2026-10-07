@@ -59,6 +59,7 @@ button {
 .button-primary:focus-visible,
 .account-switch:focus-visible,
 .account-form input:focus-visible,
+.dictionary-search input:focus-visible,
 .profile-button:focus-visible,
 .nav-tab:focus-visible,
 .brand:focus-visible {
@@ -230,6 +231,7 @@ body::before {
 .character-forms figcaption span,
 .form-label,
 .account-form label,
+.dictionary-search label,
 .lesson-finished {
   font-family: var(--font-ui);
   font-weight: 750;
@@ -721,6 +723,31 @@ body::before {
   background: rgb(255 252 244 / 96%);
 }
 
+/* Dictionary index */
+
+.dictionary-search {
+  width: min(100%, var(--measure-copy));
+  margin: 0 auto 1.5rem;
+  text-align: left;
+}
+
+.dictionary-index a {
+  grid-template-columns: auto 1fr;
+  column-gap: 1.25rem;
+  align-items: center;
+}
+
+.dictionary-index-headword {
+  grid-row: span 2;
+  font-family: var(--font-han-display);
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.dictionary-index-readings {
+  font-style: italic;
+}
+
 /* Account */
 
 .account {
@@ -743,14 +770,16 @@ body::before {
   text-align: left;
 }
 
-.account-form label {
+.account-form label,
+.dictionary-search label {
   display: grid;
   gap: 0.45rem;
   color: var(--muted);
   font-size: 0.62rem;
 }
 
-.account-form input {
+.account-form input,
+.dictionary-search input {
   padding: 0.7rem 0.85rem;
   border: 1px solid rgb(84 72 52 / 24%);
   background: rgb(255 252 244 / 72%);

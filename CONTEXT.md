@@ -47,6 +47,10 @@ _Avoid_: Dictionary entry (an entry is one lexical treatment within a page)
 The URL of a dictionary page, `/dictionary/<headword>`, such as `/dictionary/血` for `血.mdx`.
 _Avoid_: Dictionary route, dictionary URL
 
+**Dictionary index**:
+The page at `/dictionary` listing every dictionary page in the order of its first reading, with a search by headword, reading or gloss.
+_Avoid_: Glossary
+
 **Headword**:
 The written Traditional Chinese string a dictionary entry is filed under: one character such as `一`, or several such as `君子`. The written string itself is its identity.
 _Avoid_: Glyph

@@ -11,6 +11,7 @@
 import { readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 
+import { toneMark, withoutTones } from "../lib/pinyin.ts";
 import { quoteIdFromAssetName } from "../quotation-file.ts";
 import { attributeValue, exportConst, type MdastNode } from "./mdx-tree.ts";
 
@@ -80,8 +81,6 @@ export default function remarkDictionaryPage() {
   };
 }
 
-// Combining grave, acute, macron and caron: the four tone marks.
-const toneMarks = /[̀́̄̌]/g;
 // ponytail: one syllable with a tone mark; a neutral-tone reading (了 le) or the
 // several syllables of a multi-character headword fail. Allow them when a page needs one.
 const syllable =
@@ -97,9 +96,8 @@ function readPinyin(reading: MdastNode, fail: Fail): string {
 
 /** One pinyin syllable with one tone mark where pinyin puts it: on a or e, on the o of ou, or else on the last vowel. */
 function isTonedSyllable(pinyin: string): boolean {
-  const letters = pinyin.normalize("NFD");
-  const [mark, ...more] = letters.match(toneMarks) ?? [];
-  const toneless = letters.replace(toneMarks, "").normalize("NFC");
+  const [mark, ...more] = pinyin.normalize("NFD").match(toneMark) ?? [];
+  const toneless = withoutTones(pinyin);
   const vowel = /[ae]/.exec(toneless) ?? /o(?=u)/.exec(toneless) ?? /[iouü](?!.*[iouü])/.exec(toneless);
 
   return (
