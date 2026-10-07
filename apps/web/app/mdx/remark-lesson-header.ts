@@ -12,18 +12,9 @@
  */
 
 import { lessonNumberFromFileName } from "../content/lessons/lesson-files.ts";
+import { attributeValue, exportConst, findComponents, type MdastNode } from "./mdx-tree.ts";
 
 export type LessonHeaderData = { number: number; subtitle: string };
-
-/** The slice of an MDX syntax tree this plugin needs to know. */
-export type MdastNode = {
-  type: string;
-  name?: string | null;
-  value?: unknown;
-  attributes?: Array<{ type: string; name?: string; value?: unknown }>;
-  children?: MdastNode[];
-  data?: unknown;
-};
 
 export default function remarkLessonHeader() {
   return (tree: MdastNode, file: { path?: string }) => {
@@ -34,7 +25,7 @@ export default function remarkLessonHeader() {
       throw new Error(`${fileName || "This lesson"}: ${problem}`);
     };
 
-    const headers = findLessonHeaders(tree);
+    const headers = findComponents(tree, "LessonHeader");
     if (headers.length === 0) {
       if (lessonNumber !== null) fail("a lesson starts with <LessonHeader number={…} subtitle=\"…\" />, and this one has none");
       return;
@@ -46,17 +37,8 @@ export default function remarkLessonHeader() {
     if (lessonNumber !== null && header.number !== lessonNumber) {
       fail(`this file is Lesson ${lessonNumber}, but its <LessonHeader> says number={${header.number}}`);
     }
-    tree.children?.push(exportLessonHeader(header));
+    tree.children?.push(exportConst("lessonHeader", header));
   };
-}
-
-function findLessonHeaders(node: MdastNode): MdastNode[] {
-  const found = node.name === "LessonHeader" && node.type.startsWith("mdxJsx") ? [node] : [];
-  return found.concat((node.children ?? []).flatMap(findLessonHeaders));
-}
-
-function attributeValue(node: MdastNode, name: string): unknown {
-  return node.attributes?.find((attribute) => attribute.type === "mdxJsxAttribute" && attribute.name === name)?.value;
 }
 
 function readNumber(node: MdastNode, fail: (problem: string) => never): number {
@@ -70,48 +52,4 @@ function readSubtitle(node: MdastNode, fail: (problem: string) => never): string
   return typeof value === "string" && value.trim() !== ""
     ? value
     : fail('<LessonHeader> needs a subtitle written in quotes, as in subtitle="…"');
-}
-
-/** `export const lessonHeader = { number, subtitle };`, with the syntax tree MDX compiles from. */
-function exportLessonHeader(header: LessonHeaderData): MdastNode {
-  const property = (key: keyof LessonHeaderData) => ({
-    type: "Property",
-    kind: "init",
-    method: false,
-    shorthand: false,
-    computed: false,
-    key: { type: "Identifier", name: key },
-    value: { type: "Literal", value: header[key], raw: JSON.stringify(header[key]) },
-  });
-
-  return {
-    type: "mdxjsEsm",
-    value: `export const lessonHeader = ${JSON.stringify(header)};`,
-    data: {
-      estree: {
-        type: "Program",
-        sourceType: "module",
-        comments: [],
-        body: [
-          {
-            type: "ExportNamedDeclaration",
-            specifiers: [],
-            source: null,
-            attributes: [],
-            declaration: {
-              type: "VariableDeclaration",
-              kind: "const",
-              declarations: [
-                {
-                  type: "VariableDeclarator",
-                  id: { type: "Identifier", name: "lessonHeader" },
-                  init: { type: "ObjectExpression", properties: [property("number"), property("subtitle")] },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  };
 }

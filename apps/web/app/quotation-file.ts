@@ -3,7 +3,7 @@ import type {
   QuoteMapping,
   SourceToken,
   TargetToken,
-} from "./quote-slicer-export";
+} from "./quote-slicer-export.ts";
 
 /**
  * A quotation file as `docs/quotation-contract.md` defines it: the Quote
