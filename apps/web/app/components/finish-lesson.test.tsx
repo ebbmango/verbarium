@@ -30,6 +30,25 @@ describe("FinishLesson", () => {
     expect(db.maybeSingle).not.toHaveBeenCalled();
   });
 
+  it("waits for the reader's lesson completion lookup before it can be pressed", () => {
+    db.maybeSingle.mockReturnValue(new Promise(() => {}));
+    renderWithSession(<FinishLesson lesson={1} />);
+    emit("INITIAL_SESSION", sessionFor("reader@example.com"));
+
+    expect(screen.getByRole("button", { name: "Finish lesson" })).toBeDisabled();
+    expect(db.maybeSingle).toHaveBeenCalledWith(completionLookup);
+  });
+
+  it("waits for the lesson completion lookup of a reader who signs in while the lesson is open", () => {
+    db.maybeSingle.mockReturnValue(new Promise(() => {}));
+    renderWithSession(<FinishLesson lesson={1} />);
+    emit("INITIAL_SESSION", null);
+    emit("SIGNED_IN", sessionFor("reader@example.com"));
+
+    expect(screen.getByRole("button", { name: "Finish lesson" })).toBeDisabled();
+    expect(db.maybeSingle).toHaveBeenCalledWith(completionLookup);
+  });
+
   it("sends a signed-out reader to the account page", () => {
     renderWithSession(<FinishLesson lesson={1} />);
     emit("INITIAL_SESSION", null);
