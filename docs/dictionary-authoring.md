@@ -17,17 +17,27 @@ reads to make the dictionary's index, search and flashcards, so it checks them.
   <Sense gloss="blood">
     The blood of people and animals.
 
-    <Quote id="L001J-Q01" />
+    <Quote id="L001J-Q03" />
   </Sense>
 </Entry>
 ```
 
-You write no header: the page shows its headword, from the file name, its
-glosses, and the lessons that display it with `<CharDisplay>` or
-`<CharacterFocus>` ("Displayed in Lesson 1"), above the entries. Readings and senses go inside their `<Entry>`, not
-inside a `<Sense>`; prose may come before, between and after entries. Write each
-reading on its own line, as above: the page sets an entry's readings side by
-side.
+You write no header: the page shows its headword, from the file name, with
+every reading of its entries under it, and ends with links to the lessons that
+display it with `<CharDisplay>` or `<CharacterFocus>` ("Lesson 1") and to the
+dictionary. Readings and senses go inside their `<Entry>`, not inside a
+`<Sense>`. Write each reading on its own line, as above: the page sets readings
+side by side, separated by commas.
+
+The page has two sections, in this order, whatever order you write it in:
+
+- **The entries**, under a red "Meaning:" tag: the entries, each a numbered list of its senses' glosses. A
+  page with several entries repeats each entry's readings above its list. A
+  chevron by a sense folds what you wrote inside it: its writing and its
+  examples, a lettered list.
+- **The etymology**, under a red "Etymology:" tag: everything you write outside the entries, prose and
+  quotations alike, in the order you write it. A quotation there shows under
+  its source's name, in the margin.
 
 Every Chinese character a lesson writes outside its quotations needs a page:
 the characters it teaches and the ones its prose names as their parts. To list
@@ -43,8 +53,8 @@ pnpm missing-dictionary-pages
 | --- | --- |
 | `<Entry>…</Entry>` | One treatment of the headword: the readings and senses that belong together. A headword standing for genuinely different words, such as 行, has one entry per word. A page has at least one. |
 | `<Reading pinyin="xuè" />` | One modern Mandarin pronunciation, in lower-case pinyin with its tone mark. Pronunciations sharing the same senses are readings of one entry, as 血's are. An entry has at least one. |
-| `<Sense gloss="blood">…</Sense>` | One meaning. The gloss is its short English: the sense's heading, its part of the line of glosses under the headword, and what the index, search and flashcards show. The paragraphs inside explain the sense, with any usage note (a period, region or register it belongs to). An entry has at least one. |
-| `<Quote id="L001J-Q01" />` | A quotation by its Quote ID. Inside a `<Sense>`, it illustrates that sense: a passage using it, or a classical definition of it. |
+| `<Sense gloss="blood">…</Sense>` | One meaning. The gloss is its short English: the sense's line in its entry's numbered list, and what the index, search and flashcards show. The paragraphs inside explain the sense, with any usage note (a period, region or register it belongs to). An entry has at least one. |
+| `<Quote id="L001J-Q01" />` | A quotation by its Quote ID. Inside a `<Sense>`, it is one of the sense's examples: a passage that uses the word in that sense, shown plainly as its Chinese, its translation and its source. A dictionary's definition, such as the *Shuowen Jiezi*'s, is not an example: write it outside the entries, in the etymology. |
 
 ## What the build checks
 

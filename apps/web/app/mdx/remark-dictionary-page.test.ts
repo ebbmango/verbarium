@@ -81,6 +81,10 @@ describe("remarkDictionaryPage", () => {
     await expect(compile(page.replace("L001J-Q01", "L001J-Q09"))).rejects.toThrow(
       '血.mdx: <Quote id="L001J-Q09"> has no quotation file',
     );
+    // Outside the entries too.
+    await expect(compile(page.replace("L001A-Q01", "L001A-Q09"))).rejects.toThrow(
+      '血.mdx: <Quote id="L001A-Q09"> has no quotation file',
+    );
     await expect(compile(page.replace('id="L001J-Q01"', 'id={"L001J-Q01"}'))).rejects.toThrow(
       '血.mdx: a <Quote> writes its Quote ID in quotes, as in id="L001J-Q01"',
     );
