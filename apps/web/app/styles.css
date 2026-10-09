@@ -230,6 +230,7 @@ body::before {
 .study-label,
 .note-title,
 .quote-source,
+.dictionary-example-source,
 .character-forms figcaption span,
 .form-label,
 .account-form label,
@@ -399,7 +400,9 @@ body::before {
   font-style: normal;
 }
 
-.quote-source a {
+.quote-source a,
+.dictionary-example-source a,
+.dictionary-source-name a {
   text-decoration: none;
 }
 
@@ -796,18 +799,9 @@ summary.dictionary-gloss::before {
 
 .dictionary-example-source {
   color: var(--red);
-  font-family: var(--font-ui);
   font-size: 0.62rem;
   font-style: normal;
-  font-weight: 750;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
   white-space: nowrap;
-}
-
-.dictionary-example-source a,
-.dictionary-source-name a {
-  text-decoration: none;
 }
 
 .dictionary-etymology > p {

@@ -71,6 +71,9 @@ _Avoid_: Meaning
 The short English rendering of a sense, such as "blood": the sense's line in its dictionary page's numbered list, and what the page description, the dictionary index, search and flashcards show of it. The sense's own writing explains it.
 _Avoid_: Definition, translation
 
+**Etymology**:
+The part of a dictionary page after its entries: the writing outside them, with each quotation under its source's name, such as a *Shuowen Jiezi* definition. Its tag reads "Etymology:", as the entries' reads "Meaning:".
+
 **Usage note**:
 A free-text qualification of where, when or in what context a sense is used, such as a period, region, genre or register.
 

@@ -1,9 +1,9 @@
-import { Children, cloneElement, isValidElement, type PropsWithChildren, type ReactElement, type ReactNode } from "react";
+import { Children, isValidElement, type PropsWithChildren, type ReactElement, type ReactNode } from "react";
 
 import { quotationById } from "../content/quotes";
 import type { QuotationFile } from "../quotation-file";
 import { HanMarkedText, lessonComponents } from "./lesson";
-import { QuoteView } from "./quote";
+import { ProvenanceName, type QuoteProps, QuoteView } from "./quote";
 
 /** The blocks MDX gives a component, without the line breaks it leaves between them. */
 function blocksOf(children: ReactNode): ReactNode[] {
@@ -14,30 +14,12 @@ function isElementOf(component: unknown) {
   return (child: ReactNode): child is ReactElement => isValidElement(child) && child.type === component;
 }
 
-/** A quotation's source, linking to its text when it has a source link. */
-function SourceName({ quotation }: { quotation: QuotationFile }) {
-  return quotation.sourceLink ? (
-    <a href={quotation.sourceLink} rel="noopener noreferrer" target="_blank">
-      {quotation.provenance}
-    </a>
-  ) : (
-    quotation.provenance
-  );
-}
-
-/**
- * The page's entries, under the Meaning tag. The build gathers them here
- * (app/mdx/remark-dictionary-page.ts); an entry repeats its readings only when
- * there are others to tell it from.
- */
-export function Meaning({ children }: PropsWithChildren) {
-  const entries = blocksOf(children);
+/** The page's entries, under the Meaning tag: the build gathers them here (app/mdx/remark-dictionary-page.ts). */
+export function Entries({ children }: PropsWithChildren) {
   return (
     <section className="dictionary-section">
       <h2 className="dictionary-label">Meaning:</h2>
-      {entries.map((entry) =>
-        isElementOf(Entry)(entry) ? cloneElement(entry as ReactElement<EntryProps>, { showReadings: entries.length > 1 }) : entry,
-      )}
+      {children}
     </section>
   );
 }
@@ -55,10 +37,8 @@ export function Etymology({ children }: PropsWithChildren) {
   );
 }
 
-type EntryProps = PropsWithChildren<{ showReadings?: boolean }>;
-
-/** One treatment of the headword: its readings when the page has several entries, then its senses, numbered. */
-export function Entry({ children, showReadings = false }: EntryProps) {
+/** One treatment of the headword: its readings when the build marks the page as having several entries, then its senses, numbered. */
+export function Entry({ children, showReadings = false }: PropsWithChildren<{ showReadings?: boolean }>) {
   const blocks = blocksOf(children);
   const isReading = isElementOf(Reading);
   return (
@@ -94,8 +74,8 @@ export function Sense({ children, gloss }: PropsWithChildren<{ gloss: string }>)
           {blocks.filter((block) => !isExample(block))}
           {examples.length > 0 && (
             <ol className="dictionary-examples">
-              {examples.map((example) => (
-                <QuotedExample id={(example.props as QuoteProps).id} key={(example.props as QuoteProps).id} />
+              {examples.map((example, index) => (
+                <QuotedExample id={(example.props as QuoteProps).id} key={index} />
               ))}
             </ol>
           )}
@@ -127,16 +107,11 @@ function QuotedExample({ id }: { id: string }) {
         <HanMarkedText text={quotation.translation.tokens.map((token) => token.text).join("")} />
       </i>{" "}
       <cite className="dictionary-example-source">
-        <SourceName quotation={quotation} />
+        <ProvenanceName provenance={quotation.provenance} sourceLink={quotation.sourceLink} />
       </cite>
     </li>
   );
 }
-
-type QuoteProps = {
-  /** The Quote ID of a committed quotation file. */
-  id: string;
-};
 
 /**
  * `<Quote id="…" />` on a dictionary page. Inside a `<Sense>` it is one of the
@@ -148,7 +123,7 @@ export function DictionaryQuote({ id }: QuoteProps) {
   return (
     <div className="dictionary-source">
       <p className="dictionary-source-name">
-        <SourceName quotation={quotation} />:
+        <ProvenanceName provenance={quotation.provenance} sourceLink={quotation.sourceLink} />:
       </p>
       <QuoteView quote={quotation} />
     </div>
@@ -160,9 +135,9 @@ export const dictionaryComponents = {
   hr: lessonComponents.hr,
   p: lessonComponents.p,
   Quote: DictionaryQuote,
+  Entries,
   Entry,
   Etymology,
-  Meaning,
   Reading,
   Sense,
 };

@@ -5,8 +5,8 @@
  * quotations as `<Quote id="…" />` inside it. This plugin exports what it read
  * as `dictionaryPage`, which the dictionary's index, search and flashcards are
  * built from, and fails the build, naming the file, for a page that breaks
- * docs/dictionary-authoring.md. It then gathers the page's entries into a
- * `<Meaning>` and the writing around them into an `<Etymology>`, the two
+ * docs/dictionary-authoring.md. It then gathers the page's entries into an
+ * `<Entries>` and the writing around them into an `<Etymology>`, the two
  * sections the page shows. Other MDX is left alone.
  */
 
@@ -66,7 +66,10 @@ export default function remarkDictionaryPage() {
             read(child, entry, next);
           }
         } else {
-          if (component === "Quote") sense?.quoteIds.push(readQuoteId(child, committedQuoteIds, fail));
+          if (component === "Quote") {
+            const id = readQuoteId(child, committedQuoteIds, fail);
+            sense?.quoteIds.push(id);
+          }
           read(child, entry, sense);
         }
       }
@@ -79,15 +82,22 @@ export default function remarkDictionaryPage() {
       if (senses.length === 0) fail(`every <Entry> has a <Sense gloss="…">, and entry ${index + 1} has none`);
     });
 
-    // A page shows its entries first, under Meaning, and the writing around them after, under Etymology.
+    // A page shows its entries first, then the writing around them, under Etymology.
+    // An entry repeats its readings only when the page has others to tell it from.
     const blocks = tree.children ?? [];
     const isEntry = (node: MdastNode) => node.type === "mdxJsxFlowElement" && node.name === "Entry";
     const isEsm = (node: MdastNode) => node.type === "mdxjsEsm";
+    const entryNodes = blocks.filter(isEntry);
+    if (entryNodes.length > 1) {
+      for (const entry of entryNodes) entry.attributes?.push({ type: "mdxJsxAttribute", name: "showReadings", value: null });
+    }
     const writing = blocks.filter((node) => !isEntry(node) && !isEsm(node));
+    // A comment alone is no etymology.
+    const hasWriting = writing.some((node) => node.type !== "mdxFlowExpression");
     tree.children = [
       ...blocks.filter(isEsm),
-      section("Meaning", blocks.filter(isEntry)),
-      ...(writing.length > 0 ? [section("Etymology", writing)] : []),
+      section("Entries", entryNodes),
+      ...(hasWriting ? [section("Etymology", writing)] : []),
       exportConst("dictionaryPage", { headword, entries } satisfies DictionaryPageData),
     ];
   };

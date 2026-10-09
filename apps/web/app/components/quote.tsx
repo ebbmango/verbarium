@@ -202,26 +202,29 @@ type QuoteFrameProps = PropsWithChildren<{
   sourcePending?: boolean;
 }>;
 
+/** A quotation's provenance, linking to its source link when it has one. */
+export function ProvenanceName({ provenance, sourceLink }: { provenance?: string; sourceLink?: string }) {
+  return sourceLink ? (
+    <a href={sourceLink} rel="noopener noreferrer" target="_blank">
+      {provenance}
+    </a>
+  ) : (
+    provenance
+  );
+}
+
 function QuoteFrame({ children, provenance, quotationRef, sourceLink, sourcePending = false }: QuoteFrameProps) {
   return (
     <blockquote className="lesson-quote" ref={quotationRef}>
       {children}
       <footer className={sourcePending ? "quote-source quote-source-pending" : "quote-source"}>
-        {sourcePending ? (
-          "Source pending"
-        ) : sourceLink ? (
-          <a href={sourceLink} rel="noopener noreferrer" target="_blank">
-            {provenance}
-          </a>
-        ) : (
-          provenance
-        )}
+        {sourcePending ? "Source pending" : <ProvenanceName provenance={provenance} sourceLink={sourceLink} />}
       </footer>
     </blockquote>
   );
 }
 
-type QuoteProps = {
+export type QuoteProps = {
   /** The Quote ID of a committed quotation file. */
   id: string;
 };

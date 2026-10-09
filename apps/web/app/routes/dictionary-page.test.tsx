@@ -34,7 +34,9 @@ vi.mock("../content/dictionary", async (importOriginal) => {
   );
   const big = await page(
     "大",
-    `<Entry>
+    `{/* A comment is no writing. */}
+
+<Entry>
   <Reading pinyin="dà" />
 
   <Sense gloss="big" />

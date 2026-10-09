@@ -21,7 +21,7 @@ export const dictionaryPages: DictionaryPage[] = Object.values(modules).map((mod
   Content: module.default,
 }));
 
-/** A page's glosses in order, as one line: the line under its headword and its description. */
+/** A page's glosses in order, as one line: its description, and its line in the dictionary index. */
 export function glossesOf(page: DictionaryPageData): string {
   return page.entries.flatMap((entry) => entry.senses.map((sense) => sense.gloss)).join("; ");
 }
