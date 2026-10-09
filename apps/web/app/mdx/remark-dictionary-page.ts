@@ -5,7 +5,9 @@
  * quotations as `<Quote id="…" />` inside it. This plugin exports what it read
  * as `dictionaryPage`, which the dictionary's index, search and flashcards are
  * built from, and fails the build, naming the file, for a page that breaks
- * docs/dictionary-authoring.md. Other MDX is left alone.
+ * docs/dictionary-authoring.md. It then gathers the page's entries into a
+ * `<Meaning>` and the writing around them into an `<Etymology>`, the two
+ * sections the page shows. Other MDX is left alone.
  */
 
 import { readdirSync } from "node:fs";
@@ -77,8 +79,22 @@ export default function remarkDictionaryPage() {
       if (senses.length === 0) fail(`every <Entry> has a <Sense gloss="…">, and entry ${index + 1} has none`);
     });
 
-    tree.children?.push(exportConst("dictionaryPage", { headword, entries } satisfies DictionaryPageData));
+    // A page shows its entries first, under Meaning, and the writing around them after, under Etymology.
+    const blocks = tree.children ?? [];
+    const isEntry = (node: MdastNode) => node.type === "mdxJsxFlowElement" && node.name === "Entry";
+    const isEsm = (node: MdastNode) => node.type === "mdxjsEsm";
+    const writing = blocks.filter((node) => !isEntry(node) && !isEsm(node));
+    tree.children = [
+      ...blocks.filter(isEsm),
+      section("Meaning", blocks.filter(isEntry)),
+      ...(writing.length > 0 ? [section("Etymology", writing)] : []),
+      exportConst("dictionaryPage", { headword, entries } satisfies DictionaryPageData),
+    ];
   };
+}
+
+function section(name: string, children: MdastNode[]): MdastNode {
+  return { type: "mdxJsxFlowElement", name, attributes: [], children };
 }
 
 // ponytail: one syllable with a tone mark; a neutral-tone reading (了 le) or the

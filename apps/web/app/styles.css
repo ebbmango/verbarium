@@ -64,7 +64,8 @@ button {
 .nav-tab:focus-visible,
 .study-character a:focus-visible,
 .character-focus a:focus-visible,
-.dictionary-lessons a:focus-visible,
+.dictionary-gloss:focus-visible,
+.dictionary-tags a:focus-visible,
 .brand:focus-visible {
   outline: 2px solid var(--green);
   outline-offset: 4px;
@@ -207,8 +208,6 @@ body::before {
 }
 
 .lesson-manuscript > p,
-.lexical-entry > p,
-.dictionary-sense > p,
 .account p,
 .landing p {
   width: min(100%, var(--measure-copy));
@@ -671,39 +670,215 @@ body::before {
   color: var(--red);
 }
 
-.dictionary-lessons {
-  margin: 2rem 0 0;
-  color: var(--muted);
-  font-family: var(--font-ui);
-  font-size: 0.75rem;
+/* A dictionary page: the headword and its readings, centred; then a column of its senses and etymology, as the Figma design draws them */
+
+.dictionary-page {
+  width: min(100%, var(--measure-lesson));
+  margin: 0 auto;
+  font-family: var(--font-manuscript);
 }
 
-
-.lexical-entry {
-  margin-top: 6rem;
+.dictionary-header {
+  margin-bottom: 4.5rem;
+  text-align: center;
 }
 
-.lesson-heading + .lexical-entry {
-  margin-top: 0;
+.dictionary-readings {
+  margin: 1.5rem 0 0;
+  font-size: clamp(1.6rem, 4vw, 2rem);
+  line-height: 1.3;
 }
 
-.dictionary-reading {
-  font-size: 1.35rem;
-  font-style: italic;
+.dictionary-reading + .dictionary-reading::before {
+  content: ", ";
 }
 
-.dictionary-reading + .dictionary-reading {
-  margin-left: 1em;
+.dictionary-section,
+.dictionary-rule,
+.dictionary-tags {
+  width: min(100%, var(--measure-copy));
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.dictionary-label {
+  display: inline-block;
+  margin: 0 0 1.4rem;
+  padding: 0.15rem 0.75rem;
+  background: var(--red);
+  color: #fffaf1;
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.7;
+}
+
+.dictionary-rule {
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  border: 0;
+  border-top: 1px solid rgb(84 72 52 / 18%);
+}
+
+.lexical-entry + .lexical-entry {
+  margin-top: 2.25rem;
+}
+
+.lexical-entry > .dictionary-readings {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+}
+
+.dictionary-senses {
+  margin: 0;
+  padding-left: 2em;
+  font-size: 1.15rem;
+  line-height: 1.75;
 }
 
 .dictionary-sense {
-  margin-top: 3.5rem;
+  position: relative;
 }
 
 .dictionary-gloss {
+  display: block;
+  cursor: default;
+  list-style: none;
+}
+
+summary.dictionary-gloss {
+  cursor: pointer;
+}
+
+summary.dictionary-gloss::-webkit-details-marker {
+  display: none;
+}
+
+/* The chevron in the gutter, left of the sense's number: up while its examples show, down while folded. */
+summary.dictionary-gloss::before {
+  position: absolute;
+  top: 0.55em;
+  left: -2em;
+  width: 0.6em;
+  height: 0.68em;
+  background: var(--red);
+  content: "";
+  mask: url("/icons/angle-down.svg") center / contain no-repeat;
+  transform: rotate(180deg);
+}
+
+.dictionary-sense > details:not([open]) > summary.dictionary-gloss::before {
+  transform: none;
+}
+
+.dictionary-sense details > p {
+  margin: 0.15rem 0 0.4rem;
+  color: var(--muted);
+  font-size: 0.85em;
+  line-height: 1.7;
+}
+
+.dictionary-examples {
+  margin: 0.15rem 0 0.75rem;
+  padding-left: 1.6em;
+  font-size: 0.85em;
+  line-height: 1.75;
+  list-style: lower-alpha;
+}
+
+.dictionary-example::marker {
+  color: var(--red);
+}
+
+.dictionary-example :lang(zh-Hant) {
+  font-family: var(--font-han-quote);
+}
+
+.dictionary-example-source {
+  color: var(--red);
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dictionary-example-source a,
+.dictionary-source-name a {
+  text-decoration: none;
+}
+
+.dictionary-etymology > p {
+  margin: 0 0 1.4rem;
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+/* A passage of the etymology, its source named in the margin beside it. */
+.dictionary-source {
+  position: relative;
+  margin: 0 0 2rem;
+}
+
+.dictionary-source-name {
+  position: absolute;
+  top: 0;
+  right: calc(100% + 1.25rem);
+  width: 12rem;
   margin: 0;
-  font-size: 1.15rem;
-  font-weight: 600;
+  color: var(--red);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  text-align: right;
+}
+
+.dictionary-source .lesson-quote {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.dictionary-source .lesson-quote p:first-child {
+  font-size: 1.35rem;
+}
+
+.dictionary-source .quote-source:empty {
+  display: none;
+}
+
+.dictionary-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.dictionary-tags a {
+  min-width: 6.5rem;
+  padding: 0.3rem 1rem;
+  border-radius: 0.65rem;
+  background: var(--red);
+  color: #fffaf1;
+  font-size: 0.85rem;
+  text-align: center;
+  text-decoration: none;
+}
+
+.dictionary-tags a:hover {
+  background: #b9353b;
+}
+
+/* Below this width the margin cannot hold a source's name: it goes above its passage. */
+@media (max-width: 1000px) {
+  .dictionary-source-name {
+    position: static;
+    width: auto;
+    margin-bottom: 0.4rem;
+    text-align: left;
+  }
 }
 
 /* Home */
@@ -779,8 +954,7 @@ body::before {
 }
 
 .account a,
-.landing-link,
-.dictionary-lessons a {
+.landing-link {
   color: var(--green);
 }
 
@@ -888,8 +1062,6 @@ body::before {
   }
 
   .lesson-manuscript > p,
-  .lexical-entry > p,
-  .dictionary-sense > p,
   .account p {
     font-size: 0.91rem;
     line-height: 1.82;

@@ -68,7 +68,7 @@ One meaning of an entry, which passages can illustrate as examples.
 _Avoid_: Meaning
 
 **Gloss**:
-The short English rendering of a sense, such as "blood": the sense's heading on its dictionary page, and what the line under the headword, the page description, the dictionary index, search and flashcards show of it. The sense's own writing explains it.
+The short English rendering of a sense, such as "blood": the sense's line in its dictionary page's numbered list, and what the page description, the dictionary index, search and flashcards show of it. The sense's own writing explains it.
 _Avoid_: Definition, translation
 
 **Usage note**:

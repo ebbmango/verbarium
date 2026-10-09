@@ -1,9 +1,9 @@
-import { Fragment } from "react";
 import { Link, useParams } from "react-router";
 
-import { dictionaryComponents } from "~/components/dictionary";
+import { dictionaryComponents, Reading } from "~/components/dictionary";
 import { HanMarkedText, PageHeading } from "~/components/lesson";
 import { dictionaryPages, glossesOf } from "~/content/dictionary";
+import { dictionaryIndexPath } from "~/content/dictionary/dictionary-files";
 import { lessonPath, lessons } from "~/content/lessons";
 
 import type { Route } from "./+types/dictionary-page";
@@ -38,33 +38,32 @@ export default function DictionaryPage() {
     );
   }
 
+  const readings = new Set(page.entries.flatMap((entry) => entry.readings));
   const displayedIn = lessons.filter((lesson) => lesson.displayedCharacters.includes(page.headword));
 
   return (
     <main className="lesson-shell">
-      <article className="lesson lesson-manuscript">
-        <PageHeading
-          eyebrow="Dictionary"
-          title={
-            <span className="dictionary-headword" lang="zh-Hant">
-              {page.headword}
-            </span>
-          }
-          subtitle={<HanMarkedText text={glossesOf(page)} />}
-        >
-          {displayedIn.length > 0 && (
-            <p className="dictionary-lessons">
-              Displayed in{" "}
-              {displayedIn.map((lesson, index) => (
-                <Fragment key={lesson.number}>
-                  {index > 0 && ", "}
-                  <Link to={lessonPath(lesson.number)}>Lesson {lesson.number}</Link>
-                </Fragment>
-              ))}
-            </p>
-          )}
-        </PageHeading>
+      <article className="dictionary-page">
+        <header className="dictionary-header">
+          <h1 className="dictionary-headword" lang="zh-Hant">
+            {page.headword}
+          </h1>
+          <p className="dictionary-readings">
+            {Array.from(readings, (reading) => (
+              <Reading key={reading} pinyin={reading} />
+            ))}
+          </p>
+        </header>
         <page.Content components={dictionaryComponents} />
+        <hr className="dictionary-rule" />
+        <nav className="dictionary-tags" aria-label="Related pages">
+          {displayedIn.map((lesson) => (
+            <Link key={lesson.number} to={lessonPath(lesson.number)}>
+              Lesson {lesson.number}
+            </Link>
+          ))}
+          <Link to={dictionaryIndexPath}>Dictionary</Link>
+        </nav>
       </article>
     </main>
   );
