@@ -96,19 +96,20 @@ function attestationLine({ alignment, attestation }: QuotationFile): string {
     .join("");
 }
 
-/** A quotation as one of a sense's examples, plainly: its Chinese, its translation, then its source. */
+/** A quotation as one of a sense's examples, plainly: its Chinese, then a quieter line with its translation and its source. */
 function QuotedExample({ id }: { id: string }) {
   const quotation = quotationById(id);
   return (
     <li className="dictionary-example">
       <span lang="zh-Hant">{attestationLine(quotation)}</span>
-      {" — "}
-      <i>
-        <HanMarkedText text={quotation.translation.tokens.map((token) => token.text).join("")} />
-      </i>{" "}
-      <cite className="dictionary-example-source">
-        <ProvenanceName provenance={quotation.provenance} sourceLink={quotation.sourceLink} />
-      </cite>
+      <span className="dictionary-example-translation">
+        <i>
+          <HanMarkedText text={quotation.translation.tokens.map((token) => token.text).join("")} />
+        </i>{" "}
+        <cite className="dictionary-example-source">
+          <ProvenanceName provenance={quotation.provenance} sourceLink={quotation.sourceLink} />
+        </cite>
+      </span>
     </li>
   );
 }

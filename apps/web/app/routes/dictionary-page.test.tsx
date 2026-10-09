@@ -91,6 +91,9 @@ describe("the dictionary page", () => {
     expect(example).toHaveClass("dictionary-example");
     // Where Quote Slicer breaks the line without punctuation, an ideographic space keeps the phrases apart.
     expect(example.querySelector("[lang='zh-Hant']")?.textContent).toMatch(/^少之時，血氣未定　及其壯也，/);
+    // The translation is its own line, with no dash a reader could take for 一.
+    expect(example.querySelector(".dictionary-example-translation")).toHaveTextContent(/^At the time of youth/);
+    expect(example.textContent).not.toContain("—");
     expect(within(example).getByRole("link", { name: "The Analects 16.7" })).toHaveAttribute(
       "href",
       expect.stringContaining("ctext.org/analects"),

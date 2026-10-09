@@ -797,6 +797,15 @@ summary.dictionary-gloss::before {
   font-family: var(--font-han-quote);
 }
 
+/* The translation on its own line, quieter than the Chinese it renders. */
+.dictionary-example-translation {
+  display: block;
+}
+
+.dictionary-example-translation > i {
+  opacity: 0.6;
+}
+
 .dictionary-example-source {
   color: var(--red);
   font-size: 0.62rem;
