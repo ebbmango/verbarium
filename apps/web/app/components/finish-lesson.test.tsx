@@ -9,6 +9,17 @@ vi.mock("../lib/supabase", () => import("../test/fake-supabase"));
 
 const completionLookup = { table: "lesson_completion", columns: "completed_at", column: "lesson", value: 1 };
 
+/**
+ * The "Finish lesson" button once it can be pressed. It shows, disabled, until
+ * the reader's completion lookup answers, and a click before then does nothing.
+ */
+const pressableFinishButton = () =>
+  waitFor(() => {
+    const button = screen.getByRole("button", { name: "Finish lesson" });
+    expect(button).toBeEnabled();
+    return button;
+  });
+
 beforeEach(resetFakeSupabase);
 
 describe("FinishLesson", () => {
@@ -17,6 +28,25 @@ describe("FinishLesson", () => {
 
     expect(screen.getByRole("button", { name: "Finish lesson" })).toBeDisabled();
     expect(db.maybeSingle).not.toHaveBeenCalled();
+  });
+
+  it("waits for the reader's lesson completion lookup before it can be pressed", () => {
+    db.maybeSingle.mockReturnValue(new Promise(() => {}));
+    renderWithSession(<FinishLesson lesson={1} />);
+    emit("INITIAL_SESSION", sessionFor("reader@example.com"));
+
+    expect(screen.getByRole("button", { name: "Finish lesson" })).toBeDisabled();
+    expect(db.maybeSingle).toHaveBeenCalledWith(completionLookup);
+  });
+
+  it("waits for the lesson completion lookup of a reader who signs in while the lesson is open", () => {
+    db.maybeSingle.mockReturnValue(new Promise(() => {}));
+    renderWithSession(<FinishLesson lesson={1} />);
+    emit("INITIAL_SESSION", null);
+    emit("SIGNED_IN", sessionFor("reader@example.com"));
+
+    expect(screen.getByRole("button", { name: "Finish lesson" })).toBeDisabled();
+    expect(db.maybeSingle).toHaveBeenCalledWith(completionLookup);
   });
 
   it("sends a signed-out reader to the account page", () => {
@@ -36,10 +66,8 @@ describe("FinishLesson", () => {
     emit("INITIAL_SESSION", sessionFor("reader@example.com"));
 
     await waitFor(() => expect(db.maybeSingle).toHaveBeenCalledWith(completionLookup));
-    const button = await screen.findByRole("button", { name: "Finish lesson" });
-    expect(button).toBeEnabled();
 
-    fireEvent.click(button);
+    fireEvent.click(await pressableFinishButton());
 
     expect(db.insert).toHaveBeenCalledWith({ table: "lesson_completion", row: { lesson: 1 } });
     expect(await screen.findByRole("status")).toHaveTextContent("Lesson finished");
@@ -60,7 +88,7 @@ describe("FinishLesson", () => {
     renderWithSession(<FinishLesson lesson={1} />);
     emit("INITIAL_SESSION", sessionFor("reader@example.com"));
 
-    fireEvent.click(await screen.findByRole("button", { name: "Finish lesson" }));
+    fireEvent.click(await pressableFinishButton());
 
     expect(await screen.findByRole("status")).toHaveTextContent("Lesson finished");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
@@ -71,7 +99,7 @@ describe("FinishLesson", () => {
     renderWithSession(<FinishLesson lesson={1} />);
     emit("INITIAL_SESSION", sessionFor("reader@example.com"));
 
-    expect(await screen.findByRole("button", { name: "Finish lesson" })).toBeEnabled();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Finish lesson" })).toBeEnabled());
   });
 
   it("does not show a lesson as finished to a reader who signed out while it was saving", async () => {
@@ -80,7 +108,7 @@ describe("FinishLesson", () => {
     renderWithSession(<FinishLesson lesson={1} />);
     emit("INITIAL_SESSION", sessionFor("reader@example.com"));
 
-    fireEvent.click(await screen.findByRole("button", { name: "Finish lesson" }));
+    fireEvent.click(await pressableFinishButton());
     expect(screen.getByRole("button", { name: "Saving…" })).toBeDisabled();
 
     emit("SIGNED_OUT", null);
@@ -95,7 +123,7 @@ describe("FinishLesson", () => {
     renderWithSession(<FinishLesson lesson={1} />);
     emit("INITIAL_SESSION", sessionFor("reader@example.com"));
 
-    fireEvent.click(await screen.findByRole("button", { name: "Finish lesson" }));
+    fireEvent.click(await pressableFinishButton());
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Could not save this lesson. Try again.");
     expect(screen.getByRole("button", { name: "Finish lesson" })).toBeEnabled();
