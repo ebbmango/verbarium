@@ -25,14 +25,14 @@ export default function LessonPage() {
     return (
       <main className="lesson-shell">
         <section className="lesson landing">
-          <PageHeading eyebrow="Etymological lessons" title="404" subtitle={`There is no Lesson ${number}.`} />
+          <PageHeading title="404" subtitle={`There is no Lesson ${number}.`} />
         </section>
       </main>
     );
   }
 
   return (
-    <main className="lesson-shell" id="lesson">
+    <main className="lesson-shell">
       <article className="lesson lesson-manuscript">
         <lesson.Content components={lessonComponents} />
       </article>

@@ -4,41 +4,11 @@ import { Link } from "react-router";
 import { initialsFor } from "../lib/initials";
 import { useSession } from "../lib/session";
 
-function SignInIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      height="16"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      viewBox="0 0 24 24"
-      width="16"
-    >
-      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-      <path d="M10 17l5-5-5-5" />
-      <path d="M15 12H3" />
-    </svg>
-  );
-}
-
+/** Font Awesome Free's solid "user" (CC BY 4.0), as the Figma design draws it. */
 function ReaderIcon() {
   return (
-    <svg
-      aria-hidden="true"
-      fill="none"
-      height="16"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      viewBox="0 0 24 24"
-      width="16"
-    >
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
+    <svg aria-hidden="true" fill="currentColor" viewBox="0 0 448 512">
+      <path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z" />
     </svg>
   );
 }
@@ -46,7 +16,7 @@ function ReaderIcon() {
 /** What the button shows and how it is named in each sign-in state. */
 function profileFace(state: ReturnType<typeof useSession>): { label: string; face: ReactNode } {
   if (state.status === "loading") return { label: "Account", face: null };
-  if (!state.session) return { label: "Sign in", face: <SignInIcon /> };
+  if (!state.session) return { label: "Sign in", face: <ReaderIcon /> };
 
   const email = state.session.user.email;
   const initials = initialsFor(email ?? "");

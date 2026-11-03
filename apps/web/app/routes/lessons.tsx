@@ -18,7 +18,6 @@ export default function LessonIndex() {
     <main className="lesson-shell">
       <section className="lesson landing">
         <PageHeading
-          eyebrow="Etymological lessons"
           title="Lessons"
           subtitle={lessons.length === 1 ? "One lesson so far." : `${lessons.length} lessons so far.`}
         />

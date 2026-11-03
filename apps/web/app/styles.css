@@ -1,31 +1,40 @@
-@import url("https://fonts.googleapis.com/css2?family=LXGW+WenKai+Mono+TC:wght@300;400;700&family=Noto+Serif+TC:wght@200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Ancizar+Serif:wght@400;600&family=LXGW+WenKai+Mono+TC:wght@300;400;700&family=Noto+Serif+TC:wght@200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap");
+
+/* TW-Kai (全字庫正楷體, OFL 1.1: public/fonts/TW-Kai-LICENSE.md), cut down to the
+   characters the lessons display, for their historical-form studies. */
+@font-face {
+  font-family: "TW-Kai Forms";
+  src: url("/fonts/tw-kai-forms.woff2") format("woff2");
+  font-display: swap;
+}
 
 /* Design tokens */
 
 :root {
   color-scheme: light;
 
-  --paper: #f3e7d1;
-  --ink: #292a25;
-  --muted: #70736c;
-  --faint: #a5a69f;
-  --red: #cf3f45;
+  --paper: #fffef9;
+  --ink: #000;
+  --muted: #585858;
+  --faint: #bebebe;
+  --red: #e55154;
+  --rule: #d1d1d1;
   --green: #4f806e;
 
   --font-manuscript: "Source Serif 4", Georgia, "Times New Roman",
     "LXGW WenKai Mono TC", serif;
   --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-nav: "Ancizar Serif", var(--font-serif);
   --font-ui: Inter, ui-sans-serif, system-ui, sans-serif;
-  --font-han-brand: "Songti TC", "Noto Serif CJK TC", Georgia, serif;
   --font-han-display: "Noto Serif TC", "Noto Serif CJK TC", "Songti TC", serif;
-  --font-han-handwritten: "Kaiti TC", "Kaiti SC", STKaiti, "Songti TC",
-    "Noto Serif CJK TC", serif;
   --font-han-quote: "LXGW WenKai Mono TC", "Kaiti TC", "Kaiti SC", STKaiti,
     serif;
+  --font-han-forms: "TW-Kai Forms", "BiauKai TC", "Kaiti TC", var(--font-han-quote);
 
   --measure-lesson: 52rem;
   --measure-copy: 32rem;
   --measure-study: 29rem;
+  --measure-prose: 611px;
 }
 
 /* Document foundation */
@@ -71,102 +80,80 @@ button {
   outline-offset: 4px;
 }
 
-body::before {
-  position: fixed;
-  z-index: 1;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)' opacity='.22'/%3E%3C/svg%3E");
-  content: "";
-  mix-blend-mode: multiply;
-  opacity: 0.025;
-  pointer-events: none;
+/* Text for assistive technology only, where a drawing says it to the eye */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Seals: red stones with the paper showing through their marks (components/seal.tsx) */
+
+.seal-stone {
+  fill: var(--red);
+}
+
+.seal-mark {
+  fill: var(--paper);
+}
+
+.seal-logo {
+  width: 32px;
+  height: 32px;
 }
 
 /* Application shell */
 
 .paper {
   min-height: 100svh;
-  background:
-    radial-gradient(circle at 48% 16%, rgb(255 251 242 / 30%), transparent 44%),
-    linear-gradient(rgb(250 243 230 / 38%), rgb(246 234 214 / 34%)),
-    url("/paper-texture.png") center / cover fixed,
-    var(--paper);
 }
 
 /* Site header */
 
+/* The seal, then the tabs beside it; the profile button at the far end */
 .topbar {
   display: grid;
-  position: relative;
-  z-index: 2;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: auto 1fr auto;
+  column-gap: 2rem;
   align-items: center;
   height: 4.5rem;
-  padding: 0 2rem;
-  background: rgb(249 244 234 / 82%);
-  backdrop-filter: blur(10px);
+  padding: 0 2.5rem;
 }
 
 .brand {
   display: inline-flex;
-  justify-self: start;
   align-items: center;
-  gap: 0.8rem;
-  text-decoration: none;
-}
-
-.brand-mark {
-  display: grid;
-  width: 2rem;
-  height: 2rem;
-  place-items: center;
-  background: #b64f3b;
-  color: #fff8eb;
-  font-family: var(--font-han-brand);
-  font-size: 1rem;
-  line-height: 1;
-}
-
-.brand-name {
-  color: #242822;
-  font-family: var(--font-serif);
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: -0.015em;
 }
 
 .primary-nav {
   display: flex;
   align-self: stretch;
   align-items: center;
-  gap: 2.25rem;
+  gap: 2rem;
 }
 
 .nav-tab {
   display: flex;
-  position: relative;
   align-items: center;
   height: 100%;
-  color: #68706a;
+  color: var(--muted);
   text-decoration: none;
-  font-family: var(--font-ui);
-  font-size: 0.875rem;
-  font-weight: 650;
+  font-family: var(--font-nav);
+  font-size: 1.125rem;
 }
 
-.nav-tab:hover,
-.nav-tab-active {
-  color: #252b27;
+.nav-tab:hover {
+  color: var(--ink);
 }
 
-.nav-tab-active::after {
-  position: absolute;
-  right: 0;
-  bottom: -1px;
-  left: 0;
-  height: 2px;
-  background: var(--green);
-  content: "";
+/* The current tab: red and a bit heavier */
+.nav-tab-active,
+.nav-tab-active:hover {
+  color: var(--red);
+  font-weight: 600;
 }
 
 .profile-button {
@@ -174,28 +161,25 @@ body::before {
   width: 2.25rem;
   height: 2.25rem;
   justify-self: end;
-  place-items: center;
-  padding: 0;
-  border: 1px solid rgb(85 72 51 / 17%);
-  border-radius: 50%;
-  background: rgb(255 252 244 / 72%);
-  color: #3e735f;
-  cursor: pointer;
+  place-items: center end;
+  color: var(--ink);
   font-family: var(--font-ui);
-  font-size: 0.72rem;
+  font-size: 0.9rem;
   font-weight: 750;
   text-decoration: none;
 }
 
 .profile-button:hover {
-  background: rgb(255 252 244 / 96%);
+  color: var(--red);
+}
+
+.profile-button svg {
+  height: 22px;
 }
 
 /* Lesson frame and body copy */
 
 .lesson-shell {
-  position: relative;
-  z-index: 0;
   overflow: hidden;
   padding: 4.75rem 1.5rem 7rem;
 }
@@ -207,7 +191,6 @@ body::before {
   text-align: center;
 }
 
-.lesson-manuscript > p,
 .account p,
 .landing p {
   width: min(100%, var(--measure-copy));
@@ -218,7 +201,24 @@ body::before {
   line-height: 1.9;
 }
 
-/* Lesson heading and progress */
+.lesson-shell:has(.lesson-manuscript) {
+  padding-top: 46px;
+  padding-bottom: 80px;
+}
+
+/* Source Serif 4's text cut at every size but the title's, as the Figma design sets a lesson. */
+.lesson-manuscript {
+  font-optical-sizing: none;
+}
+
+.lesson-manuscript > p {
+  width: min(100%, var(--measure-prose));
+  margin: 41px auto 0;
+  font-size: 1.5rem;
+  line-height: 41px;
+}
+
+/* Lesson heading */
 
 .lesson-heading {
   position: relative;
@@ -228,11 +228,7 @@ body::before {
 
 .eyebrow,
 .study-label,
-.note-title,
-.quote-source,
 .dictionary-example-source,
-.character-forms figcaption span,
-.form-label,
 .account-form label,
 .dictionary-search label,
 .lesson-finished {
@@ -243,8 +239,7 @@ body::before {
 }
 
 .eyebrow,
-.study-label,
-.note-title {
+.study-label {
   margin: 0;
   color: var(--red);
   font-size: 0.68rem;
@@ -258,72 +253,77 @@ body::before {
   line-height: 1;
 }
 
+.lesson-manuscript .lesson-heading {
+  margin-bottom: 0;
+}
+
+.lesson-heading h1:has(.lesson-title) {
+  margin: 0;
+}
+
+/* A lesson's title: its number on the page's axis, the 課 seal hanging to its left */
+.lesson-manuscript .lesson-subtitle {
+  margin: 10px 0 0;
+  color: var(--ink);
+  font-size: 1.5rem;
+  font-style: normal;
+  line-height: 62px;
+}
+
+.lesson-title {
+  position: relative;
+  display: inline-block;
+  font-optical-sizing: auto;
+  font-size: 5.5rem;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.seal-lesson {
+  position: absolute;
+  top: 7px;
+  right: calc(100% + 22px);
+  width: 58px;
+  height: 58px;
+}
+
 .lesson-subtitle {
   color: var(--muted);
   font-size: 0.98rem;
   font-style: italic;
 }
 
-.lesson-progress {
-  display: grid;
-  grid-template-columns: auto 7rem auto;
-  justify-content: center;
-  align-items: center;
-  gap: 0.8rem;
-  margin-top: 2.7rem;
-  color: var(--faint);
-  font-family: var(--font-ui);
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
-.progress-line {
-  height: 1px;
-  overflow: hidden;
-  background: rgb(68 68 60 / 14%);
-}
-
-.progress-line span {
-  display: block;
-  min-width: 0.56rem;
-  height: 100%;
-  background: var(--red);
-}
-
 /* Character sections */
 
 .char-display {
+  --study-size: clamp(5.4rem, 20vw, 9rem);
   position: relative;
-  width: min(100%, var(--measure-study));
-  margin: 8rem auto 2.8rem;
+  width: min(100%, 510px);
+  margin: 120px auto 76px;
   text-align: center;
 }
 
-.lesson-heading+.char-display,
-.category-break+.char-display,
-.lesson-note+.char-display {
-  margin-top: 0;
+.lesson-note + .char-display {
+  margin-top: 77px;
 }
 
+/* Level with the middle of the character, above its reading */
 .section-marker {
   position: absolute;
-  top: 2.7rem;
+  top: calc(var(--study-size) / 2);
   left: 0;
-  display: grid;
-  width: 2rem;
-  height: 2rem;
-  place-items: center;
-  background: var(--red);
-  color: #fffaf1;
-  font-family: var(--font-serif);
-  font-size: 0.9rem;
-  line-height: 1;
+  translate: 0 -50%;
+  width: 34px;
+  height: 34px;
+}
+
+.section-marker text {
+  font: 600 66px var(--font-serif);
 }
 
 .form-glyph,
 .character-focus {
-  font-family: var(--font-han-handwritten);
+  font-family: var(--font-han-forms);
   font-weight: 400;
 }
 
@@ -336,19 +336,30 @@ body::before {
   line-height: 1;
 }
 
+.study-character {
+  margin: 0;
+  font-size: var(--study-size);
+  font-weight: 500;
+}
+
+.study-reading {
+  margin: 41px 0 0;
+  font-size: 2.5rem;
+  line-height: 62px;
+}
+
 /* Quotations */
 
 .lesson-quote {
   position: relative;
   width: min(100%, 50rem);
-  margin: 2.65rem auto;
-  padding: 1.8rem 2.4rem 1.75rem;
-  color: #555850;
+  margin: 51px auto;
+  color: var(--ink);
   text-align: center;
 }
 
 .lesson-quote p {
-  margin: 0.75rem 0 0;
+  margin: 5px 0 0;
   cursor: default;
   font-size: 1rem;
   font-weight: 400;
@@ -357,24 +368,17 @@ body::before {
 
 .lesson-quote > p + p {
   font-style: italic;
-  font-weight: 350;
 }
 
 .lesson-quote p:first-child {
   margin-top: 0;
-  color: #000;
-  font-size: 1.7rem;
-  letter-spacing: 0.025em;
-  line-height: 1.65;
+  font-size: 1.75rem;
+  line-height: 41px;
 }
 
 .lesson-quote :lang(zh-Hant),
 .lesson-note :lang(zh-Hant) {
   font-family: var(--font-han-quote);
-}
-
-.lesson-quote > p:lang(zh-Hant) {
-  font-weight: 300;
 }
 
 .quote-source-group {
@@ -389,15 +393,24 @@ body::before {
   font-style: normal;
 }
 
+/* The lit mapping: red and a bit heavier on both sides of the quotation */
 .quote-token-active {
-  transition: color 280ms ease;
+  font-weight: 700;
+  transition:
+    color 280ms ease,
+    font-weight 280ms ease;
+}
+
+.lesson-quote > p + p .quote-token-active {
+  font-weight: 600;
 }
 
 .quote-source {
-  margin-top: 1.15rem;
-  color: var(--red);
-  font-size: 0.54rem;
+  margin-top: 5px;
+  font-size: 13px;
   font-style: normal;
+  line-height: 28px;
+  opacity: 0.4;
 }
 
 .quote-source a,
@@ -410,119 +423,70 @@ body::before {
   color: #a39b8d;
 }
 
-/* Category breaks */
+/* Category breaks: the ordinal runs on into the sentence */
 
 .category-break {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.1rem;
-  width: min(100%, var(--measure-copy));
-  margin: 8rem auto 5rem;
-  color: #62645d;
-  text-align: center;
-}
-
-.category-break > span {
-  color: var(--red);
-  font-family: var(--font-ui);
-  font-size: 0.61rem;
-  font-weight: 750;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  width: min(100%, var(--measure-prose));
+  margin: 0 auto;
+  font-size: 1.5rem;
+  line-height: 41px;
 }
 
 .category-break p {
-  margin: 0;
-  font-size: 0.95rem;
-  font-style: italic;
-  line-height: 1.75;
+  display: inline;
 }
 
 /* Historical form studies */
 
 .character-forms {
   width: min(100%, var(--measure-study));
-  margin: 2.65rem auto;
-}
-
-.character-forms figcaption {
-  display: grid;
-  gap: 0.35rem;
-  margin-bottom: 1rem;
-  color: #74766f;
-  font-size: 0.78rem;
-  line-height: 1.5;
-  text-align: center;
-}
-
-.character-forms figcaption span {
-  color: var(--red);
-  font-size: 0.54rem;
+  margin: 65px auto 68px;
 }
 
 .form-grid {
-  display: grid;
-  gap: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 52px;
 }
 
 .form-card {
   display: grid;
-  min-height: 8.75rem;
-  align-content: center;
-  justify-items: center;
-  gap: 0.9rem;
-  padding: 1.15rem 0.8rem;
-  border: 1px solid rgb(84 72 52 / 10%);
-  background: rgb(239 235 226 / 54%);
-}
-
-.form-card-current {
-  background: rgb(255 252 244 / 35%);
+  grid-template: 120px / 120px;
+  place-content: center;
 }
 
 .form-glyph {
-  font-size: 3.2rem;
+  font-size: 128px;
   line-height: 1;
 }
 
 .form-placeholder {
-  width: 3.2rem;
-  height: 3.2rem;
-  border: 1px dashed rgb(84 72 52 / 24%);
+  width: 100%;
+  height: 100%;
+  border: 1px dashed var(--rule);
   background: linear-gradient(
     135deg,
-    transparent 49%,
-    rgb(84 72 52 / 12%) 50%,
-    transparent 51%
+    transparent 49.8%,
+    var(--rule) 50%,
+    transparent 50.2%
   );
-}
-
-.form-label {
-  color: #96978f;
-  font-size: 0.49rem;
-  line-height: 1.45;
-  text-align: center;
 }
 
 /* Commentary */
 
 .lesson-note {
-  width: min(100%, var(--measure-copy));
-  margin: 4.25rem auto;
-  padding: 2rem 2.25rem 2.15rem;
-  border: 1px solid rgb(84 72 52 / 20%);
-  background: rgb(108 83 49 / 10%);
-  box-shadow: inset 0 0 0 1px rgb(255 252 244 / 18%);
-  color: #555951;
-  font-size: 0.92rem;
-  font-weight: 400;
-  line-height: 1.85;
-  text-align: left;
+  width: min(100%, 688px);
+  margin: 98px auto 77px;
+  padding: 35px 38px 57px;
+  background: #f4f4f4;
+  color: var(--muted);
+  font-size: 1.5rem;
+  line-height: 41px;
 }
 
 .lesson-note p {
-  margin: 1.15rem 0 0;
+  margin: 41px 0 0;
 }
 
 .lesson-note .note-title + p,
@@ -532,31 +496,22 @@ body::before {
 
 .note-title {
   display: block;
-  margin-bottom: 1.25rem;
-  font-size: 0.57rem;
-}
-
-.lesson-note strong {
-  color: #454741;
-  font-weight: 650;
+  margin-bottom: 31px;
+  color: var(--faint);
 }
 
 .lesson-note .character-forms {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-}
-
-.lesson-note .form-card {
-  background: rgb(250 247 238 / 42%);
+  margin-top: 53px;
+  margin-bottom: 53px;
 }
 
 .character-focus {
   display: grid;
   width: min(100%, 18rem);
-  min-height: 10rem;
-  margin: 2.75rem auto;
+  min-height: 120px;
+  margin: 65px auto;
   place-items: center;
-  font-size: 6rem;
+  font-size: 128px;
   line-height: 1;
 }
 
@@ -568,42 +523,40 @@ body::before {
 
 .lesson-closing-quote {
   width: max-content;
-  margin: 70px auto 0;
+  margin: 61px auto 0;
   color: var(--ink);
   font-family: var(--font-han-quote);
-  font-size: 1.35rem;
-  font-weight: 300;
-  letter-spacing: 0.3em;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 17px;
   line-height: 1;
-  opacity: 0.3;
+  opacity: 0.2;
   text-orientation: upright;
   writing-mode: vertical-rl;
 }
 
 .lesson-divider {
-  width: min(100%, var(--measure-copy));
+  width: min(100%, 628px);
   border: 0;
 }
 
 .lesson-divider-solid {
-  margin: 5rem auto;
-  border-top: 1px solid rgb(84 72 52 / 38%);
+  margin: 64px auto;
+  border-top: 1px solid var(--rule);
 }
 
 .lesson-divider-dashed {
   height: 1px;
-  margin: 5rem auto;
+  margin: 76px auto 36px;
   background: repeating-linear-gradient(
     to right,
-    rgb(84 72 52 / 38%) 0 0.45rem,
-    transparent 0.45rem 0.85rem
+    var(--rule) 0 10px,
+    transparent 10px 20px
   );
 }
 
-.lesson-divider + .category-break,
-.lesson-divider + .char-display,
-.lesson-divider + .lesson-note {
-  margin-top: 0;
+.lesson-divider-dashed + .lesson-note {
+  margin-top: 36px;
 }
 
 .lesson-complete h2 {
@@ -633,14 +586,42 @@ body::before {
   letter-spacing: 0.02em;
 }
 
+.lesson-complete button {
+  width: 279px;
+  height: 54px;
+  padding: 0;
+  border-radius: 10px;
+  color: #fff;
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
 .lesson-complete button:hover,
 .button-primary:hover {
   background: #b8343a;
 }
 
-/* Padding, not margin: a margin would collapse into the last quotation's. */
+/* The button between two rules that run to the page's edges. Padding, not margin: a margin would collapse into the last quotation's. */
 .lesson-finish {
-  padding-top: 70px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  column-gap: min(33px, 4vw);
+  align-items: center;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding-top: 14px;
+}
+
+.lesson-finish::before,
+.lesson-finish::after {
+  border-top: 1px solid var(--rule);
+  content: "";
+}
+
+.lesson-finish::after {
+  grid-area: 1 / 3;
 }
 
 .lesson-finished {
@@ -650,6 +631,7 @@ body::before {
 }
 
 .lesson-finish-error {
+  grid-column: 1 / -1;
   margin: 0.8rem 0 0;
   color: var(--red);
   font-size: 0.9rem;
@@ -840,12 +822,25 @@ summary.dictionary-gloss::before {
 .dictionary-source .lesson-quote {
   width: auto;
   margin: 0;
-  padding: 0;
+  color: #555850;
   text-align: left;
 }
 
+.dictionary-source .lesson-quote p {
+  margin-top: 0.75rem;
+}
+
+.dictionary-source .lesson-quote > p + p {
+  font-weight: 350;
+}
+
 .dictionary-source .lesson-quote p:first-child {
+  margin-top: 0;
+  color: var(--ink);
   font-size: 1.35rem;
+  font-weight: 300;
+  letter-spacing: 0.025em;
+  line-height: 1.65;
 }
 
 .dictionary-source .quote-source:empty {
@@ -1027,52 +1022,49 @@ summary.dictionary-gloss::before {
     margin-bottom: 7rem;
   }
 
-  .char-display {
-    margin-top: 7rem;
-  }
-
   .section-marker {
     width: 1.75rem;
     height: 1.75rem;
-    font-size: 0.8rem;
   }
 
-  .category-break {
-    margin-top: 6.5rem;
-    margin-bottom: 4.5rem;
+  .lesson-title {
+    font-size: 4rem;
+  }
+
+  .seal-lesson {
+    top: 5px;
+    right: calc(100% + 16px);
+    width: 42px;
+    height: 42px;
   }
 }
 
 @media (max-width: 640px) {
   .topbar {
-    grid-template-columns: auto 1fr auto;
-    gap: 0.75rem;
+    column-gap: 1rem;
     height: 4rem;
     padding: 0 1rem;
   }
 
-  .brand-name {
-    display: none;
-  }
-
   .primary-nav {
-    justify-self: end;
     gap: 1rem;
   }
 
   .nav-tab {
-    font-size: 0.75rem;
+    font-size: 1rem;
   }
 
-  .lesson-manuscript > p,
   .account p {
     font-size: 0.91rem;
     line-height: 1.82;
   }
 
-  .lesson-quote {
-    padding-right: 1.35rem;
-    padding-left: 1.35rem;
+  .lesson-manuscript > p,
+  .lesson-manuscript .lesson-subtitle,
+  .category-break,
+  .lesson-note {
+    font-size: 1.125rem;
+    line-height: 1.7;
   }
 
   .lesson-note {
@@ -1086,20 +1078,12 @@ summary.dictionary-gloss::before {
   }
 
   .nav-tab {
-    font-size: 0.68rem;
+    font-size: 0.9rem;
   }
 
   .lesson-shell {
     padding-right: 1.1rem;
     padding-left: 1.1rem;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr !important;
-  }
-
-  .form-card {
-    min-height: 7.75rem;
   }
 }
 

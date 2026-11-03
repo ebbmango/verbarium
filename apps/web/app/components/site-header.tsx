@@ -5,6 +5,7 @@ import { Link, useLocation } from "react-router";
 import { dictionaryIndexPath, isDictionaryPath } from "../content/dictionary/dictionary-files";
 import { isLessonPath, lessonIndexPath } from "../content/lessons";
 import { ProfileButton } from "./profile-button";
+import { LogoSeal } from "./seal";
 
 function NavTab({ children, current, to }: PropsWithChildren<{ current: boolean; to: string }>) {
   return (
@@ -21,10 +22,7 @@ export function SiteHeader() {
   return (
     <header className="topbar">
       <Link className="brand" to="/" aria-label="Verbarium home">
-        <span className="brand-mark" aria-hidden="true">
-          文
-        </span>
-        <span className="brand-name">Verbarium</span>
+        <LogoSeal />
       </Link>
 
       <nav className="primary-nav" aria-label="Primary navigation">

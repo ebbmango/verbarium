@@ -96,7 +96,7 @@ The page at `/lessons` listing every committed lesson in course order, each link
 _Avoid_: Lesson list, table of contents
 
 **Course position**:
-The indicator in a lesson's header showing where the lesson stands in the course: its number along a line that ends at the course's last lesson, 177 in Wieger's course.
+The indicator showing where a lesson stands in the course: its number along a line that ends at the course's last lesson, 177 in Wieger's course. Not on the page for now: it left the lesson's header in 2026-11 until it has a better place.
 _Avoid_: Progress bar, tracker
 
 **Displayed character**:

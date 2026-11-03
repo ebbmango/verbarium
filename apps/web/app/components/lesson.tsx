@@ -4,11 +4,11 @@ import { Link } from "react-router";
 
 import { dictionaryPath } from "../content/dictionary/dictionary-files";
 import { hasDictionaryPage } from "../content/dictionary/headwords";
-import { lessonsInCourse } from "../content/lessons";
 import type { LessonHeaderData } from "../mdx/remark-lesson-header";
 import { splitHanRuns } from "../lib/han-runs";
 import { FinishLesson } from "./finish-lesson";
 import { LegacyQuote, Quote } from "./quote";
+import { LessonSeal, LetterSeal } from "./seal";
 
 export { LegacyQuote, Quote } from "./quote";
 
@@ -19,44 +19,35 @@ export function HanMarkedText({ text }: { text: string }) {
   ));
 }
 
-/** The course position: this lesson's number along a line that ends at the course's last. */
-export function CoursePosition({ number }: { number: number }) {
-  return (
-    <div className="lesson-progress" role="img" aria-label={`Lesson ${number} of ${lessonsInCourse}`}>
-      <span>{number}</span>
-      <span className="progress-line">
-        <span style={{ width: `${(number / lessonsInCourse) * 100}%` }} />
-      </span>
-      <span>{lessonsInCourse}</span>
-    </div>
-  );
-}
-
-type PageHeadingProps = PropsWithChildren<{
-  eyebrow: string;
+type PageHeadingProps = {
+  eyebrow?: string;
   title: ReactNode;
   subtitle: ReactNode;
-}>;
+};
 
-/** The title block a page opens with: the eyebrow, the title, a subtitle line, and whatever follows them. */
-export function PageHeading({ children, eyebrow, subtitle, title }: PageHeadingProps) {
+/** The title block a page opens with: any eyebrow, the title and a subtitle line. */
+export function PageHeading({ eyebrow, subtitle, title }: PageHeadingProps) {
   return (
     <header className="lesson-heading">
-      <p className="eyebrow">{eyebrow}</p>
+      {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
       <h1>{title}</h1>
       <p className="lesson-subtitle">{subtitle}</p>
-      {children}
     </header>
   );
 }
 
 /** A lesson's title block. Its number and subtitle are also read at compile time (app/mdx/remark-lesson-header.ts). */
 export function LessonHeader({ number, subtitle }: LessonHeaderData) {
-  return (
-    <PageHeading eyebrow="Etymological lessons" title={`Lesson ${number}`} subtitle={<HanMarkedText text={subtitle} />}>
-      <CoursePosition number={number} />
-    </PageHeading>
+  // The seal says 課, "lesson"; the hidden text says the whole title to assistive technology.
+  const title = (
+    <span className="lesson-title">
+      <LessonSeal number={number} />
+      <span className="visually-hidden">Lesson {number}</span>
+      <span aria-hidden="true">{number}</span>
+    </span>
   );
+
+  return <PageHeading title={title} subtitle={<HanMarkedText text={subtitle} />} />;
 }
 
 /** A character the lesson displays, linking to its dictionary page when it has one; a look-alike form links to its character's. */
@@ -68,17 +59,20 @@ function DisplayedCharacter({ character }: { character: string }) {
 type CharDisplayProps = {
   character: string;
   label: string;
+  /** The reading this lesson teaches: one of those on the character's dictionary page. */
+  reading: string;
 };
 
-export function CharDisplay({ character, label }: CharDisplayProps) {
+export function CharDisplay({ character, label, reading }: CharDisplayProps) {
   const headingId = `character-${label.toLowerCase()}`;
 
   return (
     <div className="char-display">
-      <span className="section-marker">{label}</span>
+      <LetterSeal character={character} className="section-marker" letter={label} />
       <h2 className="study-character" id={headingId} lang="zh-Hant">
         <DisplayedCharacter character={character} />
       </h2>
+      <p className="study-reading">{reading}</p>
     </div>
   );
 }
@@ -92,26 +86,24 @@ type CharacterFormsProps = {
 export function CharacterForms({ character, description, forms = 2 }: CharacterFormsProps) {
   return (
     <figure className="character-forms">
-      <figcaption aria-label={description}>
-        <span>Form study</span>
-      </figcaption>
-      <div className="form-grid" style={{ gridTemplateColumns: `repeat(${forms}, 1fr)` }}>
+      <figcaption className="visually-hidden">{description}</figcaption>
+      <div className="form-grid">
         {Array.from({ length: forms }, (_, index) => {
           const isCurrent = Boolean(character) && index === forms - 1;
 
           return (
-            <div className={isCurrent ? "form-card form-card-current" : "form-card"} key={index}>
+            <div className="form-card" key={index}>
               {isCurrent ? (
                 <>
                   <span className="form-glyph" lang="zh-Hant">
                     {character}
                   </span>
-                  <span className="form-label">Current form</span>
+                  <span className="visually-hidden">Current form</span>
                 </>
               ) : (
                 <>
                   <span className="form-placeholder" aria-hidden="true" />
-                  <span className="form-label">Historical form pending</span>
+                  <span className="visually-hidden">Historical form pending</span>
                 </>
               )}
             </div>
@@ -132,8 +124,7 @@ export function SectionBreak({ children, ordinal }: SectionBreakProps) {
     <>
       <hr className="lesson-divider lesson-divider-solid" />
       <section className="category-break">
-        <span>{ordinal}</span>
-        {children}
+        <strong>{ordinal},</strong> {children}
       </section>
     </>
   );

@@ -3,8 +3,8 @@
  * `<CharacterFocus>`, as `displayedCharacters`, so a dictionary page can name
  * the lessons that display its headword. A radical or compatibility form is
  * read as the character it looks like, as the dictionary reads it. A display
- * without its character in quotes fails the build, naming the file. Other MDX
- * is left alone.
+ * without its character in quotes, or a <CharDisplay> without the reading it
+ * teaches, fails the build, naming the file. Other MDX is left alone.
  */
 
 import { lessonNumberFromPath } from "../content/lessons/lesson-files.ts";
@@ -15,11 +15,18 @@ export default function remarkLessonCharacters() {
     const path = file.path ?? "";
     if (lessonNumberFromPath(path) === null) return;
 
+    const fileName = path.split(/[\\/]/).at(-1);
+    for (const display of findComponents(tree, "CharDisplay")) {
+      if (typeof attributeValue(display, "reading") !== "string") {
+        throw new Error(`${fileName}: <CharDisplay> names the reading it teaches, as in reading="yǔ"`);
+      }
+    }
+
     const displays = [...findComponents(tree, "CharDisplay"), ...findComponents(tree, "CharacterFocus")];
     const characters = displays.map((display) => {
       const character = attributeValue(display, "character");
       if (typeof character === "string") return character.normalize("NFKC");
-      throw new Error(`${path.split(/[\\/]/).at(-1)}: <${display.name}> writes its character in quotes, as in character="雨"`);
+      throw new Error(`${fileName}: <${display.name}> writes its character in quotes, as in character="雨"`);
     });
     tree.children?.push(exportConst("displayedCharacters", [...new Set(characters)]));
   };

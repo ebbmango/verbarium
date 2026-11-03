@@ -15,9 +15,6 @@ export function lessonNumberFromPath(path: string): number | null {
   return match ? lessonNumberFromFileName(match[1]) : null;
 }
 
-/** Wieger's course has this many lessons; the course position counts up to it. */
-export const lessonsInCourse = 177;
-
 /** The address of the lesson index. */
 export const lessonIndexPath = "/lessons";
 

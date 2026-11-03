@@ -2,6 +2,7 @@ import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { lessonComponents } from "../../components/lesson";
+import { dictionaryPages } from "../dictionary";
 import { resetFakeSupabase } from "../../test/fake-supabase";
 import { lessonSources } from "../../test/lesson-sources";
 import { renderWithSession } from "../../test/render-with-session";
@@ -30,8 +31,6 @@ describe("Lesson 1", () => {
 
   it("keeps its structure: 17 quotations, four divisions under solid rules, five dashed dividers", () => {
     const article = renderLesson();
-
-    expect(screen.getByRole("img", { name: "Lesson 1 of 177" })).toBeInTheDocument();
     expect(article.querySelectorAll("blockquote.lesson-quote")).toHaveLength(17);
     expect(article.querySelectorAll("hr.lesson-divider-dashed")).toHaveLength(5);
 
@@ -57,17 +56,33 @@ describe("Lesson 1", () => {
     expect(commentaries[1].querySelector("figure.character-forms")).not.toBeNull();
   });
 
-  it("keeps the line break in the blood paragraph and the closing line", () => {
+  it("keeps the authored line breaks in its prose and the closing line", () => {
     const article = renderLesson();
     const blood = Array.from(article.querySelectorAll(":scope > p")).find((p) => p.textContent?.startsWith("Blood."));
 
     expect(blood?.querySelector("br")).not.toBeNull();
     expect(blood?.textContent?.replace(/\s+/g, " ")).toBe("Blood. A 皿 (vase) containing 一 (something).");
 
+    const tree = Array.from(article.querySelectorAll(":scope > p")).find((p) => p.textContent?.startsWith("A horizontal stroke cuts through the top"));
+    expect(tree?.querySelector("br")).not.toBeNull();
+
     const closing = article.querySelector("blockquote.lesson-closing-quote");
     expect(closing).toHaveAttribute("lang", "zh-Hant");
-    expect(closing?.textContent).toBe("千里之行始於足下");
+    expect(closing?.textContent).toBe("千里之行　始於足下");
     expect(closing?.querySelector("p")).toBeNull();
+  });
+
+  it("reads each displayed character, in every lesson, as one of the readings on its dictionary page", () => {
+    const displays = Array.from(lessonSources().values()).flatMap((mdx) =>
+      Array.from(mdx.matchAll(/<CharDisplay character="([^"]+)" label="[^"]+" reading="([^"]+)" \/>/g)),
+    );
+
+    expect(displays.length).toBeGreaterThanOrEqual(10);
+    for (const [, character, reading] of displays) {
+      const page = dictionaryPages.find((candidate) => candidate.headword === character.normalize("NFKC"));
+      if (!page) continue;
+      expect(page.entries.flatMap((entry) => entry.readings), `${character} ${reading}`).toContain(reading);
+    }
   });
 
   it("marks every run of Chinese in its prose with lang zh-Hant", () => {

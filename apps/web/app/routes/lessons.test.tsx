@@ -14,6 +14,7 @@ describe("the lesson index", () => {
     render(<Stub initialEntries={["/lessons"]} />);
 
     expect(screen.getByRole("heading", { level: 1, name: "Lessons" })).toBeInTheDocument();
+    expect(screen.queryByText("Etymological lessons")).toBeNull();
     expect(screen.getByText(/lessons? so far\./)).toBeInTheDocument();
 
     const links = screen.getAllByRole("link", { name: /^Lesson \d+/ });

@@ -45,6 +45,7 @@ describe("the lesson page", () => {
     renderLessonAt("/lessons/99");
 
     expect(screen.getByRole("heading", { level: 1, name: "404" })).toBeInTheDocument();
+    expect(screen.queryByText("Etymological lessons")).toBeNull();
     expect(screen.getByText("There is no Lesson 99.")).toBeInTheDocument();
     expect(meta({ params: { number: "99" } } as never)).toEqual([{ title: "Lesson not found · Verbarium" }]);
   });
