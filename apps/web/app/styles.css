@@ -90,19 +90,12 @@ button {
   white-space: nowrap;
 }
 
-/* Seals: red stones with the paper showing through their marks (components/seal.tsx) */
-
-.seal-stone {
-  fill: var(--red);
-}
-
-.seal-mark {
-  fill: var(--paper);
-}
+/* Seals: baked images (scripts/bake-seals.ts) of a seal and a margin a quarter of its size on each side */
 
 .seal-logo {
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
+  margin: -8px;
 }
 
 /* Application shell */
@@ -283,8 +276,9 @@ button {
   position: absolute;
   top: 7px;
   right: calc(100% + 22px);
-  width: 58px;
-  height: 58px;
+  width: 87px;
+  height: 87px;
+  margin: -14.5px;
 }
 
 .lesson-subtitle {
@@ -312,13 +306,11 @@ button {
   position: absolute;
   top: calc(var(--study-size) / 2);
   left: 0;
-  translate: 0 -50%;
-  width: 34px;
-  height: 34px;
-}
-
-.section-marker text {
-  font: 600 66px var(--font-serif);
+  /* Centred on the character: half the image up, less the margin pulled back in */
+  translate: 0 calc(-50% + 8.5px);
+  width: 51px;
+  height: 51px;
+  margin: -8.5px;
 }
 
 .form-glyph,
@@ -1023,8 +1015,10 @@ summary.dictionary-gloss::before {
   }
 
   .section-marker {
-    width: 1.75rem;
-    height: 1.75rem;
+    translate: 0 calc(-50% + 7px);
+    width: 42px;
+    height: 42px;
+    margin: -7px;
   }
 
   .lesson-title {
@@ -1034,8 +1028,9 @@ summary.dictionary-gloss::before {
   .seal-lesson {
     top: 5px;
     right: calc(100% + 16px);
-    width: 42px;
-    height: 42px;
+    width: 63px;
+    height: 63px;
+    margin: -10.5px;
   }
 }
 
