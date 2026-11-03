@@ -399,10 +399,10 @@ button {
 
 .quote-source {
   margin-top: 5px;
+  color: rgb(0 0 0 / 0.4);
   font-size: 13px;
   font-style: normal;
   line-height: 28px;
-  opacity: 0.4;
 }
 
 .quote-source a,
@@ -411,8 +411,13 @@ button {
   text-decoration: none;
 }
 
+.quote-source a:hover {
+  color: var(--red);
+}
+
 .quote-source-pending {
   color: #a39b8d;
+  opacity: 0.4;
 }
 
 /* Category breaks: the ordinal runs on into the sentence */
