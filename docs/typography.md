@@ -3,6 +3,7 @@
 Reference for the design follow-ups labelled `design` in the issue tracker.
 
 - Font loading and all visual styles are in `apps/web/app/styles.css`.
+- The sizes below are the Figma design's, drawn for a 1512 px frame. Above 740 px wide, everything under the topbar renders at 75% (`zoom` on `.lesson-shell`), because that is the size that reads comfortably; a quotation undoes the zoom, so its sizes are real pixels. The topbar and phones are not scaled.
 - Lesson content is in `apps/web/app/content/lessons/001.mdx`.
 - MDX presentation components are in `apps/web/app/components/lesson.tsx`.
 - Original Chinese quote paragraphs are marked `lang="zh-Hant"`. They use LXGW WenKai Mono TC: in a lesson at weight 400, 28 px; in a dictionary page's etymology at weight 300, smaller.
