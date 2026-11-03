@@ -57,12 +57,15 @@ describe("Lesson 1", () => {
     expect(commentaries[1].querySelector("figure.character-forms")).not.toBeNull();
   });
 
-  it("keeps the line break in the blood paragraph and the closing line", () => {
+  it("keeps the authored line breaks in its prose and the closing line", () => {
     const article = renderLesson();
     const blood = Array.from(article.querySelectorAll(":scope > p")).find((p) => p.textContent?.startsWith("Blood."));
 
     expect(blood?.querySelector("br")).not.toBeNull();
     expect(blood?.textContent?.replace(/\s+/g, " ")).toBe("Blood. A 皿 (vase) containing 一 (something).");
+
+    const tree = Array.from(article.querySelectorAll(":scope > p")).find((p) => p.textContent?.startsWith("A horizontal stroke cuts through the top"));
+    expect(tree?.querySelector("br")).not.toBeNull();
 
     const closing = article.querySelector("blockquote.lesson-closing-quote");
     expect(closing).toHaveAttribute("lang", "zh-Hant");

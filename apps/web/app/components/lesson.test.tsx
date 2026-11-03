@@ -4,7 +4,7 @@ import { createRoutesStub } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 
 import { lessonsInCourse } from "../content/lessons";
-import { CharacterFocus, CharDisplay, CoursePosition, LessonHeader, SectionBreak } from "./lesson";
+import { CharacterFocus, CharacterForms, CharDisplay, CoursePosition, LessonHeader, SectionBreak } from "./lesson";
 
 // Only 血 has a dictionary page here.
 vi.mock("../content/dictionary/headwords", () => ({ hasDictionaryPage: (headword: string) => headword === "血" }));
@@ -32,6 +32,20 @@ describe("LessonHeader", () => {
 
     expect(container.querySelector(".eyebrow")).toBeNull();
     expect(container.querySelector("h1 .seal-lesson")).not.toBeNull();
+  });
+});
+
+describe("CharacterForms", () => {
+  it("draws one cell per form, the character in the last, with its words for assistive technology only", () => {
+    const { container } = render(<CharacterForms character="雨" description="Old and new form" forms={3} />);
+
+    expect(container.querySelectorAll(".form-card")).toHaveLength(3);
+    expect(container.querySelector(".form-card:last-child .form-glyph")).toHaveTextContent("雨");
+    expect(container.querySelectorAll(".form-placeholder")).toHaveLength(2);
+    for (const words of ["Old and new form", "Current form"]) {
+      expect(screen.getByText(words)).toHaveClass("visually-hidden");
+    }
+    expect(screen.getAllByText("Historical form pending")[0]).toHaveClass("visually-hidden");
   });
 });
 

@@ -33,6 +33,7 @@ describe("the dictionary index", () => {
     renderIndex();
 
     expect(screen.getByRole("heading", { level: 1, name: "Characters" })).toBeInTheDocument();
+    expect(screen.getByText("Dictionary")).toHaveClass("eyebrow");
     expect(screen.getByText("3 characters so far.")).toBeInTheDocument();
     expect(listed()).toEqual(["/dictionary/天", "/dictionary/血", "/dictionary/一"]);
     expect(screen.getByRole("link", { name: /血/ })).toHaveTextContent("血xuèblood");

@@ -58,7 +58,7 @@ between two characters of the same division. A new division of the lesson
 | `<SectionBreak ordinal="First">…</SectionBreak>` | One of the lesson's numbered divisions; its text is a paragraph that reads on from the ordinal ("First, when written…"), so it starts in lower case. |
 | `<Commentary>…</Commentary>` | An aside of paragraphs; may contain `<CharacterForms>`. |
 | `<CharacterFocus character="丂" />` | One large character standing alone in the prose; linked like `CharDisplay`'s. |
-| `<LessonComplete>` with `<FinishLesson lesson={1} />` and `<ClosingLine>…</ClosingLine>` | The end of the lesson: the button that records the completion, then the vertical closing line. Lessons after Lesson 1 close with `盡 人 事  聽 天 命`, spaces included: they are the gaps between the words ([#25](https://github.com/ebbmango/verbarium/issues/25)). |
+| `<LessonComplete>` with `<FinishLesson lesson={1} />` and `<ClosingLine>…</ClosingLine>` | The end of the lesson: the button that records the completion, then the vertical closing line. Lessons after Lesson 1 close with `盡人事　聽天命`: the full-width space (U+3000) is the gap between the words, as in Lesson 1's line ([#25](https://github.com/ebbmango/verbarium/issues/25)). |
 
 Props may contain Chinese (`character="一"`); the component marks it.
 Numbers go in braces (`lesson={1}`, `forms={3}`), text in quotes.

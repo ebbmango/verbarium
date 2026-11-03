@@ -47,8 +47,6 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  /* Source Serif 4's text cut at every size, as the Figma design sets it. */
-  font-optical-sizing: none;
 }
 
 a,
@@ -109,8 +107,6 @@ button {
 /* The seal, then the tabs beside it; the profile button at the far end */
 .topbar {
   display: grid;
-  position: relative;
-  z-index: 2;
   grid-template-columns: auto 1fr auto;
   column-gap: 2rem;
   align-items: center;
@@ -175,8 +171,6 @@ button {
 /* Lesson frame and body copy */
 
 .lesson-shell {
-  position: relative;
-  z-index: 0;
   overflow: hidden;
   padding: 4.75rem 1.5rem 7rem;
 }
@@ -188,7 +182,6 @@ button {
   text-align: center;
 }
 
-.lesson-manuscript > p,
 .account p,
 .landing p {
   width: min(100%, var(--measure-copy));
@@ -199,15 +192,19 @@ button {
   line-height: 1.9;
 }
 
-#lesson {
+.lesson-shell:has(.lesson-manuscript) {
   padding-top: 46px;
   padding-bottom: 80px;
 }
 
+/* Source Serif 4's text cut at every size, as the Figma design sets a lesson. */
+.lesson-manuscript {
+  font-optical-sizing: none;
+}
+
 .lesson-manuscript > p {
   width: min(100%, var(--measure-prose));
-  margin-top: 41px;
-  color: var(--ink);
+  margin: 41px auto 0;
   font-size: 1.5rem;
   line-height: 41px;
 }
@@ -391,10 +388,6 @@ button {
   font-family: var(--font-han-quote);
 }
 
-.lesson-quote > p:lang(zh-Hant) {
-  font-weight: 400;
-}
-
 .quote-source-group {
   white-space: nowrap;
 }
@@ -468,7 +461,7 @@ button {
   display: grid;
   width: 120px;
   height: 120px;
-  place-items: center;
+  place-content: center;
 }
 
 .form-glyph {
@@ -516,8 +509,8 @@ button {
 }
 
 .lesson-note .character-forms {
-  margin-top: 41px;
-  margin-bottom: 41px;
+  margin-top: 53px;
+  margin-bottom: 53px;
 }
 
 .character-focus {
@@ -622,7 +615,7 @@ button {
 .lesson-finish {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  column-gap: 33px;
+  column-gap: min(33px, 4vw);
   align-items: center;
   width: 100vw;
   margin-left: calc(50% - 50vw);
@@ -837,12 +830,23 @@ summary.dictionary-gloss::before {
 .dictionary-source .lesson-quote {
   width: auto;
   margin: 0;
-  padding: 0;
+  color: #555850;
   text-align: left;
 }
 
+.dictionary-source .lesson-quote p {
+  margin-top: 0.75rem;
+}
+
+.dictionary-source .lesson-quote > p + p {
+  font-weight: 350;
+}
+
 .dictionary-source .lesson-quote p:first-child {
+  margin-top: 0;
+  color: var(--ink);
   font-size: 1.35rem;
+  font-weight: 300;
   letter-spacing: 0.025em;
   line-height: 1.65;
 }
@@ -1068,10 +1072,6 @@ summary.dictionary-gloss::before {
   .category-break,
   .lesson-note {
     font-size: 1.125rem;
-    line-height: 1.7;
-  }
-
-  .note-title {
     line-height: 1.7;
   }
 
