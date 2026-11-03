@@ -14,7 +14,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
 import { lessonNumberFromFileName } from "../app/content/lessons/lesson-files.ts";
-import { MARGIN, SEALS, sealFile, sealsOfLesson, sealSvg } from "../app/lib/seal.ts";
+import { MARGIN, type Seal, SEALS, sealFile, sealsOfLesson, sealSvg, sealVersion } from "../app/lib/seal.ts";
 
 const chrome = process.env.CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const lessonsDirectory = resolve(import.meta.dirname, "../app/content/lessons");
@@ -35,7 +35,18 @@ const seals = [
 
 const work = mkdtempSync(join(tmpdir(), "seals-"));
 mkdirSync(join(publicDirectory, "seals"), { recursive: true });
-for (const seal of seals) {
+try {
+  for (const seal of seals) bake(seal);
+  // What each image was baked from, so the tests can tell a stale one.
+  writeFileSync(
+    join(publicDirectory, "seals/manifest.json"),
+    JSON.stringify(Object.fromEntries(seals.map((seal) => [seal.name, sealVersion(seal)])), null, 2) + "\n",
+  );
+} finally {
+  rmSync(work, { recursive: true, force: true });
+}
+
+function bake(seal: Seal) {
   const outer = seal.size * (1 + 2 * MARGIN);
   const page = join(work, "seal.html");
   writeFileSync(
@@ -55,4 +66,3 @@ for (const seal of seals) {
   ]);
   console.log(`${sealFile(seal.name)}  ${outer * scale} px`);
 }
-rmSync(work, { recursive: true, force: true });

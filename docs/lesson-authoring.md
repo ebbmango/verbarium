@@ -67,9 +67,9 @@ Numbers go in braces (`lesson={1}`, `forms={3}`), text in quotes.
 
 A lesson's 課 seal and its A–J markers are images baked once from a drawing
 (`apps/web/app/lib/seal.ts`), so every browser shows the same print. After
-adding a lesson or a `<CharDisplay>`, run `node scripts/bake-seals.ts` in
-`apps/web` (needs Google Chrome and the network) and commit `public/seals/`;
-a test fails until the images exist.
+adding a lesson or a `<CharDisplay>`, or changing the drawing, run
+`pnpm bake-seals` in `apps/web` (needs Google Chrome and the network) and
+commit `public/seals/`; a test fails until the images match the drawing.
 
 ## The form-study font
 

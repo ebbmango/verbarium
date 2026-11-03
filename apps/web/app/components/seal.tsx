@@ -1,4 +1,4 @@
-import { SEALS, sealFile } from "../lib/seal";
+import { type Seal as Baked, SEALS, sealFile } from "../lib/seal";
 
 /**
  * The seals, as the images `scripts/bake-seals.ts` baked from app/lib/seal.ts.
@@ -6,15 +6,14 @@ import { SEALS, sealFile } from "../lib/seal";
  * margin back in to place the seal itself.
  */
 
-type Baked = { name: string; size: number };
-
-function Seal({ className, label, seal }: { className: string; label?: string; seal: Baked }) {
+function Seal({ className, label, lazy, seal }: { className: string; label?: string; lazy?: boolean; seal: Baked }) {
   const outer = seal.size * 1.5;
   return (
     <img
       alt={label ?? ""}
       className={className}
       height={outer}
+      loading={lazy ? "lazy" : undefined}
       src={`${import.meta.env.BASE_URL}${sealFile(seal.name)}`}
       width={outer}
     />
@@ -33,5 +32,5 @@ export function LessonSeal({ number }: { number: number }) {
 
 /** A section's letter on a small stone of its own, named after the letter and its character. */
 export function LetterSeal({ character, className, letter }: { character: string; className: string; letter: string }) {
-  return <Seal className={className} label={letter} seal={SEALS.letter(letter, character.normalize("NFKC"))} />;
+  return <Seal className={className} label={letter} lazy seal={SEALS.letter(letter, character.normalize("NFKC"))} />;
 }

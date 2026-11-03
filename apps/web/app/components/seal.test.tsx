@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { lessonNumberFromFileName } from "../content/lessons/lesson-files";
-import { placement, sealFile, sealsOfLesson, sealSvg, stone } from "../lib/seal";
+import { placement, SEALS, sealFile, sealsOfLesson, sealSvg, sealVersion, stone } from "../lib/seal";
 import { lessonSources } from "../test/lesson-sources";
 import { LessonSeal, LetterSeal, LogoSeal } from "./seal";
 
@@ -77,12 +77,20 @@ describe("the seals on the page", () => {
     expect(screen.getByRole("img", { name: "J" })).toHaveAttribute("src", "/seals/J-血.png");
   });
 
-  it("have been baked for every lesson, so a new character or lesson fails here until scripts/bake-seals.ts runs", () => {
+  it("have been baked, from the current drawing, for every lesson: a new character or a changed drawing fails here until pnpm bake-seals runs", () => {
     const seals = Array.from(lessonSources(), ([fileName, source]) => sealsOfLesson(lessonNumberFromFileName(fileName)!, source)).flat();
+    const publicDirectory = join(import.meta.dirname, "../../public");
+    const manifest = JSON.parse(readFileSync(join(publicDirectory, "seals/manifest.json"), "utf8")) as Record<string, string>;
 
     expect(seals.length).toBeGreaterThanOrEqual(11);
-    for (const seal of [...seals, { name: "logo" }]) {
-      expect(existsSync(join(import.meta.dirname, "../../public", sealFile(seal.name))), seal.name).toBe(true);
+    for (const seal of [...seals, SEALS.logo]) {
+      expect(existsSync(join(publicDirectory, sealFile(seal.name))), seal.name).toBe(true);
+      expect(manifest[seal.name], seal.name).toBe(sealVersion(seal));
     }
+  });
+
+  it("list a lesson's seals whatever the order of a CharDisplay's props", () => {
+    const seals = sealsOfLesson(2, '<CharDisplay label="A" reading="èr" character="二" />\n<CharDisplay character="⾎" label="B" />');
+    expect(seals.map((seal) => seal.name)).toEqual(["lesson2", "A:二", "B:血"]);
   });
 });
