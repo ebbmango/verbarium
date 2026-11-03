@@ -66,7 +66,7 @@ describe("Lesson 1", () => {
 
     const closing = article.querySelector("blockquote.lesson-closing-quote");
     expect(closing).toHaveAttribute("lang", "zh-Hant");
-    expect(closing?.textContent).toBe("千里之行始於足下");
+    expect(closing?.textContent).toBe("千里之行　始於足下");
     expect(closing?.querySelector("p")).toBeNull();
   });
 

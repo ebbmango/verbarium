@@ -37,7 +37,7 @@ decision requires, applied to what Lesson 1 needed.
 | `<span lang="zh-Hant">一</span>` | `一` |
 | `<hr className="lesson-divider lesson-divider-dashed" />` | `---` on a line of its own, with a blank line above and below it (without the blank line above, markdown turns the previous line into a heading). |
 | `<hr className="lesson-divider lesson-divider-solid" />` before a `<SectionBreak>` | Nothing: `SectionBreak` draws the solid rule itself. |
-| `<blockquote className="lesson-closing-quote" lang="zh-Hant">…</blockquote>` | `<ClosingLine>千里之行始於足下</ClosingLine>` inside `<LessonComplete>`. |
+| `<blockquote className="lesson-closing-quote" lang="zh-Hant">…</blockquote>` | `<ClosingLine>千里之行　始於足下</ClosingLine>` inside `<LessonComplete>`. |
 
 Markdown a lesson may use: paragraphs, `**bold**`, `*italic*`, a hard line
 break (`\` at the end of a line) and the `---` divider. Everything else is a
@@ -55,7 +55,7 @@ between two characters of the same division. A new division of the lesson
 | `<CharDisplay character="雨" label="B" />` | Opens a character's section: the big character and its letter. The character links to its dictionary page once it has one, and that page names this lesson. |
 | `<CharacterForms character="雨" description="Old and new form of the character" forms={2} />` | The historical-forms study. `forms` is how many cards; `character` fills the last one. |
 | `<Quote id="L001B-Q01" />` | A quotation by its Quote ID; the quotation file carries the text, provenance and source link. |
-| `<SectionBreak ordinal="First">…</SectionBreak>` | One of the lesson's numbered divisions; its text is a paragraph. |
+| `<SectionBreak ordinal="First">…</SectionBreak>` | One of the lesson's numbered divisions; its text is a paragraph that reads on from the ordinal ("First, when written…"), so it starts in lower case. |
 | `<Commentary>…</Commentary>` | An aside of paragraphs; may contain `<CharacterForms>`. |
 | `<CharacterFocus character="丂" />` | One large character standing alone in the prose; linked like `CharDisplay`'s. |
 | `<LessonComplete>` with `<FinishLesson lesson={1} />` and `<ClosingLine>…</ClosingLine>` | The end of the lesson: the button that records the completion, then the vertical closing line. Lessons after Lesson 1 close with `盡 人 事  聽 天 命`, spaces included: they are the gaps between the words ([#25](https://github.com/ebbmango/verbarium/issues/25)). |

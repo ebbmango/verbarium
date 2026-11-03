@@ -34,16 +34,16 @@ export function CoursePosition({ number }: { number: number }) {
 }
 
 type PageHeadingProps = PropsWithChildren<{
-  eyebrow: string;
+  eyebrow?: string;
   title: ReactNode;
   subtitle: ReactNode;
 }>;
 
-/** The title block a page opens with: the eyebrow, the title, a subtitle line, and whatever follows them. */
+/** The title block a page opens with: any eyebrow, the title, a subtitle line, and whatever follows them. */
 export function PageHeading({ children, eyebrow, subtitle, title }: PageHeadingProps) {
   return (
     <header className="lesson-heading">
-      <p className="eyebrow">{eyebrow}</p>
+      {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
       <h1>{title}</h1>
       <p className="lesson-subtitle">{subtitle}</p>
       {children}
@@ -63,7 +63,7 @@ export function LessonHeader({ number, subtitle }: LessonHeaderData) {
   );
 
   return (
-    <PageHeading eyebrow="Etymological lessons" title={title} subtitle={<HanMarkedText text={subtitle} />}>
+    <PageHeading title={title} subtitle={<HanMarkedText text={subtitle} />}>
       <CoursePosition number={number} />
     </PageHeading>
   );
@@ -102,26 +102,24 @@ type CharacterFormsProps = {
 export function CharacterForms({ character, description, forms = 2 }: CharacterFormsProps) {
   return (
     <figure className="character-forms">
-      <figcaption aria-label={description}>
-        <span>Form study</span>
-      </figcaption>
-      <div className="form-grid" style={{ gridTemplateColumns: `repeat(${forms}, 1fr)` }}>
+      <figcaption className="visually-hidden">{description}</figcaption>
+      <div className="form-grid">
         {Array.from({ length: forms }, (_, index) => {
           const isCurrent = Boolean(character) && index === forms - 1;
 
           return (
-            <div className={isCurrent ? "form-card form-card-current" : "form-card"} key={index}>
+            <div className="form-card" key={index}>
               {isCurrent ? (
                 <>
                   <span className="form-glyph" lang="zh-Hant">
                     {character}
                   </span>
-                  <span className="form-label">Current form</span>
+                  <span className="visually-hidden">Current form</span>
                 </>
               ) : (
                 <>
                   <span className="form-placeholder" aria-hidden="true" />
-                  <span className="form-label">Historical form pending</span>
+                  <span className="visually-hidden">Historical form pending</span>
                 </>
               )}
             </div>
@@ -142,8 +140,7 @@ export function SectionBreak({ children, ordinal }: SectionBreakProps) {
     <>
       <hr className="lesson-divider lesson-divider-solid" />
       <section className="category-break">
-        <span>{ordinal}</span>
-        {children}
+        <strong>{ordinal},</strong> {children}
       </section>
     </>
   );

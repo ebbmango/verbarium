@@ -4,7 +4,7 @@ import { createRoutesStub } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 
 import { lessonsInCourse } from "../content/lessons";
-import { CharacterFocus, CharDisplay, CoursePosition, LessonHeader } from "./lesson";
+import { CharacterFocus, CharDisplay, CoursePosition, LessonHeader, SectionBreak } from "./lesson";
 
 // Only 血 has a dictionary page here.
 vi.mock("../content/dictionary/headwords", () => ({ hasDictionaryPage: (headword: string) => headword === "血" }));
@@ -25,6 +25,26 @@ describe("LessonHeader", () => {
     const subtitle = container.querySelector(".lesson-subtitle") as HTMLElement;
     expect(subtitle.textContent).toBe("About 二, two strokes。");
     expect(Array.from(subtitle.querySelectorAll('[lang="zh-Hant"]'), (span) => span.textContent)).toEqual(["二"]);
+  });
+
+  it("opens with the number and its seal, under no eyebrow", () => {
+    const { container } = render(<LessonHeader number={1} subtitle="About the primitive 一." />);
+
+    expect(container.querySelector(".eyebrow")).toBeNull();
+    expect(container.querySelector("h1 .seal-lesson")).not.toBeNull();
+  });
+});
+
+describe("SectionBreak", () => {
+  it("runs its ordinal on into its sentence", () => {
+    const { container } = render(
+      <SectionBreak ordinal="First">
+        <p>when written on top of the compound</p>
+      </SectionBreak>,
+    );
+
+    expect(container.querySelector(".category-break")?.textContent).toBe("First, when written on top of the compound");
+    expect(container.querySelector(".category-break strong")?.textContent).toBe("First,");
   });
 });
 

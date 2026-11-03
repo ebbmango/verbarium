@@ -23,7 +23,6 @@ export default function Home() {
     <main className="lesson-shell">
       <section className="lesson landing">
         <PageHeading
-          eyebrow="Etymological lessons"
           title="Verbarium"
           subtitle="Reading Literary and Classical Chinese, one character at a time."
         />
