@@ -415,8 +415,16 @@ body::before {
   font-style: normal;
 }
 
+/* The lit mapping: red and a bit heavier on both sides of the quotation */
 .quote-token-active {
-  transition: color 280ms ease;
+  font-weight: 700;
+  transition:
+    color 280ms ease,
+    font-weight 280ms ease;
+}
+
+.lesson-quote > p + p .quote-token-active {
+  font-weight: 600;
 }
 
 .quote-source {
