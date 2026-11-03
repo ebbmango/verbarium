@@ -15,7 +15,6 @@ export function lessonNumberFromPath(path: string): number | null {
   return match ? lessonNumberFromFileName(match[1]) : null;
 }
 
-
 /** The address of the lesson index. */
 export const lessonIndexPath = "/lessons";
 
