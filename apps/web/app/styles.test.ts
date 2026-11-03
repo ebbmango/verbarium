@@ -23,6 +23,21 @@ describe("the stylesheet", () => {
     }
   });
 
+  it("scales the page under the topbar to three-quarters, with quotations back at full size", () => {
+    const zoomOf = (target: RegExp) =>
+      declarationsFor(target).flatMap((declarations) =>
+        Array.from(declarations.matchAll(/(?:^|[\s;])zoom\s*:\s*([\d.]+)/g), (match) => Number(match[1])),
+      );
+
+    const [page] = zoomOf(/^\.lesson-shell$/);
+    expect(page).toBe(0.75);
+    for (const quotation of [/^\.lesson-quote$/, /^\.dictionary-examples$/]) {
+      expect(zoomOf(quotation)).toHaveLength(1);
+      expect(page * zoomOf(quotation)[0]).toBeCloseTo(1, 3);
+    }
+    expect(zoomOf(/^\.topbar$/)).toEqual([]);
+  });
+
   it("keeps the topbar in three columns, so the profile button stays on the brand's line", () => {
     const columns = declarationsFor(/^\.topbar$/).flatMap((declarations) =>
       Array.from(declarations.matchAll(/grid-template-columns\s*:\s*([^;]+);/g), (match) => match[1].trim()),
