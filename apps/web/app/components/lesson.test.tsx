@@ -3,20 +3,17 @@ import type { ReactNode } from "react";
 import { createRoutesStub } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 
-import { lessonsInCourse } from "../content/lessons";
-import { CharacterFocus, CharacterForms, CharDisplay, CoursePosition, LessonHeader, SectionBreak } from "./lesson";
+import { CharacterFocus, CharacterForms, CharDisplay, LessonHeader, SectionBreak } from "./lesson";
 
 // Only 血 has a dictionary page here.
 vi.mock("../content/dictionary/headwords", () => ({ hasDictionaryPage: (headword: string) => headword === "血" }));
 
 describe("LessonHeader", () => {
-  it("shows the lesson's course position under its subtitle", () => {
+  it("names the heading after the lesson, with its subtitle under it", () => {
     render(<LessonHeader number={1} subtitle="About the primitive 一, a single stroke." />);
 
-    expect(screen.getByRole("heading", { level: 1, name: "Lesson 1" })).toBeInTheDocument();
-    const position = screen.getByRole("img", { name: `Lesson 1 of ${lessonsInCourse}` });
-    expect(position.previousElementSibling).toHaveClass("lesson-subtitle");
-    expect(position.parentElement).toHaveClass("lesson-heading");
+    const heading = screen.getByRole("heading", { level: 1, name: "Lesson 1" });
+    expect(heading.nextElementSibling).toHaveClass("lesson-subtitle");
   });
 
   it("shows the lesson's own subtitle with its Chinese marked", () => {
@@ -62,25 +59,6 @@ describe("SectionBreak", () => {
   });
 });
 
-describe("CoursePosition", () => {
-  it("shows the lesson's number and the course's last, with the line filled to the lesson's share", () => {
-    const { container } = render(<CoursePosition number={1} />);
-
-    const position = screen.getByRole("img", { name: "Lesson 1 of 177" });
-    const [number, , last] = Array.from(position.children, (child) => child.textContent);
-    expect(number).toBe("1");
-    expect(last).toBe("177");
-    const bar = container.querySelector(".progress-line > span") as HTMLElement;
-    expect(bar.style.width).toBe(`${(1 / lessonsInCourse) * 100}%`);
-  });
-
-  it("fills the whole line at the course's last lesson", () => {
-    const { container } = render(<CoursePosition number={lessonsInCourse} />);
-
-    expect((container.querySelector(".progress-line > span") as HTMLElement).style.width).toBe("100%");
-  });
-});
-
 describe("a displayed character", () => {
   function renderInRouter(ui: ReactNode) {
     const Stub = createRoutesStub([{ path: "/", Component: () => ui }]);
@@ -90,7 +68,7 @@ describe("a displayed character", () => {
   it("links to its dictionary page when it has one, a look-alike form to its character's", () => {
     renderInRouter(
       <>
-        <CharDisplay character="血" label="J" />
+        <CharDisplay character="血" label="J" reading="xuè" />
         <CharacterFocus character="⾎" />
       </>,
     );
@@ -105,12 +83,18 @@ describe("a displayed character", () => {
   it("stays plain without one", () => {
     renderInRouter(
       <>
-        <CharDisplay character="丂" label="I" />
+        <CharDisplay character="丂" label="I" reading="kǎo" />
         <CharacterFocus character="丂" />
       </>,
     );
 
     expect(screen.queryAllByRole("link")).toEqual([]);
     expect(screen.getByRole("heading", { level: 2, name: "丂" })).toBeInTheDocument();
+  });
+
+  it("shows its reading under the character, outside the heading", () => {
+    renderInRouter(<CharDisplay character="丂" label="I" reading="kǎo" />);
+
+    expect(screen.getByRole("heading", { level: 2, name: "丂" }).nextElementSibling).toHaveTextContent("kǎo");
   });
 });

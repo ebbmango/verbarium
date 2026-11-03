@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -30,8 +33,6 @@ describe("Lesson 1", () => {
 
   it("keeps its structure: 17 quotations, four divisions under solid rules, five dashed dividers", () => {
     const article = renderLesson();
-
-    expect(screen.getByRole("img", { name: "Lesson 1 of 177" })).toBeInTheDocument();
     expect(article.querySelectorAll("blockquote.lesson-quote")).toHaveLength(17);
     expect(article.querySelectorAll("hr.lesson-divider-dashed")).toHaveLength(5);
 
@@ -71,6 +72,17 @@ describe("Lesson 1", () => {
     expect(closing).toHaveAttribute("lang", "zh-Hant");
     expect(closing?.textContent).toBe("千里之行　始於足下");
     expect(closing?.querySelector("p")).toBeNull();
+  });
+
+  it("reads each displayed character as one of the readings on its dictionary page", () => {
+    const displays = [...source.matchAll(/<CharDisplay character="([^"]+)" label="[^"]+" reading="([^"]+)" \/>/g)];
+
+    expect(displays).toHaveLength(source.match(/<CharDisplay /g)?.length ?? 0);
+    expect(displays.length).toBeGreaterThan(0);
+    for (const [, character, reading] of displays) {
+      const page = readFileSync(join(import.meta.dirname, `../dictionary/${character}.mdx`), "utf8");
+      expect(Array.from(page.matchAll(/<Reading pinyin="([^"]+)"/g), (match) => match[1])).toContain(reading);
+    }
   });
 
   it("marks every run of Chinese in its prose with lang zh-Hant", () => {

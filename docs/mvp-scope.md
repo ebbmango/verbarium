@@ -117,7 +117,8 @@ new quotations. Write down the portable authoring rules before bulk authoring
 starts, and bring Lesson 1 in line with them.
 
 **Phase 3 — Multi-lesson web.** Lesson index, routing between lessons, and the
-course-position indicator. `LessonHeader` shows the course position.
+course-position indicator. The indicator left `LessonHeader` in 2026-11, to match
+the Figma design, until it has a better place.
 
 **Phase 4 — Lessons 002–020.** Nineteen lessons of prose, plus their quotations
 authored in Quote Slicer. Lesson 001 carries seventeen quotations, so budget

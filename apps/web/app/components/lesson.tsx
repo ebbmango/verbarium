@@ -4,7 +4,6 @@ import { Link } from "react-router";
 
 import { dictionaryPath } from "../content/dictionary/dictionary-files";
 import { hasDictionaryPage } from "../content/dictionary/headwords";
-import { lessonsInCourse } from "../content/lessons";
 import type { LessonHeaderData } from "../mdx/remark-lesson-header";
 import { splitHanRuns } from "../lib/han-runs";
 import { FinishLesson } from "./finish-lesson";
@@ -20,33 +19,19 @@ export function HanMarkedText({ text }: { text: string }) {
   ));
 }
 
-/** The course position: this lesson's number along a line that ends at the course's last. */
-export function CoursePosition({ number }: { number: number }) {
-  return (
-    <div className="lesson-progress" role="img" aria-label={`Lesson ${number} of ${lessonsInCourse}`}>
-      <span>{number}</span>
-      <span className="progress-line">
-        <span style={{ width: `${(number / lessonsInCourse) * 100}%` }} />
-      </span>
-      <span>{lessonsInCourse}</span>
-    </div>
-  );
-}
-
-type PageHeadingProps = PropsWithChildren<{
+type PageHeadingProps = {
   eyebrow?: string;
   title: ReactNode;
   subtitle: ReactNode;
-}>;
+};
 
-/** The title block a page opens with: any eyebrow, the title, a subtitle line, and whatever follows them. */
-export function PageHeading({ children, eyebrow, subtitle, title }: PageHeadingProps) {
+/** The title block a page opens with: any eyebrow, the title and a subtitle line. */
+export function PageHeading({ eyebrow, subtitle, title }: PageHeadingProps) {
   return (
     <header className="lesson-heading">
       {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
       <h1>{title}</h1>
       <p className="lesson-subtitle">{subtitle}</p>
-      {children}
     </header>
   );
 }
@@ -62,11 +47,7 @@ export function LessonHeader({ number, subtitle }: LessonHeaderData) {
     </span>
   );
 
-  return (
-    <PageHeading title={title} subtitle={<HanMarkedText text={subtitle} />}>
-      <CoursePosition number={number} />
-    </PageHeading>
-  );
+  return <PageHeading title={title} subtitle={<HanMarkedText text={subtitle} />} />;
 }
 
 /** A character the lesson displays, linking to its dictionary page when it has one; a look-alike form links to its character's. */
@@ -78,9 +59,11 @@ function DisplayedCharacter({ character }: { character: string }) {
 type CharDisplayProps = {
   character: string;
   label: string;
+  /** The reading this lesson teaches: one of those on the character's dictionary page. */
+  reading: string;
 };
 
-export function CharDisplay({ character, label }: CharDisplayProps) {
+export function CharDisplay({ character, label, reading }: CharDisplayProps) {
   const headingId = `character-${label.toLowerCase()}`;
 
   return (
@@ -89,6 +72,7 @@ export function CharDisplay({ character, label }: CharDisplayProps) {
       <h2 className="study-character" id={headingId} lang="zh-Hant">
         <DisplayedCharacter character={character} />
       </h2>
+      <p className="study-reading">{reading}</p>
     </div>
   );
 }

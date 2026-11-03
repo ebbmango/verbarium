@@ -209,7 +209,7 @@ button {
   line-height: 41px;
 }
 
-/* Lesson heading and progress */
+/* Lesson heading */
 
 .lesson-heading {
   position: relative;
@@ -284,45 +284,24 @@ button {
   font-style: italic;
 }
 
-.lesson-progress {
-  display: grid;
-  grid-template-columns: auto 7rem auto;
-  justify-content: center;
-  align-items: center;
-  gap: 0.8rem;
-  margin-top: 8px;
-  color: var(--faint);
-  font-family: var(--font-ui);
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
-.progress-line {
-  height: 1px;
-  overflow: hidden;
-  background: rgb(68 68 60 / 14%);
-}
-
-.progress-line span {
-  display: block;
-  min-width: 0.56rem;
-  height: 100%;
-  background: var(--red);
-}
-
 /* Character sections */
 
 .char-display {
+  --study-size: clamp(5.4rem, 20vw, 9rem);
   position: relative;
   width: min(100%, 510px);
-  margin: 120px auto 100px;
+  margin: 120px auto 76px;
   text-align: center;
 }
 
+.lesson-note + .char-display {
+  margin-top: 77px;
+}
+
+/* Level with the middle of the character, above its reading */
 .section-marker {
   position: absolute;
-  top: 50%;
+  top: calc(var(--study-size) / 2);
   left: 0;
   translate: 0 -50%;
   width: 34px;
@@ -351,8 +330,14 @@ button {
 
 .study-character {
   margin: 0;
-  font-size: clamp(5.4rem, 20vw, 9rem);
+  font-size: var(--study-size);
   font-weight: 500;
+}
+
+.study-reading {
+  margin: 41px 0 0;
+  font-size: 2.5rem;
+  line-height: 62px;
 }
 
 /* Quotations */
@@ -470,8 +455,8 @@ button {
 }
 
 .form-placeholder {
-  width: 100%;
-  height: 100%;
+  width: 120px;
+  height: 120px;
   border: 1px dashed var(--rule);
   background: linear-gradient(
     135deg,

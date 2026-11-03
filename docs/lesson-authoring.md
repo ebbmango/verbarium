@@ -51,8 +51,8 @@ between two characters of the same division. A new division of the lesson
 
 | Component | What it is for |
 | --- | --- |
-| `<LessonHeader number={1} subtitle="About the primitive 一, a single stroke." />` | The lesson's title block: the title, your subtitle, and the course position (Lesson 1 of 177). Once per lesson, first. The subtitle is plain text in quotes; it is also the lesson's line in the lesson index and the page description. To put a double quote in it, write the subtitle between single quotes: `subtitle='About "one" stroke.'`. |
-| `<CharDisplay character="雨" label="B" />` | Opens a character's section: the big character and its letter. The character links to its dictionary page once it has one, and that page names this lesson. |
+| `<LessonHeader number={1} subtitle="About the primitive 一, a single stroke." />` | The lesson's title block: the title and your subtitle. Once per lesson, first. The subtitle is plain text in quotes; it is also the lesson's line in the lesson index and the page description. To put a double quote in it, write the subtitle between single quotes: `subtitle='About "one" stroke.'`. |
+| `<CharDisplay character="雨" label="B" reading="yǔ" />` | Opens a character's section: the big character, its letter, and the reading the lesson teaches, which must be one of those on its dictionary page. The character links to its dictionary page once it has one, and that page names this lesson. |
 | `<CharacterForms character="雨" description="Old and new form of the character" forms={2} />` | The historical-forms study. `forms` is how many cards; `character` fills the last one. |
 | `<Quote id="L001B-Q01" />` | A quotation by its Quote ID; the quotation file carries the text, provenance and source link. |
 | `<SectionBreak ordinal="First">…</SectionBreak>` | One of the lesson's numbered divisions; its text is a paragraph that reads on from the ordinal ("First, when written…"), so it starts in lower case. |
