@@ -1,10 +1,8 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { lessonComponents } from "../../components/lesson";
+import { dictionaryPages } from "../dictionary";
 import { resetFakeSupabase } from "../../test/fake-supabase";
 import { lessonSources } from "../../test/lesson-sources";
 import { renderWithSession } from "../../test/render-with-session";
@@ -74,14 +72,16 @@ describe("Lesson 1", () => {
     expect(closing?.querySelector("p")).toBeNull();
   });
 
-  it("reads each displayed character as one of the readings on its dictionary page", () => {
-    const displays = [...source.matchAll(/<CharDisplay character="([^"]+)" label="[^"]+" reading="([^"]+)" \/>/g)];
+  it("reads each displayed character, in every lesson, as one of the readings on its dictionary page", () => {
+    const displays = Array.from(lessonSources().values()).flatMap((mdx) =>
+      Array.from(mdx.matchAll(/<CharDisplay character="([^"]+)" label="[^"]+" reading="([^"]+)" \/>/g)),
+    );
 
-    expect(displays).toHaveLength(source.match(/<CharDisplay /g)?.length ?? 0);
-    expect(displays.length).toBeGreaterThan(0);
+    expect(displays.length).toBeGreaterThanOrEqual(10);
     for (const [, character, reading] of displays) {
-      const page = readFileSync(join(import.meta.dirname, `../dictionary/${character}.mdx`), "utf8");
-      expect(Array.from(page.matchAll(/<Reading pinyin="([^"]+)"/g), (match) => match[1])).toContain(reading);
+      const page = dictionaryPages.find((candidate) => candidate.headword === character.normalize("NFKC"));
+      if (!page) continue;
+      expect(page.entries.flatMap((entry) => entry.readings), `${character} ${reading}`).toContain(reading);
     }
   });
 

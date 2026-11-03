@@ -15,15 +15,21 @@ describe("remarkLessonCharacters", () => {
   });
 
   it("reads a radical or compatibility form as the character it looks like", async () => {
-    expect(await displayed('<CharDisplay character="⾎" label="A" />\n\n<CharacterFocus character="血" />')).toEqual(["血"]);
+    expect(await displayed('<CharDisplay character="⾎" label="A" reading="xuè" />\n\n<CharacterFocus character="血" />')).toEqual(["血"]);
   });
 
   it("fails the build, naming the lesson, for a display without its character in quotes", async () => {
-    await expect(displayed('<CharDisplay character={"雨"} label="B" />')).rejects.toThrow(
+    await expect(displayed('<CharDisplay character={"雨"} label="B" reading="yǔ" />')).rejects.toThrow(
       '002.mdx: <CharDisplay> writes its character in quotes, as in character="雨"',
     );
     await expect(displayed("<CharacterFocus />")).rejects.toThrow(
       '002.mdx: <CharacterFocus> writes its character in quotes, as in character="雨"',
+    );
+  });
+
+  it("fails the build, naming the lesson, for a CharDisplay without the reading it teaches", async () => {
+    await expect(displayed('<CharDisplay character="雨" label="B" />')).rejects.toThrow(
+      '002.mdx: <CharDisplay> names the reading it teaches, as in reading="yǔ"',
     );
   });
 

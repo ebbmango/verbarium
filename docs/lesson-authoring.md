@@ -63,6 +63,16 @@ between two characters of the same division. A new division of the lesson
 Props may contain Chinese (`character="一"`); the component marks it.
 Numbers go in braces (`lesson={1}`, `forms={3}`), text in quotes.
 
+## The form-study font
+
+Historical-form studies set their current form in TW-Kai, shipped as
+`apps/web/public/fonts/tw-kai-forms.woff2`: a copy cut down to the characters
+the lessons display, so the page does not load the 37 MB font. When a lesson
+displays a character the file lacks, the glyph falls back to WenKai; rebuild
+the file with every displayed character (fontTools' `pyftsubset`, `--flavor=woff2`,
+from TW-Kai's `Fonts_Kai.zip` at <https://www.cns11643.gov.tw/opendata/>).
+The font is OFL 1.1; its licence stays beside it.
+
 ## Prose
 
 - A blank line separates paragraphs. Wrapping a paragraph over several lines
