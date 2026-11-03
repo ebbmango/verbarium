@@ -9,6 +9,7 @@ import type { LessonHeaderData } from "../mdx/remark-lesson-header";
 import { splitHanRuns } from "../lib/han-runs";
 import { FinishLesson } from "./finish-lesson";
 import { LegacyQuote, Quote } from "./quote";
+import { LessonSeal, LetterSeal } from "./seal";
 
 export { LegacyQuote, Quote } from "./quote";
 
@@ -52,8 +53,17 @@ export function PageHeading({ children, eyebrow, subtitle, title }: PageHeadingP
 
 /** A lesson's title block. Its number and subtitle are also read at compile time (app/mdx/remark-lesson-header.ts). */
 export function LessonHeader({ number, subtitle }: LessonHeaderData) {
+  // The seal says 課, "lesson"; the hidden text says the whole title to assistive technology.
+  const title = (
+    <span className="lesson-title">
+      <LessonSeal number={number} />
+      <span className="visually-hidden">Lesson {number}</span>
+      <span aria-hidden="true">{number}</span>
+    </span>
+  );
+
   return (
-    <PageHeading eyebrow="Etymological lessons" title={`Lesson ${number}`} subtitle={<HanMarkedText text={subtitle} />}>
+    <PageHeading eyebrow="Etymological lessons" title={title} subtitle={<HanMarkedText text={subtitle} />}>
       <CoursePosition number={number} />
     </PageHeading>
   );
@@ -75,7 +85,7 @@ export function CharDisplay({ character, label }: CharDisplayProps) {
 
   return (
     <div className="char-display">
-      <span className="section-marker">{label}</span>
+      <LetterSeal character={character} className="section-marker" letter={label} />
       <h2 className="study-character" id={headingId} lang="zh-Hant">
         <DisplayedCharacter character={character} />
       </h2>
