@@ -35,6 +35,9 @@ jobs:
 
       - name: Test
         run: pnpm test
+        env:
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
 
       - name: Configure GitHub Pages
         id: pages
