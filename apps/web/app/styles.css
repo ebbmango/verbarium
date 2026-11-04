@@ -385,15 +385,16 @@ button {
   font-style: normal;
 }
 
-/* The lit mapping: red and a bit heavier on both sides of the quotation */
+/* The lit mapping: red, and a bit heavier in English. Chinese stays at its weight:
+   this font's bold barely shows, and lighting a character would download it, showing
+   a fallback font until it arrived. */
 .quote-token-active {
-  font-weight: 700;
   transition:
     color 280ms ease,
     font-weight 280ms ease;
 }
 
-.lesson-quote > p + p .quote-token-active {
+.lesson-quote > p + p .quote-token-active:not(.quote-target-hanzi) {
   font-weight: 600;
 }
 

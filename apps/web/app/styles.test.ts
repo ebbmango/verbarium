@@ -38,6 +38,11 @@ describe("the stylesheet", () => {
     expect(zoomOf(/^\.topbar$/)).toEqual([]);
   });
 
+  it("lights Chinese without changing its weight, which would fetch a bold font file on hover, and English at 600", () => {
+    expect(declarationsFor(/\.quote-token-active$/).join()).not.toMatch(/font-weight\s*:/);
+    expect(declarationsFor(/\.quote-token-active:not\(\.quote-target-hanzi\)$/).join()).toMatch(/font-weight\s*:\s*600/);
+  });
+
   it("keeps the topbar in three columns, so the profile button stays on the brand's line", () => {
     const columns = declarationsFor(/^\.topbar$/).flatMap((declarations) =>
       Array.from(declarations.matchAll(/grid-template-columns\s*:\s*([^;]+);/g), (match) => match[1].trim()),
