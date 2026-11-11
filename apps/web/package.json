@@ -10,7 +10,8 @@
     "start": "react-router-serve ./build/server/index.js",
     "test": "vitest run",
     "typecheck": "react-router typegen && tsc",
-    "validate-quotations": "node scripts/validate-quotations.ts"
+    "validate-quotations": "node scripts/validate-quotations.ts",
+    "fetch-forms": "scripts/fetch-forms.sh"
   },
   "dependencies": {
     "@react-router/node": "^8.3.0",
