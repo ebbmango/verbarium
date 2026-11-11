@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { createRoutesStub } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 
-import { CharacterFocus, CharacterForms, CharDisplay, LessonHeader, SectionBreak } from "./lesson";
+import { CharacterFocus, CharacterForms, CharDisplay, formPictureUrl, LessonHeader, SectionBreak } from "./lesson";
 
 // Only 血 has a dictionary page here.
 vi.mock("../content/dictionary/headwords", () => ({ hasDictionaryPage: (headword: string) => headword === "血" }));
@@ -44,6 +44,39 @@ describe("CharacterForms", () => {
     }
     expect(screen.getAllByText("Historical form pending")[0]).toHaveClass("visually-hidden");
   });
+
+  it("shows the historical pictures oldest first, then the character, adding cards as needed", () => {
+    const { container } = render(
+      <CharacterForms character="雨" description="Forms" historical="a-雨  b-雨 c-雨" />,
+    );
+
+    const cards = container.querySelectorAll(".form-card");
+    expect(cards).toHaveLength(4);
+    expect(screen.getAllByRole("img", { name: "Historical form" }).map((picture) => picture.style.getPropertyValue("--form-picture"))).toEqual([
+      'url("/forms/a-雨.svg")',
+      'url("/forms/b-雨.svg")',
+      'url("/forms/c-雨.svg")',
+    ]);
+    expect(cards[3].querySelector(".form-glyph")).toHaveTextContent("雨");
+    expect(container.querySelector(".form-placeholder")).toBeNull();
+  });
+
+  it("shows a glyph:X entry as the current form of X, in its place among the pictures", () => {
+    const { container } = render(
+      <CharacterForms character="閂" description="Forms" historical="a-門 glyph:門" />,
+    );
+
+    const cards = container.querySelectorAll(".form-card");
+    expect(cards).toHaveLength(3);
+    expect(cards[0].querySelector(".form-picture")).not.toBeNull();
+    expect(cards[1].querySelector(".form-glyph")).toHaveTextContent("門");
+    expect(cards[2].querySelector(".form-glyph")).toHaveTextContent("閂");
+  });
+
+  it("takes a picture's extension when its name has one", () => {
+    expect(formPictureUrl("drawing-閂.png")).toBe("/forms/drawing-閂.png");
+    expect(formPictureUrl("sinica-03-oracle-bone-雨")).toBe("/forms/sinica-03-oracle-bone-雨.svg");
+  });
 });
 
 describe("SectionBreak", () => {
@@ -69,7 +102,7 @@ describe("a displayed character", () => {
     renderInRouter(
       <>
         <CharDisplay character="血" label="J" reading="xuè" />
-        <CharacterFocus character="⾎" />
+        <CharDisplay character="⾎" label="K" reading="xuè" />
       </>,
     );
 
@@ -78,6 +111,23 @@ describe("a displayed character", () => {
       ["血", "/dictionary/血"],
       ["⾎", "/dictionary/血"],
     ]);
+  });
+
+  it("stays plain as a focus character, even with a dictionary page", () => {
+    renderInRouter(<CharacterFocus character="血" />);
+
+    expect(screen.queryAllByRole("link")).toEqual([]);
+    expect(screen.getByText("血")).toHaveClass("character-focus");
+  });
+
+  it("in a form study, links the current form to its dictionary page and each picture to the page it came from", () => {
+    renderInRouter(<CharacterForms character="血" description="Forms" historical="sinica-01-oracle-bone-血" />);
+
+    const [source, dictionary] = screen.getAllByRole("link");
+    expect(source).toHaveAttribute("href", "https://xiaoxue.iis.sinica.edu.tw/yanbian/?char=%E8%A1%80");
+    expect(source).toHaveAttribute("target", "_blank");
+    expect(screen.getByRole("img", { name: "Historical form, from 小學堂字形演變: 鐵50.1 · 甲 · 商" })).toBeInTheDocument();
+    expect([dictionary.textContent, dictionary.getAttribute("href")]).toEqual(["血", "/dictionary/血"]);
   });
 
   it("stays plain without one", () => {

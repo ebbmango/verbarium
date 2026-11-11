@@ -1,9 +1,10 @@
-import type { ComponentPropsWithoutRef, PropsWithChildren, ReactNode } from "react";
+import type { ComponentPropsWithoutRef, CSSProperties, PropsWithChildren, ReactNode } from "react";
 import { Fragment } from "react";
 import { Link } from "react-router";
 
 import { dictionaryPath } from "../content/dictionary/dictionary-files";
 import { hasDictionaryPage } from "../content/dictionary/headwords";
+import { formSources } from "../content/forms/form-sources";
 import type { LessonHeaderData } from "../mdx/remark-lesson-header";
 import { splitHanRuns } from "../lib/han-runs";
 import { FinishLesson } from "./finish-lesson";
@@ -81,22 +82,59 @@ type CharacterFormsProps = {
   character?: string;
   description: string;
   forms?: number;
+  /** Historical-form pictures in `public/forms/`, oldest first, by file name, separated by spaces; a name without an extension means `.svg`. A `glyph:X` entry shows the current form of X as text instead of a picture. */
+  historical?: string;
 };
 
-export function CharacterForms({ character, description, forms = 2 }: CharacterFormsProps) {
+/** Where a historical-form picture is served; a name without an extension means `.svg`. */
+export function formPictureUrl(name: string) {
+  return `${import.meta.env.BASE_URL}forms/${/\.\w+$/.test(name) ? name : `${name}.svg`}`;
+}
+
+/** A historical-form picture, linking to the page it was taken from. */
+function FormPicture({ name }: { name: string }) {
+  const source = formSources[name];
+  // Drawn as a mask over the text colour, so a picture takes the ink of its surroundings (muted in a Commentary).
+  const picture = (
+    <span
+      aria-label={source ? `Historical form, from ${source.label}` : "Historical form"}
+      className="form-picture"
+      role="img"
+      style={{ "--form-picture": `url("${formPictureUrl(name)}")` } as CSSProperties}
+    />
+  );
+
+  return source ? (
+    <a className="form-source" href={source.href} rel="noopener noreferrer" target="_blank" title={source.label}>
+      {picture}
+    </a>
+  ) : (
+    picture
+  );
+}
+
+export function CharacterForms({ character, description, forms = 2, historical = "" }: CharacterFormsProps) {
+  const pictures = historical.split(/\s+/).filter(Boolean);
+  const cards = Math.max(forms, pictures.length + (character ? 1 : 0));
+
   return (
     <figure className="character-forms">
       <figcaption className="visually-hidden">{description}</figcaption>
       <div className="form-grid">
-        {Array.from({ length: forms }, (_, index) => {
-          const isCurrent = Boolean(character) && index === forms - 1;
+        {Array.from({ length: cards }, (_, index) => {
+          const isCurrent = Boolean(character) && index === cards - 1;
+          const entry = isCurrent ? undefined : pictures[index];
+          const glyph = entry?.startsWith("glyph:") ? entry.slice("glyph:".length) : undefined;
+          const picture = glyph ? undefined : entry;
 
           return (
             <div className="form-card" key={index}>
-              {isCurrent ? (
+              {picture ? (
+                <FormPicture name={picture} />
+              ) : isCurrent || glyph ? (
                 <>
                   <span className="form-glyph" lang="zh-Hant">
-                    {character}
+                    <DisplayedCharacter character={(glyph ?? character) as string} />
                   </span>
                   <span className="visually-hidden">Current form</span>
                 </>
@@ -144,10 +182,11 @@ export function Commentary({ children }: PropsWithChildren) {
   );
 }
 
+/** One large character standing alone in the prose: shown, not linked. */
 export function CharacterFocus({ character }: { character: string }) {
   return (
     <div className="character-focus" lang="zh-Hant">
-      <DisplayedCharacter character={character} />
+      {character}
     </div>
   );
 }

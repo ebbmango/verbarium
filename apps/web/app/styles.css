@@ -1,10 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Ancizar+Serif:wght@400;600&family=LXGW+WenKai+Mono+TC:wght@300;400;700&family=Noto+Serif+TC:wght@200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap");
 
-/* TW-Kai (全字庫正楷體, OFL 1.1: public/fonts/TW-Kai-LICENSE.md), cut down to the
-   characters the lessons display, for their historical-form studies. */
+/* TW-Kai (全字庫正楷體, OFL 1.1: public/fonts/TW-Kai-LICENSE.md), the whole font
+   (15 MB), for the historical-form studies. To be cut down before launch. */
 @font-face {
   font-family: "TW-Kai Forms";
-  src: url("/fonts/tw-kai-forms.woff2") format("woff2");
+  src: url("/fonts/tw-kai.woff2") format("woff2");
   font-display: swap;
 }
 
@@ -72,7 +72,6 @@ button {
 .profile-button:focus-visible,
 .nav-tab:focus-visible,
 .study-character a:focus-visible,
-.character-focus a:focus-visible,
 .dictionary-gloss:focus-visible,
 .dictionary-tags a:focus-visible,
 .brand:focus-visible {
@@ -373,6 +372,11 @@ button {
   font-family: var(--font-han-quote);
 }
 
+/* A form study inside a Commentary keeps the form font, not the quotation font. */
+.lesson-note .form-glyph {
+  font-family: var(--font-han-forms);
+}
+
 .quote-source-group {
   white-space: nowrap;
 }
@@ -429,26 +433,55 @@ button {
 /* Historical form studies */
 
 .character-forms {
-  width: min(100%, var(--measure-study));
+  /* As wide as its cards, so they stay on one line; never wider than the lesson. */
+  width: fit-content;
+  min-width: min(100%, var(--measure-study));
+  max-width: 100%;
   margin: 65px auto 68px;
 }
 
 .form-grid {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  gap: 52px;
+  gap: clamp(16px, 5vw, 52px);
 }
 
+/* 120px squares, shrinking together only when the screen is too narrow for one line. */
 .form-card {
   display: grid;
-  grid-template: 120px / 120px;
-  place-content: center;
+  flex: 0 1 auto;
+  width: 120px;
+  min-width: 0;
+  aspect-ratio: 1;
+  place-items: center;
+  container-type: inline-size;
 }
 
 .form-glyph {
-  font-size: 128px;
+  font-size: calc(100cqi * 128 / 120);
   line-height: 1;
+  /* Shown like the pictures beside it: not selectable as text. */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.form-card a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.form-source {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.form-picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: currentColor;
+  mask: var(--form-picture) center / contain no-repeat;
 }
 
 .form-placeholder {
@@ -639,13 +672,11 @@ button {
 
 /* Dictionary pages, and the links to them from lessons */
 
-.study-character a,
-.character-focus a {
+.study-character a {
   text-decoration: none;
 }
 
-.study-character a:hover,
-.character-focus a:hover {
+.study-character a:hover {
   color: var(--red);
 }
 
