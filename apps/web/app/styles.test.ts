@@ -38,9 +38,14 @@ describe("the stylesheet", () => {
     expect(zoomOf(/^\.topbar$/)).toEqual([]);
   });
 
-  it("lights Chinese without changing its weight, which would fetch a bold font file on hover, and English at 600", () => {
-    expect(declarationsFor(/\.quote-token-active$/).join()).not.toMatch(/font-weight\s*:/);
-    expect(declarationsFor(/\.quote-token-active:not\(\.quote-target-hanzi\)$/).join()).toMatch(/font-weight\s*:\s*600/);
+  it("crossfades mapped tokens in both states without changing their weight", () => {
+    const activeRules = declarationsFor(/\.quote-token-active\b/).join();
+    const mappedRules = declarationsFor(/^\.lesson-quote \[data-mapping-id\]$/);
+
+    expect(mappedRules).toHaveLength(2);
+    expect(mappedRules[0]).toMatch(/transition\s*:\s*color\s+280ms\s+ease/);
+    expect(activeRules + mappedRules.join()).not.toMatch(/font-weight/);
+    expect(mappedRules[1]).toMatch(/transition\s*:\s*none/);
   });
 
   it("keeps the topbar in three columns, so the profile button stays on the brand's line", () => {

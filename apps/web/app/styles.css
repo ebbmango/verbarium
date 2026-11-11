@@ -385,17 +385,9 @@ button {
   font-style: normal;
 }
 
-/* The lit mapping: red, and a bit heavier in English. Chinese stays at its weight:
-   this font's bold barely shows, and lighting a character would download it, showing
-   a fallback font until it arrived. */
-.quote-token-active {
-  transition:
-    color 280ms ease,
-    font-weight 280ms ease;
-}
-
-.lesson-quote > p + p .quote-token-active:not(.quote-target-hanzi) {
-  font-weight: 600;
+/* Keep the transition on resting tokens too, so mappings crossfade both ways. */
+.lesson-quote [data-mapping-id] {
+  transition: color 280ms ease;
 }
 
 .quote-source {
@@ -1122,7 +1114,7 @@ summary.dictionary-gloss::before {
     scroll-behavior: auto;
   }
 
-  .quote-token-active {
+  .lesson-quote [data-mapping-id] {
     transition: none;
   }
 }
