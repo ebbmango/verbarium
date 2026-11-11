@@ -6,3 +6,7 @@ build/
 
 supabase/.temp/
 supabase/.branches/
+
+.vibe-wise/
+
+.env
