@@ -10,3 +10,7 @@ supabase/.branches/
 .vibe-wise/
 
 .env
+
+# 小學堂 historical-form traces: shown on the site, kept out of this public repo.
+# Copied from the private repo hanzi-old-forms by apps/web/scripts/fetch-forms.sh.
+apps/web/public/forms/sinica-*

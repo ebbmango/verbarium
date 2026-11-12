@@ -30,6 +30,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Check out historical-form pictures
+        # The 小學堂 traces are shown on the site but kept in a private repo, not this one.
+        uses: actions/checkout@v7
+        with:
+          repository: ebbmango/hanzi-old-forms
+          token: ${{ secrets.FORMS_REPO_TOKEN }}
+          path: hanzi-old-forms
+
+      - name: Copy historical-form pictures into the site
+        env:
+          FORMS_REPO_DIR: ${{ github.workspace }}/hanzi-old-forms
+        run: apps/web/scripts/fetch-forms.sh
+
       - name: Type-check
         run: pnpm typecheck
 
