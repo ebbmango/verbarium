@@ -440,7 +440,14 @@ button {
   margin: 65px auto 68px;
 }
 
+/* Rows of at most four pictures, the shorter rows centred under the fuller ones. */
 .form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 5vw, 52px);
+}
+
+.form-row {
   display: flex;
   justify-content: center;
   gap: clamp(16px, 5vw, 52px);

@@ -6,6 +6,7 @@ import { dictionaryPath } from "../content/dictionary/dictionary-files";
 import { hasDictionaryPage } from "../content/dictionary/headwords";
 import { formSources } from "../content/forms/form-sources";
 import type { LessonHeaderData } from "../mdx/remark-lesson-header";
+import { rowSizes } from "../lib/form-rows";
 import { splitHanRuns } from "../lib/han-runs";
 import { FinishLesson } from "./finish-lesson";
 import { LegacyQuote, Quote } from "./quote";
@@ -117,33 +118,45 @@ export function CharacterForms({ character, description, forms = 2, historical =
   const pictures = historical.split(/\s+/).filter(Boolean);
   const cards = Math.max(forms, pictures.length + (character ? 1 : 0));
 
+  const cardElements = Array.from({ length: cards }, (_, index) => {
+    const isCurrent = Boolean(character) && index === cards - 1;
+    const entry = isCurrent ? undefined : pictures[index];
+    const glyph = entry?.startsWith("glyph:") ? entry.slice("glyph:".length) : undefined;
+    const picture = glyph ? undefined : entry;
+
+    return (
+      <div className="form-card" key={index}>
+        {picture ? (
+          <FormPicture name={picture} />
+        ) : isCurrent || glyph ? (
+          <>
+            <span className="form-glyph" lang="zh-Hant">
+              <DisplayedCharacter character={(glyph ?? character) as string} />
+            </span>
+            <span className="visually-hidden">Current form</span>
+          </>
+        ) : (
+          <>
+            <span className="form-placeholder" aria-hidden="true" />
+            <span className="visually-hidden">Historical form pending</span>
+          </>
+        )}
+      </div>
+    );
+  });
+
+  // Rows of at most four, the upper rows taking any extra (see rowSizes).
+  let next = 0;
   return (
     <figure className="character-forms">
       <figcaption className="visually-hidden">{description}</figcaption>
       <div className="form-grid">
-        {Array.from({ length: cards }, (_, index) => {
-          const isCurrent = Boolean(character) && index === cards - 1;
-          const entry = isCurrent ? undefined : pictures[index];
-          const glyph = entry?.startsWith("glyph:") ? entry.slice("glyph:".length) : undefined;
-          const picture = glyph ? undefined : entry;
-
+        {rowSizes(cards).map((size) => {
+          const first = next;
+          next += size;
           return (
-            <div className="form-card" key={index}>
-              {picture ? (
-                <FormPicture name={picture} />
-              ) : isCurrent || glyph ? (
-                <>
-                  <span className="form-glyph" lang="zh-Hant">
-                    <DisplayedCharacter character={(glyph ?? character) as string} />
-                  </span>
-                  <span className="visually-hidden">Current form</span>
-                </>
-              ) : (
-                <>
-                  <span className="form-placeholder" aria-hidden="true" />
-                  <span className="visually-hidden">Historical form pending</span>
-                </>
-              )}
+            <div className="form-row" key={first}>
+              {cardElements.slice(first, next)}
             </div>
           );
         })}
