@@ -10,7 +10,7 @@ import { rowSizes } from "../lib/form-rows";
 import { splitHanRuns } from "../lib/han-runs";
 import { FinishLesson } from "./finish-lesson";
 import { LegacyQuote, Quote } from "./quote";
-import { LessonSeal, LetterSeal } from "./seal";
+import { LetterSeal } from "./seal";
 
 export { LegacyQuote, Quote } from "./quote";
 
@@ -40,10 +40,9 @@ export function PageHeading({ eyebrow, subtitle, title }: PageHeadingProps) {
 
 /** A lesson's title block. Its number and subtitle are also read at compile time (app/mdx/remark-lesson-header.ts). */
 export function LessonHeader({ number, subtitle }: LessonHeaderData) {
-  // The seal says 課, "lesson"; the hidden text says the whole title to assistive technology.
+  // The hidden text says the whole title to assistive technology.
   const title = (
     <span className="lesson-title">
-      <LessonSeal number={number} />
       <span className="visually-hidden">Lesson {number}</span>
       <span aria-hidden="true">{number}</span>
     </span>
