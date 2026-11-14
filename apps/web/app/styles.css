@@ -366,8 +366,10 @@ button {
 }
 
 .lesson-shell:has(.lesson-manuscript) {
-  padding-top: 46px;
-  padding-bottom: 80px;
+  /* Room for the fades: the title starts below the top one, and the Finish
+     lesson button ends a little above the bottom one. */
+  padding-top: 72px;
+  padding-bottom: 180px;
 }
 
 /* Source Serif 4's text cut at every size but the title's, as the Figma design sets a lesson. */
