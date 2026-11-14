@@ -56,7 +56,7 @@ describe("Lesson 1", () => {
     expect(commentaries[1].querySelector("figure.character-forms")).not.toBeNull();
   });
 
-  it("keeps the authored line breaks in its prose and the closing line", () => {
+  it("keeps the authored line breaks in its prose, and ends on the Finish lesson button", () => {
     const article = renderLesson();
     const blood = Array.from(article.querySelectorAll(":scope > p")).find((p) => p.textContent?.startsWith("Blood."));
 
@@ -66,10 +66,7 @@ describe("Lesson 1", () => {
     const tree = Array.from(article.querySelectorAll(":scope > p")).find((p) => p.textContent?.startsWith("A horizontal stroke cuts through the top"));
     expect(tree?.querySelector("br")).not.toBeNull();
 
-    const closing = article.querySelector("blockquote.lesson-closing-quote");
-    expect(closing).toHaveAttribute("lang", "zh-Hant");
-    expect(closing?.textContent).toBe("千里之行　始於足下");
-    expect(closing?.querySelector("p")).toBeNull();
+    expect(article.querySelector("blockquote.lesson-closing-quote")).toBeNull();
   });
 
   it("reads each displayed character, in every lesson, as one of the readings on its dictionary page", () => {
