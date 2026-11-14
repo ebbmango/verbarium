@@ -41,6 +41,9 @@ export function LessonProgress() {
         const top = start ? start.getBoundingClientRect().top : -1;
         if (top <= window.innerHeight * reachedAt) reached = index;
       });
+      // A short last section can never rise that far: the end of the page is its.
+      const page = document.documentElement;
+      if (window.innerHeight + window.scrollY >= page.scrollHeight - 2) reached = Math.max(0, starts.current.length - 1);
       setCurrent(reached);
     };
     const schedule = () => {
