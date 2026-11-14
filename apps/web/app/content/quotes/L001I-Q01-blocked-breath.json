@@ -1,7 +1,7 @@
 {
   "formatVersion": 1,
   "provenance": "Shuowen Jiezi, 丂部, 丂 entry",
-  "sourceLink": "https://ctext.org/shuo-wen-jie-zi/kao-bu#:~:text=%E4%B8%82%EF%BC%9A%E6%B0%94%E6%AC%B2%E8%88%92%E5%87%BA%E3%80%82%F0%A0%83%91%E4%B8%8A%E7%A4%99%E6%96%BC%E4%B8%80%E4%B9%9F%E3%80%82",
+  "sourceLink": "https://ctext.org/shuo-wen-jie-zi/kao-bu#:~:text=%E6%B0%94%E6%AC%B2%E8%88%92%E5%87%BA%E3%80%82%F0%A0%83%91%E4%B8%8A%E7%A4%99%E6%96%BC%E4%B8%80%E4%B9%9F%E3%80%82",
   "attestation": {
     "tokens": [
       { "id": 0, "text": "气", "pinyin": "qi4", "type": "character" },
