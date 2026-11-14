@@ -71,7 +71,7 @@ export function CharDisplay({ character, label, reading }: CharDisplayProps) {
   return (
     <div className="char-display">
       <LetterSeal character={character} className="section-marker" letter={label} />
-      <h2 className="study-character" id={headingId} lang="zh-Hant">
+      <h2 className="study-character" data-character={character} id={headingId} lang="zh-Hant">
         <DisplayedCharacter character={character} />
       </h2>
       <p className="study-reading">{reading}</p>

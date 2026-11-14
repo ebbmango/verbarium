@@ -103,6 +103,82 @@ button {
   min-height: 100svh;
 }
 
+/* The bottom of a lesson's screen is a fixed band of clear paper, 80px tall like
+   an empty toolbar, with the text fading out into it over another 80px above. It
+   stays put as the page scrolls, so text is never cut by the screen's edge. */
+.paper:has(.lesson-manuscript)::after {
+  content: "";
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 160px;
+  background: linear-gradient(to bottom, transparent, var(--paper) 50%);
+  pointer-events: none;
+}
+
+/* The same plain fade at the top of the screen: text fades out as it scrolls away. */
+.paper:has(.lesson-manuscript)::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  height: 80px;
+  background: linear-gradient(to top, transparent, var(--paper));
+  pointer-events: none;
+}
+
+/* The characters of a lesson, in the empty band the fade above leaves at the
+   bottom of the screen: the one being read is darker. */
+.lesson-progress {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0rem, 0.8vw, 0.5rem);
+  height: 80px;
+  padding: 0 1rem;
+  pointer-events: none;
+}
+
+.lesson-progress-stop {
+  padding: 0.25rem;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-family: var(--font-han-quote);
+  /* Every stop takes the room of the largest, and the others are scaled down
+     inside it, so growing one never moves its neighbours. */
+  font-size: 2.3rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.18;
+  pointer-events: auto;
+  scale: 0.65;
+  transition: opacity 0.5s, scale 0.5s;
+}
+
+.lesson-progress-stop:hover {
+  opacity: 0.26;
+}
+
+/* The chapter being read: the same size as the rest, only a little darker. */
+.lesson-progress-current {
+  opacity: 0.28;
+  scale: 75%;
+}
+
+.lesson-progress-stop:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
 /* Site header */
 
 /* The seal, then the tabs beside it; the profile button at the far end */
@@ -118,6 +194,94 @@ button {
 .brand {
   display: inline-flex;
   align-items: center;
+}
+
+/* The lesson's navigation rail: the logo above pale icons, fixed to the left edge */
+.side-nav {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.side-nav .brand {
+  margin-bottom: 4px;
+}
+
+.side-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--ink);
+  /* The chapter strip's rest and hover steps, matched by eye: a solid icon
+     reads darker than thin brush strokes at the same opacity. No icon is marked
+     as current: the rail only shows inside a lesson. */
+  opacity: 0.12;
+  transition: opacity 0.2s;
+}
+
+.side-nav-item:hover {
+  opacity: 0.20;
+}
+
+.side-nav-item:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+.side-nav-icon {
+  width: 28px;
+  height: 28px;
+}
+
+/* Beside the page, not on the screen's edge: the rail a fixed way left of the
+   page's centre line and the chapter strip the same way right, both level with
+   the middle of the screen. The strip reads downward, first chapter at the top.
+   The distance clears the widest block of a lesson, the form pictures, whose
+   half is 281px on screen, by about 56px more than a column's half width (so
+   357px on screen, 397px before the page's 90% zoom), and never lets a column
+   run off a narrow window. */
+@media (min-width: 741px) {
+  .paper {
+    --rail-offset: min(397px, calc(50% - 28px));
+  }
+
+  .side-nav {
+    top: 50%;
+    left: calc(50% - var(--rail-offset));
+    translate: -50% -50%;
+  }
+
+  /* Nothing sits in the bottom band any more: a plain fade, no clear paper */
+  .paper:has(.lesson-manuscript)::after {
+    height: 80px;
+    background: linear-gradient(to bottom, transparent, var(--paper));
+  }
+
+  .lesson-progress {
+    top: 50%;
+    right: auto;
+    bottom: auto;
+    left: calc(50% + var(--rail-offset));
+    flex-direction: column;
+    gap: 0;
+    height: auto;
+    padding: 0;
+    translate: -50% -50%;
+  }
+}
+
+/* No room beside the page on a phone */
+@media (max-width: 740px) {
+  .side-nav {
+    display: none;
+  }
 }
 
 .primary-nav {
@@ -1135,6 +1299,12 @@ summary.dictionary-gloss::before {
 @media (min-width: 641px) and (pointer: fine) {
   .lesson-shell {
     zoom: 0.75;
+  }
+
+  /* A lesson's whole page, rail and strips included, reads best at 90% of the
+     above, as if the browser were zoomed to 90%. */
+  .paper:has(.lesson-manuscript) {
+    zoom: 0.9;
   }
 
   .lesson-quote {
