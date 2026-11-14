@@ -799,7 +799,7 @@ button {
   background: #b8343a;
 }
 
-/* The button between two rules that run past the page's edges, which clip them. Padding, not margin: a margin would collapse into the last quotation's. */
+/* The button centred between two empty columns (they once held rules running past the page's edges). Padding, not margin: a margin would collapse into the last quotation's. */
 .lesson-finish {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -811,7 +811,6 @@ button {
 .lesson-finish::before,
 .lesson-finish::after {
   width: 100vmax;
-  border-top: 1px solid var(--rule);
   content: "";
 }
 
