@@ -15,7 +15,11 @@ export function meta({}: Route.MetaArgs) {
 
 const pagesInOrder = [...dictionaryPages].sort(byReading);
 
-/** The dictionary index: every page, each linking to its address, and a search through them. */
+/**
+ * The dictionary index: a grid of tiles, one per page, each its character over
+ * its first reading and linking to its address (the senses are its hover title),
+ * and a search through them.
+ */
 export default function DictionaryIndex() {
   const [search, setSearch] = useState("");
   const found = pagesInOrder.filter((page) => matchesSearch(page, search));
@@ -34,17 +38,15 @@ export default function DictionaryIndex() {
             <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} />
           </label>
         </div>
-        <ul className="lesson-index dictionary-index">
+        <ul className="dictionary-index">
           {found.map((page) => (
             <li key={page.headword}>
-              <Link to={dictionaryPath(page.headword)}>
+              <Link title={glossesOf(page)} to={dictionaryPath(page.headword)}>
                 <span className="dictionary-index-headword" lang="zh-Hant">
                   {page.headword}
                 </span>
-                <span className="dictionary-index-readings">
-                  {page.entries.flatMap((entry) => entry.readings).join(" · ")}
-                </span>
-                <span className="lesson-subtitle">
+                <span className="dictionary-index-reading">{page.entries[0].readings[0]}</span>
+                <span className="visually-hidden">
                   <HanMarkedText text={glossesOf(page)} />
                 </span>
               </Link>

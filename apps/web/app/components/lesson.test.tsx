@@ -24,11 +24,12 @@ describe("LessonHeader", () => {
     expect(Array.from(subtitle.querySelectorAll('[lang="zh-Hant"]'), (span) => span.textContent)).toEqual(["二"]);
   });
 
-  it("opens with the number and its seal, under no eyebrow", () => {
+  it("opens with the number alone, under no eyebrow and with no seal", () => {
     const { container } = render(<LessonHeader number={1} subtitle="About the primitive 一." />);
 
     expect(container.querySelector(".eyebrow")).toBeNull();
-    expect(container.querySelector("h1 .seal-lesson")).not.toBeNull();
+    expect(container.querySelector("h1 .seal-lesson")).toBeNull();
+    expect(screen.getByRole("heading", { level: 1, name: "Lesson 1" })).toBeInTheDocument();
   });
 });
 

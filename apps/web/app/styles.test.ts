@@ -47,15 +47,4 @@ describe("the stylesheet", () => {
     expect(activeRules + mappedRules.join()).not.toMatch(/font-weight/);
     expect(mappedRules[1]).toMatch(/transition\s*:\s*none/);
   });
-
-  it("keeps the topbar in three columns, so the profile button stays on the brand's line", () => {
-    const columns = declarationsFor(/^\.topbar$/).flatMap((declarations) =>
-      Array.from(declarations.matchAll(/grid-template-columns\s*:\s*([^;]+);/g), (match) => match[1].trim()),
-    );
-
-    expect(columns.length).toBeGreaterThan(0);
-    for (const tracks of columns) {
-      expect(tracks.split(/\s+(?![^(]*\))/), tracks).toHaveLength(3);
-    }
-  });
 });

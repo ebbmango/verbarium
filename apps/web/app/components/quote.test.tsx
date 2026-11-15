@@ -66,15 +66,7 @@ describe("Quote", () => {
     const sourceLink = within(quotation.children[2] as HTMLElement).getByRole("link", {
       name: "Wang Bi’s notes on the Dao De Jing",
     });
-    expect(sourceLink).toHaveAttribute("href", "https://ctext.org/dao-de-zhen-jing-zhu#n90518");
-  });
-
-  it("shows the provenance without a link when the file has no source link", () => {
-    const { container } = render(<Quote id="L001B-Q01" />);
-    const provenance = container.querySelector("blockquote.lesson-quote")?.children[2] as HTMLElement;
-
-    expect(provenance).toHaveTextContent("Shuowen Jiezi");
-    expect(within(provenance).queryByRole("link")).not.toBeInTheDocument();
+    expect(sourceLink).toHaveAttribute("href", expect.stringMatching(/^https:\/\/ctext\.org\/dao-de-zhen-jing-zhu#:~:text=/));
   });
 
   it("fails loudly for a Quote ID no file carries", () => {

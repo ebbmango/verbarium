@@ -1,6 +1,7 @@
 {
   "formatVersion": 1,
   "provenance": "Shuowen Jiezi",
+  "sourceLink": "https://ctext.org/shuo-wen-jie-zi/dan-bu1/zh#:~:text=%E6%98%8E%E4%B9%9F%E3%80%82%E4%BB%8E%E6%97%A5%E8%A6%8B%E4%B8%80%E4%B8%8A%E3%80%82%E4%B8%80%EF%BC%8C%E5%9C%B0%E4%B9%9F%E3%80%82",
   "attestation": {
     "tokens": [
       { "id": 0, "text": "明", "pinyin": "ming2", "type": "character" },

@@ -1,6 +1,7 @@
 import { useParams } from "react-router";
 
 import { lessonComponents, PageHeading } from "~/components/lesson";
+import { LessonProgress } from "~/components/lesson-progress";
 import { lessonByNumber } from "~/content/lessons";
 
 import type { Route } from "./+types/lesson";
@@ -32,10 +33,13 @@ export default function LessonPage() {
   }
 
   return (
-    <main className="lesson-shell">
-      <article className="lesson lesson-manuscript">
-        <lesson.Content components={lessonComponents} />
-      </article>
-    </main>
+    <>
+      <main className="lesson-shell">
+        <article className="lesson lesson-manuscript">
+          <lesson.Content components={lessonComponents} />
+        </article>
+      </main>
+      <LessonProgress />
+    </>
   );
 }
