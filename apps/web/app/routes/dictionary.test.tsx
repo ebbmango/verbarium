@@ -29,14 +29,17 @@ function renderIndex() {
 const listed = () => screen.queryAllByRole("link").map((link) => link.getAttribute("href"));
 
 describe("the dictionary index", () => {
-  it("lists every page in pinyin order, each linking to its address", () => {
+  it("lists every page in pinyin order as a tile: its character over its first reading, linking to its address", () => {
     renderIndex();
 
     expect(screen.getByRole("heading", { level: 1, name: "Characters" })).toBeInTheDocument();
     expect(screen.getByText("Dictionary")).toHaveClass("eyebrow");
     expect(screen.getByText("3 characters so far.")).toBeInTheDocument();
     expect(listed()).toEqual(["/dictionary/天", "/dictionary/血", "/dictionary/一"]);
-    expect(screen.getByRole("link", { name: /血/ })).toHaveTextContent("血xuèblood");
+    const tile = screen.getByRole("link", { name: /血/ });
+    expect(tile).toHaveTextContent("血xuèblood");
+    expect(tile).toHaveAttribute("title", "blood");
+    expect(screen.getByText("blood")).toHaveClass("visually-hidden");
     expect(screen.getByText("血")).toHaveAttribute("lang", "zh-Hant");
     expect(screen.getByRole("status")).toBeEmptyDOMElement();
   });
