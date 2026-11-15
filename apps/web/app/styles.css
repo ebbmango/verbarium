@@ -70,7 +70,6 @@ button {
 .account-form input:focus-visible,
 .dictionary-search input:focus-visible,
 .profile-button:focus-visible,
-.nav-tab:focus-visible,
 .study-character a:focus-visible,
 .dictionary-gloss:focus-visible,
 .dictionary-tags a:focus-visible,
@@ -101,6 +100,11 @@ button {
 
 .paper {
   min-height: 100svh;
+}
+
+/* The room the topbar took above every page but a lesson, which sets its own. */
+.paper:not(:has(.lesson-manuscript)) {
+  padding-top: 4.5rem;
 }
 
 /* The bottom of a lesson's screen is a fixed band of clear paper, 80px tall like
@@ -178,35 +182,25 @@ button {
 
 /* Site header */
 
-/* The seal, then the tabs beside it; the profile button at the far end */
-.topbar {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  column-gap: 2rem;
-  align-items: center;
-  height: 4.5rem;
-  padding: 0 2.5rem;
-}
-
 .brand {
   display: inline-flex;
   align-items: center;
 }
 
-/* The lesson's navigation rail: the logo above pale icons, fixed to the left edge */
+/* The navigation rail, on every page: the logo above pale icons. On a phone a row
+   at the top of the page; beside the page on a wider screen (below). */
 .side-nav {
-  position: fixed;
-  top: 24px;
-  left: 24px;
+  position: absolute;
+  top: 16px;
+  left: 16px;
   z-index: 2;
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 14px;
 }
 
 .side-nav .brand {
-  margin-bottom: 4px;
+  margin-right: 4px;
 }
 
 .side-nav-item {
@@ -225,6 +219,12 @@ button {
 
 .side-nav-item:hover {
   opacity: 0.20;
+}
+
+/* On its own index page an icon is a step darker, like the current chapter. */
+.side-nav-item[aria-current="page"] {
+  opacity: 0.28;
+  cursor: default;
 }
 
 .side-nav-item:focus-visible {
@@ -249,10 +249,23 @@ button {
     --rail-offset: min(397px, calc(50% - 28px));
   }
 
+  /* A dictionary entry hangs its source names in a 12rem column left of the
+     page, so the rail stands further out, clear of that column. */
+  .paper:has(.dictionary-page) {
+    --rail-offset: min(455px, calc(50% - 28px));
+  }
+
   .side-nav {
+    position: fixed;
     top: 50%;
     left: calc(50% - var(--rail-offset));
+    flex-direction: column;
     translate: -50% -50%;
+  }
+
+  .side-nav .brand {
+    margin-right: 0;
+    margin-bottom: 4px;
   }
 
   /* Nothing sits in the bottom band any more: a plain fade, no clear paper */
@@ -274,12 +287,7 @@ button {
   }
 }
 
-/* No room beside the page on a phone */
 @media (max-width: 740px) {
-  .side-nav {
-    display: none;
-  }
-
   /* The stops share the strip's width, so a long lesson's still fit the screen. */
   .lesson-progress {
     gap: 0;
@@ -290,34 +298,6 @@ button {
     min-width: 0;
     padding-inline: 0;
   }
-}
-
-.primary-nav {
-  display: flex;
-  align-self: stretch;
-  align-items: center;
-  gap: 2rem;
-}
-
-.nav-tab {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  color: var(--muted);
-  text-decoration: none;
-  font-family: var(--font-nav);
-  font-size: 1.125rem;
-}
-
-.nav-tab:hover {
-  color: var(--ink);
-}
-
-/* The current tab: red and a bit heavier */
-.nav-tab-active,
-.nav-tab-active:hover {
-  color: var(--red);
-  font-weight: 600;
 }
 
 .profile-button {
@@ -1250,20 +1230,6 @@ summary.dictionary-gloss::before {
 }
 
 @media (max-width: 640px) {
-  .topbar {
-    column-gap: 1rem;
-    height: 4rem;
-    padding: 0 1rem;
-  }
-
-  .primary-nav {
-    gap: 1rem;
-  }
-
-  .nav-tab {
-    font-size: 1rem;
-  }
-
   .account p {
     font-size: 0.91rem;
     line-height: 1.82;
@@ -1289,14 +1255,6 @@ summary.dictionary-gloss::before {
 }
 
 @media (max-width: 470px) {
-  .primary-nav {
-    gap: 0.72rem;
-  }
-
-  .nav-tab {
-    font-size: 0.9rem;
-  }
-
   .lesson-shell {
     padding-right: 1.1rem;
     padding-left: 1.1rem;
@@ -1315,6 +1273,11 @@ summary.dictionary-gloss::before {
   /* A lesson's whole page, rail and strips included, reads best at 90% of the
      above, as if the browser were zoomed to 90%. */
   .paper:has(.lesson-manuscript) {
+    zoom: 0.9;
+  }
+
+  /* The rail keeps that size on the pages that are not zoomed. */
+  .paper:not(:has(.lesson-manuscript)) .side-nav {
     zoom: 0.9;
   }
 

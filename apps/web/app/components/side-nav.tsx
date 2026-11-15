@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 
 import { dictionaryIndexPath } from "../content/dictionary/dictionary-files";
 import { lessonIndexPath } from "../content/lessons";
@@ -26,17 +26,19 @@ const cardsBlank = (
 );
 
 function SideNavItem({ children, label, to }: { children: ReactNode; label: string; to: string }) {
+  // Current only on the page itself: inside a lesson or a dictionary entry, nothing is.
+  const current = useLocation().pathname === to;
   return (
-    <Link aria-label={label} className="side-nav-item" title={label} to={to}>
+    <Link aria-current={current ? "page" : undefined} aria-label={label} className="side-nav-item" title={label} to={to}>
       <Icon>{children}</Icon>
     </Link>
   );
 }
 
 /**
- * The navigation rail down the left edge of a lesson: the logo, then Lessons,
- * Dictionary and Flashcards as pale icons, taking no room from the page. None is
- * marked as current: the reader is in a lesson, and the chapter strip says where.
+ * The site's navigation, on every page: the logo, then Lessons, Dictionary and
+ * Flashcards as pale icons. Beside the page on a wide screen, a row above it on a
+ * phone. An icon is marked current only on its own index page.
  */
 export function SideNav() {
   return (
