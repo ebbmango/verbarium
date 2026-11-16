@@ -2,6 +2,8 @@
 export type FormSource = { href: string; label: string };
 
 export const formSources: Record<string, FormSource> = {
+  "sinica-01-small-seal-佞": { href: "https://xiaoxue.iis.sinica.edu.tw/yanbian/?char=%E4%BD%9E", label: "小學堂字形演變: 說文‧女部" },
+  "sinica-10-small-seal-仁": { href: "https://xiaoxue.iis.sinica.edu.tw/yanbian/?char=%E4%BB%81", label: "小學堂字形演變: 說文‧人部" },
   "sinica-01-bronze-末": { href: "https://xiaoxue.iis.sinica.edu.tw/yanbian/?char=%E6%9C%AB", label: "小學堂字形演變: 蔡侯紐鐘 · 金 · 春秋晚期" },
   "sinica-01-bronze-本": { href: "https://xiaoxue.iis.sinica.edu.tw/yanbian/?char=%E6%9C%AC", label: "小學堂字形演變: 本鼎 · 金 · 西周中期" },
   "sinica-01-oracle-bone-血": { href: "https://xiaoxue.iis.sinica.edu.tw/yanbian/?char=%E8%A1%80", label: "小學堂字形演變: 鐵50.1 · 甲 · 商" },

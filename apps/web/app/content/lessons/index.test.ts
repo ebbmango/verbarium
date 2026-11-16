@@ -5,15 +5,18 @@ import { isLessonPath, lessonNumberFromFileName, lessonPath } from "./lesson-fil
 
 describe("lessons", () => {
   it("lists every committed lesson by the number in its file name, in order, with what it displays", () => {
-    expect(lessons.map((lesson) => lesson.number)).toEqual([1]);
+    expect(lessons.map((lesson) => lesson.number)).toEqual([1, 2]);
     expect(lessons[0].subtitle).toBe("About the primitive 一, a single stroke.");
     expect(lessons[0].displayedCharacters).toEqual(["一", "雨", "天", "末", "旦", "立", "本", "閂", "丂", "血"]);
     expect(typeof lessons[0].Content).toBe("function");
+    expect(lessons[1].subtitle).toBe("About the primitive 二, two strokes.");
+    expect(lessons[1].displayedCharacters).toEqual(["二", "仁", "佞", "亟", "亙", "恆", "上"]);
   });
 
   it("finds a lesson by number and nothing for one that does not exist", () => {
     expect(lessonByNumber(1)?.number).toBe(1);
-    expect(lessonByNumber(2)).toBeUndefined();
+    expect(lessonByNumber(2)?.number).toBe(2);
+    expect(lessonByNumber(3)).toBeUndefined();
     expect(lessonByNumber(Number.NaN)).toBeUndefined();
   });
 });

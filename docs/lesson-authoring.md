@@ -63,6 +63,15 @@ between two characters of the same division. A new division of the lesson
 Props may contain Chinese (`character="一"`); the component marks it.
 Numbers go in braces (`lesson={1}`, `forms={3}`), text in quotes.
 
+## Displayed source names
+
+Keep a quotation’s displayed provenance short: normally the work title alone,
+such as `Shuowen Jiezi Xizhuan`. Omit author names, juan, chapter, part and
+entry locators from that label; keep precise locations in the source link
+and full bibliographical details in research notes or MDX comments.
+A familiar compact reference such as `The Analects 16.7`, or an author name
+needed to identify whose commentary is quoted, may remain as in Lesson 1.
+
 ## The seals
 
 A lesson's 課 seal and its A–J markers are images baked once from a drawing
@@ -83,6 +92,47 @@ Then add its line to `apps/web/app/content/forms/form-sources.ts`: the web page
 it was taken from (its `web address` in `sources.tsv`) and a short label. Each
 picture links to that page, and a test fails for a shown picture without one.
 The current form links to its dictionary page when it has one.
+
+### Adding a form from a research pack
+
+1. Read `../wieger-research/forms/packs/<unit>/pack.json` (for example,
+   `002C/pack.json`). Match the requested name's number and period to an entry
+   in `sinica_forms`; use that entry's `image` path and source label. Inspect
+   the image before tracing. Black strokes on transparency can look entirely
+   black in a dark image viewer.
+2. Trace the original PNG to the exact name referenced by the lesson. For the
+   research pack's 8-bit RGBA PNGs, the dependency-free Python helper below
+   decodes transparency, flattens onto white, scales 4× with nearest-neighbour
+   sampling, thresholds at half grey, and runs the potrace settings above.
+   It requires `potrace` on PATH and rejects unsupported PNG encodings.
+
+   ```bash
+   python3 apps/web/scripts/trace-form.py \
+     ../wieger-research/forms/sinica/images/4f5e/00.png \
+     apps/web/public/forms/sinica-01-small-seal-佞.svg
+   ```
+
+3. Add the exact asset name to `formSources` in
+   `apps/web/app/content/forms/form-sources.ts`. Link to the character's own
+   Sinica page, `https://xiaoxue.iis.sinica.edu.tw/yanbian/?char=…`, and use
+   the pack's source label. A missing source entry loses the clickable
+   attribution; a missing SVG makes the CSS mask blank even when the lesson
+   markup is correct.
+4. Add `<CharacterForms>` to the unit, normally after its opening gloss, with
+   the asset name in `historical` and the modern character in `character`.
+   Inspect the resulting stroke silhouette and check the historical and
+   current forms on the lesson page.
+5. Save master copies in the private `hanzi-old-forms` repository and beside
+   the research PNG, following the persistence instructions below. If those
+   directories are outside the session's writable roots, report that step
+   as pending: the ignored file in `public/forms/` fixes localhost only.
+   `fetch-forms` deletes local `sinica-*.svg` files before copying masters,
+   so an unsaved master will disappear on the next fetch.
+6. Check all referenced files and source links:
+
+   ```bash
+   pnpm --filter @verbarium/web test app/content/forms/form-sources.test.ts
+   ```
 
 The 小學堂 pictures (`public/forms/sinica-*`) are shown on the site but kept
 out of this public repo (`.gitignore`). Their master copies live in the private
