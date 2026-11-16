@@ -26,7 +26,9 @@ describe("the stylesheet", () => {
   it("scales the page under the topbar to three-quarters, with quotations back at full size", () => {
     const zoomOf = (target: RegExp) =>
       declarationsFor(target).flatMap((declarations) =>
-        Array.from(declarations.matchAll(/(?:^|[\s;])zoom\s*:\s*([\d.]+)/g), (match) => Number(match[1])),
+        Array.from(declarations.matchAll(/(?:^|[\s;])zoom\s*:\s*([\d.]+|var\(--quote-zoom\))/g), (match) =>
+          Number(match[1].startsWith("var(") ? declarations.match(/--quote-zoom\s*:\s*([\d.]+)/)?.[1] : match[1]),
+        ),
       );
 
     const [page] = zoomOf(/^\.lesson-shell$/);

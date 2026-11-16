@@ -60,8 +60,8 @@ describe("Lesson 1", () => {
     const article = renderLesson();
     const blood = Array.from(article.querySelectorAll(":scope > p")).find((p) => p.textContent?.startsWith("Blood."));
 
-    expect(blood?.querySelector("br")).not.toBeNull();
-    expect(blood?.textContent?.replace(/\s+/g, " ")).toBe("Blood. A 皿 (vase) containing 一 (something).");
+    expect(blood?.textContent).toBe("Blood.");
+    expect(blood?.nextElementSibling?.textContent).toBe("A 皿 (vase) containing 一 (something).");
 
     const tree = Array.from(article.querySelectorAll(":scope > p")).find((p) => p.textContent?.startsWith("A horizontal stroke cuts through the top"));
     expect(tree?.querySelector("br")).not.toBeNull();

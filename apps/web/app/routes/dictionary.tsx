@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 
-import { HanMarkedText, PageHeading } from "~/components/lesson";
+import { HanMarkedText } from "~/components/lesson";
 import { byReading, dictionaryPages, dictionaryPath, glossesOf, matchesSearch } from "~/content/dictionary";
 
 import type { Route } from "./+types/dictionary";
@@ -18,7 +18,7 @@ const pagesInOrder = [...dictionaryPages].sort(byReading);
 /**
  * The dictionary index: a grid of tiles, one per page, each its character over
  * its first reading and linking to its address (the senses are its hover title),
- * and a search through them.
+ * under a search through them that leaves the grid empty when nothing matches.
  */
 export default function DictionaryIndex() {
   const [search, setSearch] = useState("");
@@ -27,16 +27,15 @@ export default function DictionaryIndex() {
   return (
     <main className="lesson-shell">
       <section className="lesson landing">
-        <PageHeading
-          eyebrow="Dictionary"
-          title="Characters"
-          subtitle={dictionaryPages.length === 1 ? "One character so far." : `${dictionaryPages.length} characters so far.`}
-        />
+        <h1 className="visually-hidden">Dictionary</h1>
         <div className="dictionary-search" role="search">
-          <label>
-            Search by character, pinyin or English
-            <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} />
-          </label>
+          <input
+            type="search"
+            aria-label="Search by character, pinyin or English"
+            placeholder="Search by character, pinyin or English"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
         </div>
         <ul className="dictionary-index">
           {found.map((page) => (
@@ -53,11 +52,6 @@ export default function DictionaryIndex() {
             </li>
           ))}
         </ul>
-        <p role="status">
-          {found.length === 0 && search.trim() !== "" && (
-            <HanMarkedText text={`No character matches “${search.trim()}”.`} />
-          )}
-        </p>
       </section>
     </main>
   );
