@@ -91,6 +91,16 @@ export function formPictureUrl(name: string) {
   return `${import.meta.env.BASE_URL}forms/${/\.\w+$/.test(name) ? name : `${name}.svg`}`;
 }
 
+/** A historical glyph over real text, so selection, copying and speech retain the character. */
+export function InlineForm({ name, character }: { name: string; character: string }) {
+  return (
+    <span className="inline-form" lang="zh-Hant" style={{ "--inline-form-picture": `url("${formPictureUrl(name)}")` } as CSSProperties}>
+      <span className="inline-form-text">{character}</span>
+      <span className="inline-form-picture" aria-hidden="true" />
+    </span>
+  );
+}
+
 /** A historical-form picture, linking to the page it was taken from. */
 function FormPicture({ name }: { name: string }) {
   const source = formSources[name];
@@ -226,6 +236,7 @@ export const lessonComponents = {
   CharDisplay,
   CharacterFocus,
   CharacterForms,
+  InlineForm,
   ClosingLine,
   Commentary,
   FinishLesson,

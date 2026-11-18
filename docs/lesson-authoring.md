@@ -82,6 +82,18 @@ commit `public/seals/`; a test fails until the images match the drawing.
 
 ## The historical-form pictures
 
+### Inline forms
+
+Use `<InlineForm name="又-bigseal.svg" character="又" />` within a prose
+sentence to show an SVG in place of a character. `name` identifies an asset
+in `public/forms/`, with the same filename rules as `CharacterForms`.
+`character` is the real text equivalent for selection, copying and screen
+readers. The SVG is a decorative overlay, sized to one em and coloured with
+the surrounding text. Use this for a single character; use `CharacterForms`
+for a standalone study. The `又-bigseal.svg` asset was supplied by the user.
+
+### Standalone forms
+
 Candidate pictures for each character are collected, with their sources
 (`sources.tsv`) and a `report.md`, in the sibling research repository at
 `../wieger-research/by-lesson/<lesson>/<letter>/`, e.g.

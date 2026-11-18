@@ -3,10 +3,28 @@ import type { ReactNode } from "react";
 import { createRoutesStub } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 
-import { CharacterFocus, CharacterForms, CharDisplay, formPictureUrl, LessonHeader, SectionBreak } from "./lesson";
+import { CharacterFocus, CharacterForms, CharDisplay, formPictureUrl, InlineForm, LessonHeader, SectionBreak } from "./lesson";
 
 // Only 血 has a dictionary page here.
 vi.mock("../content/dictionary/headwords", () => ({ hasDictionaryPage: (headword: string) => headword === "血" }));
+
+describe("InlineForm", () => {
+  it("keeps the equivalent character in a sentence's native text selection", () => {
+    const { container } = render(<p>his <InlineForm name="又-bigseal.svg" character="又" /> hand</p>);
+    const paragraph = container.querySelector("p")!;
+    const range = document.createRange();
+    range.selectNodeContents(paragraph);
+    const selection = window.getSelection()!;
+    selection.removeAllRanges();
+    selection.addRange(range);
+    expect(selection.toString()).toBe("his 又 hand");
+    selection.removeAllRanges();
+    expect(paragraph.textContent).toBe("his 又 hand");
+    expect(container.querySelector(".inline-form")).toHaveAttribute("lang", "zh-Hant");
+    expect(container.querySelector(".inline-form-picture")).toHaveAttribute("aria-hidden", "true");
+    expect(container.querySelector(".inline-form")?.getAttribute("style")).toContain(formPictureUrl("又-bigseal.svg"));
+  });
+});
 
 describe("LessonHeader", () => {
   it("names the heading after the lesson, with its subtitle under it", () => {

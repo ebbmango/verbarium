@@ -590,6 +590,28 @@ button {
 
 /* Historical form studies */
 
+.inline-form {
+  position: relative;
+  /* Preserve the character's native inline metrics, including selection's
+     full line-height. An inline-block creates notches in the highlight. */
+  white-space: nowrap;
+}
+
+/* Hide only the glyph fill: leave the browser's native selection colours
+   untouched so the selected character still gets its normal highlight. */
+.inline-form-text {
+  -webkit-text-fill-color: transparent;
+}
+
+.inline-form-picture {
+  position: absolute;
+  inset: 0;
+  background-color: currentColor;
+  mask: var(--inline-form-picture) center / contain no-repeat;
+  pointer-events: none;
+  user-select: none;
+}
+
 .character-forms {
   /* As wide as its cards, so they stay on one line; never wider than the lesson. */
   width: fit-content;
