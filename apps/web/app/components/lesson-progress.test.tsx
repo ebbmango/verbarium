@@ -41,4 +41,29 @@ describe("the lesson progress strip", () => {
     fireEvent.click(screen.getByRole("button", { name: "亙" }));
     expect(scrolled.at(-1)).toBe(document.querySelector("hr.lesson-divider"));
   });
+
+  it("jumps a display with a chapter start before it to the end of the element before the marker", () => {
+    Element.prototype.scrollIntoView = vi.fn();
+    const scrollTo = vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+    vi.spyOn(window, "scrollY", "get").mockReturnValue(1000);
+
+    render(
+      <>
+        {display("亟", true)}
+        <aside className="lesson-note">
+          <figure className="character-forms" />
+          <div data-chapter-start="" />
+          <p>Although it later came to mean urgent</p>
+          {display("極", false)}
+        </aside>
+        <LessonProgress />
+      </>,
+    );
+    const forms = document.querySelector("figure.character-forms") as HTMLElement;
+    vi.spyOn(forms, "getBoundingClientRect").mockReturnValue({ bottom: 340 } as DOMRect);
+
+    fireEvent.click(screen.getByRole("button", { name: "極" }));
+    expect(scrollTo).toHaveBeenCalledWith({ top: 1340 });
+    expect(Element.prototype.scrollIntoView).not.toHaveBeenCalled();
+  });
 });

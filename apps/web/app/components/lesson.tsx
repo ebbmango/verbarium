@@ -214,6 +214,14 @@ export function Commentary({ children }: PropsWithChildren) {
   );
 }
 
+/**
+ * Where a character's chapter-strip stop jumps to: the end of the element just
+ * before this one. Renders nothing visible.
+ */
+export function ChapterStart() {
+  return <div aria-hidden="true" className="chapter-start" data-chapter-start="" />;
+}
+
 type FocusItemProps = { headword?: string } & (
   | { character: string; name?: never; description?: never }
   | { name: string; description: string; character?: string }
@@ -273,6 +281,7 @@ export const lessonComponents = {
   p: LessonParagraph,
   CharDisplay,
   CharacterFocus,
+  ChapterStart,
   FocusItem,
   CharacterForms,
   InlineForm,

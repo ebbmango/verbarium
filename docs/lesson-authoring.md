@@ -50,6 +50,15 @@ Use `<SectionBreak ordinal="Third" marker="上">` to add a progress marker
 for 上 (“up”) at the rule itself. This is useful when the division opens
 with prose or a comparison instead of a character heading.
 
+A character's stop on the chapter strip jumps to its section's divider or, in
+a Commentary, to the display itself. When that would cut off the prose that
+introduces the character, put `<ChapterStart />` on its own line before that
+prose. The jump then puts the end of the element just above the marker at the
+top of the screen, so the fade swallows that element and the introduction
+shows whole. Keep the marker before the introduction, never between the
+introduction and the display, and with no other display or divider between it
+and the display it belongs to.
+
 
 ## The components
 

@@ -34,17 +34,20 @@ describe("the lesson page", () => {
     expect(screen.queryByRole("button", { name: "Finish lesson" })).toBeNull();
   });
 
-  it("jumps to Lesson 2's section dividers and the labeled display within commentary", () => {
+  it("jumps to Lesson 2's section dividers, and to the chapter start before the 極 display", () => {
     const { container } = renderLessonAt("/lessons/2");
     const secondDivider = [...container.querySelectorAll(".category-break")]
       .find((section) => section.textContent?.startsWith("Second,"))?.previousElementSibling;
-    const commentaryDisplay = screen.getByRole("heading", { level: 2, name: "極" }).closest(".char-display");
+    const chapterStart = screen.getByRole("heading", { level: 2, name: "極" }).closest(".lesson-note")
+      ?.querySelector("[data-chapter-start]");
+    const formsBefore = chapterStart?.previousElementSibling;
     const thirdDivider = container.querySelector('hr[data-progress-marker="上"]');
     const markers = within(screen.getByRole("navigation", { name: "Characters in this lesson" }));
     const scrolled: Element[] = [];
     const scroll = vi.fn(function (this: Element) { scrolled.push(this); });
     Object.defineProperty(secondDivider!, "scrollIntoView", { value: scroll });
-    Object.defineProperty(commentaryDisplay!, "scrollIntoView", { value: scroll });
+    vi.spyOn(formsBefore!, "getBoundingClientRect").mockReturnValue({ bottom: 120 } as DOMRect);
+    const scrollTo = vi.spyOn(window, "scrollTo").mockImplementation(() => {});
     Object.defineProperty(thirdDivider!, "scrollIntoView", { value: scroll });
 
     fireEvent.click(markers.getByRole("button", { name: "亟" }));
@@ -52,7 +55,9 @@ describe("the lesson page", () => {
     const lastMarker = markers.getAllByRole("button").at(-1)!;
     expect(lastMarker).toHaveAccessibleName("上");
     fireEvent.click(lastMarker);
-    expect(scrolled).toEqual([secondDivider, commentaryDisplay, thirdDivider]);
+    expect(formsBefore).toHaveClass("character-forms");
+    expect(scrollTo).toHaveBeenCalledWith({ top: window.scrollY + 120 });
+    expect(scrolled).toEqual([secondDivider, thirdDivider]);
   });
 
   it("titles and describes the page after the lesson", () => {
