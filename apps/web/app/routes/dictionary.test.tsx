@@ -32,16 +32,13 @@ describe("the dictionary index", () => {
   it("lists every page in pinyin order as a tile: its character over its first reading, linking to its address", () => {
     renderIndex();
 
-    expect(screen.getByRole("heading", { level: 1, name: "Characters" })).toBeInTheDocument();
-    expect(screen.getByText("Dictionary")).toHaveClass("eyebrow");
-    expect(screen.getByText("3 characters so far.")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Dictionary" })).toHaveClass("visually-hidden");
     expect(listed()).toEqual(["/dictionary/天", "/dictionary/血", "/dictionary/一"]);
     const tile = screen.getByRole("link", { name: /血/ });
     expect(tile).toHaveTextContent("血xuèblood");
     expect(tile).toHaveAttribute("title", "blood");
     expect(screen.getByText("blood")).toHaveClass("visually-hidden");
     expect(screen.getByText("血")).toHaveAttribute("lang", "zh-Hant");
-    expect(screen.getByRole("status")).toBeEmptyDOMElement();
   });
 
   it.each([
@@ -52,20 +49,20 @@ describe("the dictionary index", () => {
     ["", ["/dictionary/天", "/dictionary/血", "/dictionary/一"]],
   ])("finds pages for the search %j", (search, expected) => {
     renderIndex();
-    fireEvent.change(screen.getByRole("searchbox", { name: "Search by character, pinyin or English" }), {
-      target: { value: search },
-    });
+    const searchbox = screen.getByRole("searchbox", { name: "Search by character, pinyin or English" });
+    expect(searchbox).toHaveAttribute("placeholder", "Search by character, pinyin or English");
+    fireEvent.change(searchbox, { target: { value: search } });
 
     expect(listed()).toEqual(expected);
   });
 
-  it("says when nothing matches, marking any Chinese in the search", () => {
+  it("leaves the grid empty, with no message, when nothing matches", () => {
     renderIndex();
-    fireEvent.change(screen.getByRole("searchbox"), { target: { value: " 水 " } });
+    fireEvent.change(screen.getByRole("searchbox"), { target: { value: "水" } });
 
     expect(listed()).toEqual([]);
-    expect(screen.getByRole("status")).toHaveTextContent("No character matches “水”.");
-    expect(screen.getByText("水")).toHaveAttribute("lang", "zh-Hant");
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(screen.queryByText(/No character matches/)).not.toBeInTheDocument();
   });
 
   it("is titled and described as the dictionary", () => {

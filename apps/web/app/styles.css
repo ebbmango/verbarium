@@ -25,6 +25,8 @@
     "LXGW WenKai Mono TC", serif;
   --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
   --font-nav: "Ancizar Serif", var(--font-serif);
+  /* TODO: Inter is not loaded yet (missing from the Google Fonts import on line 1), so this
+     falls back to the system sans unless Inter is installed. Load it, and add it to Hylia Licences.md. */
   --font-ui: Inter, ui-sans-serif, system-ui, sans-serif;
   --font-han-display: "Noto Serif TC", "Noto Serif CJK TC", "Songti TC", serif;
   --font-han-quote: "LXGW WenKai Mono TC", "Kaiti TC", "Kaiti SC", STKaiti,
@@ -376,7 +378,6 @@ button {
 .study-label,
 .dictionary-example-source,
 .account-form label,
-.dictionary-search label,
 .lesson-finished {
   font-family: var(--font-ui);
   font-weight: 750;
@@ -1119,10 +1120,33 @@ summary.dictionary-gloss::before {
 
 /* Dictionary index */
 
+/* As wide as the tile grid and dressed like a tile: beige fill, round corners, no border. */
 .dictionary-search {
   width: min(100%, var(--measure-copy));
-  margin: 0 auto 1.5rem;
-  text-align: left;
+  margin: 0 auto 0.6rem;
+}
+
+.dictionary-search input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 2.75rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 1rem;
+  background: rgb(84 72 52 / 7%);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  transition: background-color 0.2s;
+}
+
+.dictionary-search input:hover,
+.dictionary-search input:focus {
+  background: rgb(84 72 52 / 13%);
+}
+
+.dictionary-search input::placeholder {
+  color: var(--muted);
 }
 
 /* Tiles filling the copy's width, five to a row (three on a phone): the character, light, over its first reading. */
@@ -1191,16 +1215,14 @@ summary.dictionary-gloss::before {
   text-align: left;
 }
 
-.account-form label,
-.dictionary-search label {
+.account-form label {
   display: grid;
   gap: 0.45rem;
   color: var(--muted);
   font-size: 0.62rem;
 }
 
-.account-form input,
-.dictionary-search input {
+.account-form input {
   padding: 0.7rem 0.85rem;
   border: 1px solid rgb(84 72 52 / 24%);
   background: rgb(255 252 244 / 72%);
