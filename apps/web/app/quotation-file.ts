@@ -14,6 +14,7 @@ import type {
 export type QuotationFile = AttestationTranslationAlignment & {
   formatVersion: typeof quotationFormatVersion;
   provenance: string;
+  sourceDetails?: string;
   sourceLink?: string;
 };
 
@@ -85,6 +86,7 @@ export function formatQuotationFile(file: QuotationFile): string {
     "{",
     `  "formatVersion": ${file.formatVersion},`,
     `  "provenance": ${JSON.stringify(file.provenance)},`,
+    ...(file.sourceDetails === undefined ? [] : [`  "sourceDetails": ${JSON.stringify(file.sourceDetails)},`]),
     ...(file.sourceLink === undefined ? [] : [`  "sourceLink": ${JSON.stringify(file.sourceLink)},`]),
     '  "attestation": {',
     '    "tokens": [',
@@ -156,7 +158,7 @@ function fail(at: string, message: string): never {
 
 const sourceTokenTypes = ["character", "punctuation", "number", "symbol"] as const;
 const targetTokenTypes = ["text", "hanzi", "punctuation", "whitespace"] as const;
-const fileKeys = ["formatVersion", "provenance", "sourceLink", "attestation", "translation", "alignment"];
+const fileKeys = ["formatVersion", "provenance", "sourceDetails", "sourceLink", "attestation", "translation", "alignment"];
 
 function parseFile(value: unknown): QuotationFile {
   const file = expectObject(value, "the file", fileKeys);
@@ -166,6 +168,8 @@ function parseFile(value: unknown): QuotationFile {
   }
   const provenance = expectText(file.provenance, "provenance");
   if (provenance.trim() === "") fail("provenance", "must not be blank");
+  const sourceDetails = "sourceDetails" in file ? expectText(file.sourceDetails, "sourceDetails") : undefined;
+  if (sourceDetails?.trim() === "") fail("sourceDetails", "must not be blank");
   const sourceLink = "sourceLink" in file ? expectLink(file.sourceLink, "sourceLink") : undefined;
 
   const attestation = expectObject(file.attestation, "attestation", ["tokens"]);
@@ -180,6 +184,7 @@ function parseFile(value: unknown): QuotationFile {
   return {
     formatVersion: quotationFormatVersion,
     provenance,
+    ...(sourceDetails === undefined ? {} : { sourceDetails }),
     ...(sourceLink === undefined ? {} : { sourceLink }),
     attestation: { tokens: sourceTokens },
     translation: { tokens: targetTokens },

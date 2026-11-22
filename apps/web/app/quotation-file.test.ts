@@ -39,6 +39,28 @@ describe("parseQuotationFile", () => {
     expect(parseQuotationFile(value, "x.json").sourceLink).toBeUndefined();
   });
 
+  it("preserves optional source details through creation, editing and removal", () => {
+    const original = parseQuotationFile(example(), "x.json");
+    expect(original).not.toHaveProperty("sourceDetails");
+    expect(formatQuotationFile(original)).not.toContain("sourceDetails");
+
+    for (const sourceDetails of ["Part II, Book VI, Ode VI, line 5", '卷六, "鹿鳴" \\ 𠃑']) {
+      const edited = parseQuotationFile({ ...original, sourceDetails }, "x.json");
+      expect(edited.sourceDetails).toBe(sourceDetails);
+      expect(parseQuotationFile(JSON.parse(formatQuotationFile(edited)), "x.json")).toEqual(edited);
+      delete edited.sourceDetails;
+      expect(formatQuotationFile(edited)).toBe(formatQuotationFile(original));
+    }
+  });
+
+  it.each([null, 42, {}, [], ""])("rejects non-text or empty source details: %j", (sourceDetails) => {
+    expect(problemOf({ ...example(), sourceDetails })).toBe("sourceDetails must be a non-empty string");
+  });
+
+  it("rejects whitespace-only source details", () => {
+    expect(problemOf({ ...example(), sourceDetails: " \n " })).toBe("sourceDetails must not be blank");
+  });
+
   it("names the file in the error", () => {
     expect(() => parseQuotationFile({}, "L001A-Q09-nothing.json")).toThrow(
       "L001A-Q09-nothing.json: formatVersion must be 1",

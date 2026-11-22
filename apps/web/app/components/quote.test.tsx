@@ -1,6 +1,7 @@
 import { act, fireEvent, render, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import * as quoteRegistry from "../content/quotes";
 import { quotationById } from "../content/quotes";
 // Run the Dao renderer/interaction regressions against the unchanged producer export.
 import { quoteSlicerDaoOne as l001aQ02DaoOne } from "../content/quotes/quote-slicer-dao-one";
@@ -32,6 +33,15 @@ afterEach(() => {
 });
 
 describe("LegacyQuote", () => {
+  it("accepts inline details and retains the pending-source behavior", () => {
+    const { container, rerender } = render(
+      <LegacyQuote source="Book of Songs" sourceDetails="Part II, Book VI"><p>The quotation</p></LegacyQuote>,
+    );
+    expect(container.querySelector(".quote-source-details")).toHaveTextContent("Part II, Book VI");
+    rerender(<LegacyQuote source="Book of Songs" sourceDetails="Part II, Book VI" sourcePending><p>The quotation</p></LegacyQuote>);
+    expect(container.querySelector(".quote-source")?.innerHTML).toBe("Source pending");
+  });
+
   it("preserves authored quotation content and linked provenance", () => {
     const { container } = render(
       <LegacyQuote source="The textual witness" sourceHref="https://example.com/witness">
@@ -69,6 +79,12 @@ describe("Quote", () => {
     expect(sourceLink).toHaveAttribute("href", expect.stringMatching(/^https:\/\/ctext\.org\/dao-de-zhen-jing-zhu#:~:text=/));
   });
 
+  it("passes the quotation file's source details to the display", () => {
+    vi.spyOn(quoteRegistry, "quotationById").mockReturnValue({ ...l001aQ03OriginNumber, sourceDetails: "Part II, Book VI" });
+    const { container } = render(<Quote id="L001A-Q03" />);
+    expect(container.querySelector(".quote-source-details")).toHaveTextContent("Part II, Book VI");
+  });
+
   it("fails loudly for a Quote ID no file carries", () => {
     expect(() => render(<Quote id="L001A-Q09" />)).toThrow(
       'Unknown Quote ID "L001A-Q09": no file in app/content/quotes is named L001A-Q09-<slug>.json',
@@ -77,6 +93,25 @@ describe("Quote", () => {
 });
 
 describe("QuoteView", () => {
+  it.each(["https://example.com/witness", undefined])("shows details beneath a source title, with link %s", (sourceLink) => {
+    const { container } = render(
+      <QuoteView quote={l001aQ03OriginNumber} provenance="Book of Songs" sourceLink={sourceLink}
+        sourceDetails="Part II, Book VI, Ode VI, line 5" />,
+    );
+    const footer = container.querySelector(".quote-source") as HTMLElement;
+    const details = footer.querySelector(".quote-source-details") as HTMLElement;
+    expect(details).toHaveTextContent("Part II, Book VI, Ode VI, line 5");
+    expect(footer.lastElementChild).toBe(details);
+    expect(details.closest("a")).toBeNull();
+    if (sourceLink) expect(within(footer).getByRole("link", { name: "Book of Songs" })).toHaveAttribute("href", sourceLink);
+    else expect(within(footer).queryByRole("link")).toBeNull();
+  });
+
+  it.each([undefined, "", "  "])("adds no details markup for %j", (sourceDetails) => {
+    const { container } = render(<QuoteView quote={l001aQ03OriginNumber} provenance="Book of Songs" sourceDetails={sourceDetails} />);
+    expect(container.querySelector(".quote-source")?.innerHTML).toBe("Book of Songs");
+  });
+
   it("rebuilds a passage from its aligned token sequences", () => {
     const { container } = render(
       <QuoteView
