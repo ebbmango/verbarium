@@ -3,10 +3,45 @@ import type { ReactNode } from "react";
 import { createRoutesStub } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 
-import { CharacterFocus, CharacterForms, CharDisplay, formPictureUrl, LessonHeader, SectionBreak } from "./lesson";
+import { CharacterFocus, CharacterForms, CharDisplay, FocusItem, formPictureUrl, InlineForm, LessonHeader, SectionBreak } from "./lesson";
 
 // Only 血 has a dictionary page here.
 vi.mock("../content/dictionary/headwords", () => ({ hasDictionaryPage: (headword: string) => headword === "血" }));
+
+describe("illustrated CharacterFocus", () => {
+  it("keeps copyable text in display order independently of headwords and image labels", () => {
+    const { container } = render(
+      <CharacterFocus>
+        <FocusItem name="2011F.svg" character="𠄟" headword="下" description="Longer upper stroke" />
+        <FocusItem name="2011F.svg" headword="下" description="Unencoded test form" />
+        <FocusItem character="下" />
+      </CharacterFocus>,
+    );
+    const range = document.createRange();
+    range.selectNodeContents(container);
+    expect(range.toString()).toBe("𠄟下");
+    expect(screen.getByRole("img", { name: "Longer upper stroke" })).toHaveAttribute("lang", "en");
+    expect(screen.getByRole("link", { name: /Unencoded test form/ })).toHaveAttribute("href", "https://zdic.net/hans/𠄟");
+  });
+});
+
+describe("InlineForm", () => {
+  it("keeps the equivalent character in a sentence's native text selection", () => {
+    const { container } = render(<p>his <InlineForm name="口-oracle.svg" character="口" /> mouth and his <InlineForm name="又-bigseal.svg" character="又" /> hand</p>);
+    const paragraph = container.querySelector("p")!;
+    const range = document.createRange();
+    range.selectNodeContents(paragraph);
+    const selection = window.getSelection()!;
+    selection.removeAllRanges();
+    selection.addRange(range);
+    expect(selection.toString()).toBe("his 口 mouth and his 又 hand");
+    selection.removeAllRanges();
+    expect(paragraph.textContent).toBe("his 口 mouth and his 又 hand");
+    expect(container.querySelector(".inline-form")).toHaveAttribute("lang", "zh-Hant");
+    expect(container.querySelector(".inline-form-picture")).toHaveAttribute("aria-hidden", "true");
+    expect(container.querySelector(".inline-form")?.getAttribute("style")).toContain(formPictureUrl("口-oracle.svg"));
+  });
+});
 
 describe("LessonHeader", () => {
   it("names the heading after the lesson, with its subtitle under it", () => {
@@ -121,6 +156,15 @@ describe("a displayed character", () => {
     expect(screen.getByText("血")).toHaveClass("character-focus");
   });
 
+  it("groups space-separated focus characters in order, without links", () => {
+    const { container } = render(<CharacterFocus characters={" 二  血\n𠄞 二 "} />);
+    const group = container.querySelector(".character-focus-group")!;
+
+    expect(group).toHaveAttribute("lang", "zh-Hant");
+    expect(Array.from(group.children, (child) => child.textContent)).toEqual(["二", "血", "𠄞", "二"]);
+    expect(screen.queryAllByRole("link")).toEqual([]);
+  });
+
   it("in a form study, links the current form to its dictionary page and each picture to the page it came from", () => {
     renderInRouter(<CharacterForms character="血" description="Forms" historical="sinica-01-oracle-bone-血" />);
 
@@ -147,5 +191,14 @@ describe("a displayed character", () => {
     renderInRouter(<CharDisplay character="丂" label="I" reading="kǎo" />);
 
     expect(screen.getByRole("heading", { level: 2, name: "丂" }).nextElementSibling).toHaveTextContent("kǎo");
+  });
+
+  it("without a label, as in a commentary, shows the character and its reading with no seal and no anchor", () => {
+    renderInRouter(<CharDisplay character="極" reading="jí" />);
+
+    const heading = screen.getByRole("heading", { level: 2, name: "極" });
+    expect(heading).not.toHaveAttribute("id");
+    expect(heading.nextElementSibling).toHaveTextContent("jí");
+    expect(screen.queryByRole("img")).toBeNull();
   });
 });

@@ -356,6 +356,7 @@ button {
 
 /* Source Serif 4's text cut at every size but the title's, as the Figma design sets a lesson. */
 .lesson-manuscript {
+  --divider-intro-gap: 64px;
   font-optical-sizing: none;
 }
 
@@ -457,6 +458,11 @@ button {
   margin-top: 77px;
 }
 
+/* A character introduced within commentary continues the preceding discussion. */
+.lesson-note > p + .char-display {
+  margin-top: 76px;
+}
+
 /* Level with the middle of the character, above its reading */
 .section-marker {
   position: absolute;
@@ -529,9 +535,15 @@ button {
   font-family: var(--font-han-quote);
 }
 
-/* A form study inside a Commentary keeps the form font, not the quotation font. */
-.lesson-note .form-glyph {
+/* Form studies and standalone characters keep their form font inside Commentary. */
+.lesson-note .form-glyph,
+.lesson-note .character-focus {
   font-family: var(--font-han-forms);
+}
+
+/* So does a displayed character (CharDisplay) with its display font. */
+.lesson-note .study-character {
+  font-family: var(--font-han-display);
 }
 
 .quote-source-group {
@@ -601,6 +613,28 @@ button {
 }
 
 /* Historical form studies */
+
+.inline-form {
+  position: relative;
+  /* Preserve the character's native inline metrics, including selection's
+     full line-height. An inline-block creates notches in the highlight. */
+  white-space: nowrap;
+}
+
+/* Hide only the glyph fill: leave the browser's native selection colours
+   untouched so the selected character still gets its normal highlight. */
+.inline-form-text {
+  -webkit-text-fill-color: transparent;
+}
+
+.inline-form-picture {
+  position: absolute;
+  inset: 0;
+  background-color: currentColor;
+  mask: var(--inline-form-picture) center / contain no-repeat;
+  pointer-events: none;
+  user-select: none;
+}
 
 .character-forms {
   /* As wide as its cards, so they stay on one line; never wider than the lesson. */
@@ -685,11 +719,16 @@ button {
   line-height: 41px;
 }
 
-.lesson-note p {
+.lesson-note > p {
   margin: 41px 0 0;
 }
 
-.lesson-note .note-title + p,
+/* The box's padding supplies the closing space when either quote type ends it. */
+.lesson-note > .lesson-quote:last-child {
+  margin-bottom: 0;
+}
+
+.lesson-note > .note-title + p,
 .lesson-note > p:first-of-type {
   margin-top: 0;
 }
@@ -708,11 +747,37 @@ button {
 .character-focus {
   display: grid;
   width: min(100%, 18rem);
-  min-height: 120px;
-  margin: 65px auto;
+  margin: 28px auto;
   place-items: center;
-  font-size: 128px;
+  font-size: clamp(144px, 24vw, 192px);
   line-height: 1;
+}
+
+.lesson-note > .character-focus + p {
+  margin-top: 0;
+}
+
+.character-focus-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem clamp(1rem, 4vw, 3rem);
+  width: 100%;
+}
+
+.focus-item {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+.focus-source {
+  display: inline-flex;
+  color: inherit;
+  text-decoration: none;
 }
 
 /* Lesson completion and dividers */
@@ -741,7 +806,7 @@ button {
 }
 
 .lesson-divider-solid {
-  margin: 64px auto;
+  margin: var(--divider-intro-gap) auto;
   border-top: 1px solid var(--rule);
 }
 
@@ -757,6 +822,12 @@ button {
 
 .lesson-divider-dashed + .lesson-note {
   margin-top: 36px;
+}
+
+/* A prose introduction after a dashed divider follows the same rhythm as
+   SectionBreak's introduction. The following character block supplies its gap. */
+.lesson-divider-dashed + p {
+  margin-top: var(--divider-intro-gap);
 }
 
 .lesson-complete h2 {
@@ -1344,8 +1415,15 @@ summary.dictionary-gloss::before {
   }
 
   .lesson-quote {
+    --quote-zoom: 1.3333;
     margin-block: 38px;
-    zoom: 1.3333;
+    zoom: var(--quote-zoom);
+  }
+
+  /* Keep normal quotation typography, but compensate the width for enlargement
+     so both Quote and LegacyQuote stay inside the commentary's padding. */
+  .lesson-note .lesson-quote {
+    width: min(calc(100% / var(--quote-zoom)), 50rem);
   }
 
   .dictionary-examples {

@@ -46,6 +46,10 @@ component.
 `---` is the one visual separator a lesson writes itself: the dashed line
 between two characters of the same division. A new division of the lesson
 (*First*, *Second*, …) is a `SectionBreak`, which carries its own solid rule.
+Use `<SectionBreak ordinal="Third" marker="上">` to add a progress marker
+for 上 (“up”) at the rule itself. This is useful when the division opens
+with prose or a comparison instead of a character heading.
+
 
 ## The components
 
@@ -53,15 +57,37 @@ between two characters of the same division. A new division of the lesson
 | --- | --- |
 | `<LessonHeader number={1} subtitle="About the primitive 一, a single stroke." />` | The lesson's title block: the title and your subtitle. Once per lesson, first. The subtitle is plain text in quotes; it is also the lesson's line in the lesson index and the page description. To put a double quote in it, write the subtitle between single quotes: `subtitle='About "one" stroke.'`. |
 | `<CharDisplay character="雨" label="B" reading="yǔ" />` | Opens a character's section: the big character, its letter, and the reading the lesson teaches, which must be one of those on its dictionary page. The character links to its dictionary page once it has one, and that page names this lesson. |
+| `<CharDisplay character="極" reading="jí" />` | The same display without `label`, for a character shown in passing, as inside a `<Commentary>`: no letter seal and no section anchor, same size, still a heading, and its dictionary page still names this lesson. |
 | `<CharacterForms character="雨" description="Old and new forms of the character" historical="sinica-03-oracle-bone-雨 sinica-08-bronze-雨" />` | The historical-forms study. `historical` names the pictures in `apps/web/public/forms/`, oldest first, by file name, separated by spaces (a name without an extension means `.svg`; give other names in full, e.g. `….png`); `character` fills the last card. Pictures take the colour of the text around them. `forms` is a minimum card count; cards without a picture show a placeholder. |
 | `<Quote id="L001B-Q01" />` | A quotation by its Quote ID; the quotation file carries the text, provenance and source link. |
 | `<SectionBreak ordinal="First">…</SectionBreak>` | One of the lesson's numbered divisions; its text is a paragraph that reads on from the ordinal ("First, when written…"), so it starts in lower case. |
 | `<Commentary>…</Commentary>` | An aside of paragraphs; may contain `<CharacterForms>`. |
 | `<CharacterFocus character="丂" />` | One large character standing alone in the prose; not linked. |
+| `<CharacterFocus characters="二 上" />` | Multiple large characters side by side, separated by spaces in the prop; not linked. The row is centered and wraps on narrow screens. Use either `character` or `characters`. Each character is recorded for the dictionary's lesson references. |
 | `<LessonComplete>` with `<FinishLesson lesson={1} />` and `<ClosingLine>…</ClosingLine>` | The end of the lesson: the button that records the completion, then the vertical closing line. Lessons after Lesson 1 close with `盡人事　聽天命`: the full-width space (U+3000) is the gap between the words, as in Lesson 1's line ([#25](https://github.com/ebbmango/verbarium/issues/25)). |
 
 Props may contain Chinese (`character="一"`); the component marks it.
 Numbers go in braces (`lesson={1}`, `forms={3}`), text in quotes.
+
+## Displayed source names
+
+Keep a quotation’s displayed provenance short: normally the work title alone,
+such as `Shuowen Jiezi Xizhuan`. Omit author names, juan, chapter, part and
+entry locators from that label. Put details readers need in the optional
+`sourceDetails` field of the quotation file, displayed below the title in
+smaller, muted text. Use `sourceLink` for the online textual witness, and
+keep full bibliographical details in research notes or MDX comments.
+A familiar compact reference such as `The Analects 16.7`, or an author name
+needed to identify whose commentary is quoted, may remain as in Lesson 1.
+
+For example, a quotation file can use `"provenance": "Book of Songs"` and
+`"sourceDetails": "Part II, Book VI, Ode VI, line 5"`. Add or edit these fields
+in the JSON file; remove `sourceDetails` entirely when there are no details.
+The file format and validator are described in [quotation-contract.md](quotation-contract.md).
+
+Inline quotations also accept details:
+`<LegacyQuote source="Book of Songs" sourceDetails="Part II, Book VI, Ode VI, line 5">…</LegacyQuote>`.
+Existing titles and quotations without details keep their current presentation.
 
 ## The seals
 
@@ -73,6 +99,41 @@ commit `public/seals/`; a test fails until the images match the drawing.
 
 ## The historical-form pictures
 
+### Historical forms in a focus display
+
+Keep the single-character and space-separated shortcuts for ordinary text. For
+illustrated comparisons, put one `FocusItem` per position inside the focus:
+
+```mdx
+<CharacterFocus>
+  <FocusItem name="2011F.svg" character="𠄟" description="Historical form of down, with the longer stroke above." />
+  <FocusItem character="下" />
+</CharacterFocus>
+```
+
+A single illustrated child works too. Give each picture its local forms filename
+and a short English description. Register its source under that exact name in
+`formSources`. The picture links to its source and uses the surrounding ink.
+Keep the natural margins in the artwork's viewBox when preparing a form.
+
+Supply `character` when the depicted form has a Unicode representation, even
+when a font cannot display it. Readers copy that text. Omit it for an
+unencoded form. Use `headword` when the dictionary reference should point to
+a particular entry. Without it the compiler uses `character`, or skips the
+item if neither is present. These fields take quoted literals.
+
+### Inline forms
+
+Use `<InlineForm name="又-bigseal.svg" character="又" />` within a prose
+sentence to show an SVG in place of a character. `name` identifies an asset
+in `public/forms/`, with the same filename rules as `CharacterForms`.
+`character` is the real text equivalent for selection, copying and screen
+readers. The SVG is a decorative overlay, sized to one em and coloured with
+the surrounding text. Use this for a single character; use `CharacterForms`
+for a standalone study. The `又-bigseal.svg` asset was supplied by the user.
+
+### Standalone forms
+
 Candidate pictures for each character are collected, with their sources
 (`sources.tsv`) and a `report.md`, in the sibling research repository at
 `../wieger-research/by-lesson/<lesson>/<letter>/`, e.g.
@@ -83,6 +144,47 @@ Then add its line to `apps/web/app/content/forms/form-sources.ts`: the web page
 it was taken from (its `web address` in `sources.tsv`) and a short label. Each
 picture links to that page, and a test fails for a shown picture without one.
 The current form links to its dictionary page when it has one.
+
+### Adding a form from a research pack
+
+1. Read `../wieger-research/forms/packs/<unit>/pack.json` (for example,
+   `002C/pack.json`). Match the requested name's number and period to an entry
+   in `sinica_forms`; use that entry's `image` path and source label. Inspect
+   the image before tracing. Black strokes on transparency can look entirely
+   black in a dark image viewer.
+2. Trace the original PNG to the exact name referenced by the lesson. For the
+   research pack's 8-bit RGBA PNGs, the dependency-free Python helper below
+   decodes transparency, flattens onto white, scales 4× with nearest-neighbour
+   sampling, thresholds at half grey, and runs the potrace settings above.
+   It requires `potrace` on PATH and rejects unsupported PNG encodings.
+
+   ```bash
+   python3 apps/web/scripts/trace-form.py \
+     ../wieger-research/forms/sinica/images/4f5e/00.png \
+     apps/web/public/forms/sinica-01-small-seal-佞.svg
+   ```
+
+3. Add the exact asset name to `formSources` in
+   `apps/web/app/content/forms/form-sources.ts`. Link to the character's own
+   Sinica page, `https://xiaoxue.iis.sinica.edu.tw/yanbian/?char=…`, and use
+   the pack's source label. A missing source entry loses the clickable
+   attribution; a missing SVG makes the CSS mask blank even when the lesson
+   markup is correct.
+4. Add `<CharacterForms>` to the unit, normally after its opening gloss, with
+   the asset name in `historical` and the modern character in `character`.
+   Inspect the resulting stroke silhouette and check the historical and
+   current forms on the lesson page.
+5. Save master copies in the private `hanzi-old-forms` repository and beside
+   the research PNG, following the persistence instructions below. If those
+   directories are outside the session's writable roots, report that step
+   as pending: the ignored file in `public/forms/` fixes localhost only.
+   `fetch-forms` deletes local `sinica-*.svg` files before copying masters,
+   so an unsaved master will disappear on the next fetch.
+6. Check all referenced files and source links:
+
+   ```bash
+   pnpm --filter @verbarium/web test app/content/forms/form-sources.test.ts
+   ```
 
 The 小學堂 pictures (`public/forms/sinica-*`) are shown on the site but kept
 out of this public repo (`.gitignore`). Their master copies live in the private

@@ -183,11 +183,11 @@ export function sealFile(name: string): string {
   return `seals/${name.replace(":", "-")}.png`;
 }
 
-/** Every seal a lesson calls for: its own, and one per displayed character, whatever the order of its props. */
+/** Every seal a lesson calls for: its own, and one per labeled displayed character, whatever the order of its props. */
 export function sealsOfLesson(number: number, source: string): Seal[] {
-  const markers = Array.from(source.matchAll(/<CharDisplay\b([^>]*)>/g), ([, props]) => {
+  const markers = Array.from(source.matchAll(/<CharDisplay\b([^>]*)>/g)).flatMap(([, props]) => {
     const prop = (name: string) => props.match(new RegExp(`\\b${name}="([^"]+)"`))?.[1] ?? "";
-    return SEALS.letter(prop("label"), prop("character").normalize("NFKC"));
+    return prop("label") ? [SEALS.letter(prop("label"), prop("character").normalize("NFKC"))] : [];
   });
   return [SEALS.lesson(number), ...markers];
 }

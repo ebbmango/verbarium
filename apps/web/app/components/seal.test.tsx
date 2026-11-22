@@ -93,4 +93,9 @@ describe("the seals on the page", () => {
     const seals = sealsOfLesson(2, '<CharDisplay label="A" reading="èr" character="二" />\n<CharDisplay character="⾎" label="B" />');
     expect(seals.map((seal) => seal.name)).toEqual(["lesson2", "A:二", "B:血"]);
   });
+
+  it("skip a CharDisplay without a label, which shows no seal", () => {
+    const seals = sealsOfLesson(2, '<CharDisplay label="D" reading="jí" character="亟" />\n<CharDisplay character="極" reading="jí" />');
+    expect(seals.map((seal) => seal.name)).toEqual(["lesson2", "D:亟"]);
+  });
 });
