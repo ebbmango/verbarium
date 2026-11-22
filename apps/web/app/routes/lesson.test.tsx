@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { createRoutesStub } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -32,6 +32,27 @@ describe("the lesson page", () => {
 
     expect(screen.getByRole("heading", { level: 1, name: "Lesson 1" })).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "Finish lesson" })).toHaveLength(1);
+  });
+
+  it("jumps to Lesson 2's section dividers and the labeled display within commentary", () => {
+    const { container } = renderLessonAt("/lessons/2");
+    const secondDivider = [...container.querySelectorAll(".category-break")]
+      .find((section) => section.textContent?.startsWith("Second,"))?.previousElementSibling;
+    const commentaryDisplay = screen.getByRole("heading", { level: 2, name: "極" }).closest(".char-display");
+    const thirdDivider = container.querySelector('hr[data-progress-marker="上"]');
+    const markers = within(screen.getByRole("navigation", { name: "Characters in this lesson" }));
+    const scrolled: Element[] = [];
+    const scroll = vi.fn(function (this: Element) { scrolled.push(this); });
+    Object.defineProperty(secondDivider!, "scrollIntoView", { value: scroll });
+    Object.defineProperty(commentaryDisplay!, "scrollIntoView", { value: scroll });
+    Object.defineProperty(thirdDivider!, "scrollIntoView", { value: scroll });
+
+    fireEvent.click(markers.getByRole("button", { name: "亟" }));
+    fireEvent.click(markers.getByRole("button", { name: "極" }));
+    const lastMarker = markers.getAllByRole("button").at(-1)!;
+    expect(lastMarker).toHaveAccessibleName("上");
+    fireEvent.click(lastMarker);
+    expect(scrolled).toEqual([secondDivider, commentaryDisplay, thirdDivider]);
   });
 
   it("titles and describes the page after the lesson", () => {

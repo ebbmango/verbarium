@@ -1,0 +1,51 @@
+# Lesson 2B–C assessment
+
+The accompanying `lesson-002-b-c-dossier.patch` appends these findings to the existing Hylia dossiers. It is prepared but **not applied**: the original dossier checkout lies outside this session’s writable roots. From that checkout, apply it with `git apply /Users/ebbmango/Coding/verbarium/docs/research/lesson-002-b-c-dossier.patch`.
+
+## Lesson 2B editorial assessment — 2026-11-16
+
+The lesson MDX is the editorial source of truth. This review retains its chosen translations and the LegacyQuote format; it does not create alignment data.
+
+- **L002B-Q01:** The received *Shuowen Jiezi*, entry 仁 (ren, benevolence), supports 親也。从人从二。 (“Kinship. Formed from 人 [person] and from 二 [two].”). Rechecked at https://www.shuowen.org/view/4929. Keep the received entry distinct from Zhu Junsheng’s expanded entry and Wieger’s composite quotation. “Kinship” is the lesson’s chosen rendering; the dossier’s “closeness or affection” is broader and does not restrict the word to family relationships.
+- **L002B-Q02:** *Liji*, *Jingjie*, section 4: 上下相親，謂之仁。 (“High and low hold one another dear; this is called love.”). CText’s indexed parallel-passages text confirms the wording: https://ctext.org/text.pl?if=en&node=61476&show=parallel. Direct page access returned 403 during this review. The passage concerns government and affection across rank. “Love” remains the author’s contextual rendering of ren, not a claim that all uses of ren mean love. The lesson’s “neighbour” explanation is inherited exposition, not part of the quoted source.
+- **L002B-Q03 (added):** 純乎天地生物之理。 (“Wholly in accord with the principle by which Heaven and Earth bring forth life.”). This is a later commentary, not the ancient *Liji*. Attribute to **Li Shigu, Liji Zhongyao, juan 25**, in the *Jingjie* discussion of the preceding passage. Source: https://www.shidianguji.com/zh/book/CADAL02033688/chapter/1lalnghmf0xex. Bibliographical header identifies the Qing compiler Li Shigu. CText’s indexed OCR independently preserves the exact excerpt: https://ctext.org/wiki.pl?chapter=8498127&if=gb. It contains errors in the surrounding text and should not supply a fresh verbatim transcription of that context.
+
+The existing vault note [Heaven, Earth, and mutual affection](../../../../Notes/Heaven,%20Earth,%20and%20mutual%20affection.md) had already checked this attribution and situated the excerpt in Li’s editorial note introduced by 按 (“I note”), rather than in the preceding quotation. Its fuller contextual transcription is:
+
+> 是純乎天地生物之理，父母斯民之道也，故謂之仁而已矣。
+>
+> “This is wholly in accord with the principle by which Heaven and Earth bring forth life, the way of acting as father and mother to these people; hence it is called ren.”
+
+This review adds the short excerpt to the lesson and replaces the unsupported standalone paraphrase with the close working translation already preserved in that note. Closing punctuation is editorial. Evidence remains transcription-level, not a new facsimile verification. All pre-existing dossier layers remain historical evidence, not authority over the lesson’s current wording.
+
+---
+
+## Lesson 2C editorial assessment — 2026-11-16
+
+Retain LegacyQuote. The three Xu Kai excerpts are from the same discussion in **Shuowen Jiezi Xizhuan, juan 35, Tonglun, part 3**; standardize all three displayed attributions to that work and author. These are Xu Kai’s exposition, not quotations of the received Shuowen entry without qualification.
+
+| Quote ID | Chinese and current English | Witness |
+| --- | --- | --- |
+| L002C-Q01 | 佞者巧諂高才也。 — “The smooth-tongued is artful in flattery, of great talent.” | https://ctext.org/library.pl?if=en&file=77400&page=87 |
+| L002C-Q02 | 佞者女子之仁，故于文女仁為佞。 — “Fawning is a womanly kindliness; thus, in writing, 女 [woman] and 仁 [kindliness] make 佞 [fawning].” | https://ctext.org/library.pl?if=en&file=77400&page=88 |
+| L002C-Q03 | 有小才不以正道近其君，曰佞也。 — “One who possesses some talent but uses improper means to gain closeness to his ruler is called nìng.” | https://ctext.org/library.pl?if=en&file=77400&page=87 |
+| L002C-Q04 | 佞是口才捷利之名，本非善惡之稱。 — “佞 is the name for quick and sharp verbal talent; in itself not a designation of good or evil.” | https://zh.wikisource.org/zh-hant/春秋左傳正義/卷27#成公十有三年傳 |
+
+Q03 was already verified in this dossier’s 2026-10-18 scan check: page 87, columns 7–8. The lesson now wraps its Chinese and English in a quote component, removing the handwritten author line. No claim of a new scan inspection is made. Existing graph choices and editorial punctuation are retained.
+
+### Supplementary research: Q04
+
+**Attribution:** Kong Yingda, *Chunqiu Zuozhuan Zhengyi*, juan 27, subcommentary on Duke Cheng’s thirteenth year, explaining 寡人不佞 (“I am without talent”). The page’s bibliographical header distinguishes Zuo Qiuming’s tradition, Du Yu’s notes, and Kong Yingda’s subcommentary. The quoted sentence is in the last of these. Fu Qian’s gloss is cited earlier in that paragraph; it is not the attribution of the whole explanation.
+
+The exact sentence and context were verified in the search-indexed text of the linked Wikisource primary-text edition on 2026-11-16. Direct page extraction omitted the matching passage, so no new scan verification is claimed. The explanation continues by distinguishing good and bad uses of verbal quickness. 本 (“at root; in itself”) here supports moral neutrality, not by itself a dated sequence of semantic change. The lesson therefore replaces “Originally, eloquence” with “Also, eloquence in itself, whether used for good or ill” and changes “originally” to “in itself” in the translation.
+
+A parallel occurs in Xing Bing’s *Lunyu Zhushu*, juan 5, on Analects 5.5: https://zh.wikisource.org/wiki/論語註疏/卷05. Record it as a parallel witness, not the attribution of the selected Zuo commentary excerpt.
+
+### Editorial distinctions retained for author review
+
+- The lesson’s “seduction” explanation remains explicitly first-person interpretation inside Commentary. Xu Kai supports improper pursuit of closeness and a gendered account of the graph; those lines do not themselves establish romantic seduction as the historical origin of the character.
+- 小才 (“small/limited talent”) is rendered “some talent” in the user’s translation. It is not the expression 小人 (“lesser man”). No silent substitution of that Confucian category has been made.
+- Q01’s personal rendering (“the smooth-tongued”) and Q02’s “womanly kindliness” remain editorial choices. Neither is replaced by a uniform abstract English gloss merely to harmonize the lesson.
+- Wieger’s statement about the “daughters of Eve” is inherited authorial rhetoric, not Xu Kai’s wording or independent evidence about the original makers of the graph.
+
+Units A and D–G are outside this B–C assessment and remain unchanged. Stable existing IDs Q01–Q02 are retained; Q03–Q04 identify the additional excerpts in reading order.
