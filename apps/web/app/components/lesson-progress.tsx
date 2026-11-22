@@ -4,23 +4,23 @@ import { useEffect, useRef, useState } from "react";
 const reachedAt = 0.25;
 
 /**
- * Where a character's section starts: the divider line above it, or the top of
- * the page for the first one. Walking back stops at the previous character, so
- * a section never claims a divider that belongs to an earlier one.
+ * Find the opening divider for a main character display. Commentary displays
+ * and later displays without a divider start at their own position.
  */
-function sectionStart(heading: HTMLElement): HTMLElement | null {
-  for (let node = heading.closest(".char-display")?.previousElementSibling; node; node = node.previousElementSibling) {
-    if (node.matches(".char-display")) return null;
+function sectionStart(heading: HTMLElement, index: number): HTMLElement | null {
+  if (heading.hasAttribute("data-progress-marker")) return heading;
+  const display = heading.closest<HTMLElement>(".char-display") ?? heading;
+  if (!heading.id || display.closest(".lesson-note")) return display;
+  for (let node = display.previousElementSibling; node; node = node.previousElementSibling) {
+    if (node.matches(".char-display")) break;
     if (node.matches("hr.lesson-divider")) return node as HTMLElement;
   }
-  return null;
+  return index === 0 ? null : display;
 }
 
 /**
- * The strip of characters in the empty band at the bottom of a lesson: one per
- * studied character, the one being read drawn larger and darker, each a way to
- * jump to the start of its section. It reads the lesson from the page itself, so
- * a lesson needs nothing extra to appear in it.
+ * The strip follows the lesson's character displays and explicitly marked
+ * section breaks in reading order.
  */
 export function LessonProgress() {
   const [characters, setCharacters] = useState<string[]>([]);
@@ -29,9 +29,11 @@ export function LessonProgress() {
   const starts = useRef<(HTMLElement | null)[]>([]);
 
   useEffect(() => {
-    const headings = [...document.querySelectorAll<HTMLElement>("h2.study-character[data-character]")];
-    starts.current = headings.map(sectionStart);
-    setCharacters(headings.map((heading) => heading.dataset.character ?? ""));
+    const markers = [...document.querySelectorAll<HTMLElement>(
+      "h2.study-character[data-character], hr[data-progress-marker]",
+    )];
+    starts.current = markers.map(sectionStart);
+    setCharacters(markers.map(({ dataset }) => dataset.progressMarker ?? dataset.character ?? ""));
 
     let frame = 0;
     const update = () => {

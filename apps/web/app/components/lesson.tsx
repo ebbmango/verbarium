@@ -59,18 +59,17 @@ function DisplayedCharacter({ character }: { character: string }) {
 
 type CharDisplayProps = {
   character: string;
-  label: string;
+  /** The section's letter, shown on its seal; left out for a character shown in passing, as in a Commentary, which gets no seal. */
+  label?: string;
   /** The reading this lesson teaches: one of those on the character's dictionary page. */
   reading: string;
 };
 
 export function CharDisplay({ character, label, reading }: CharDisplayProps) {
-  const headingId = `character-${label.toLowerCase()}`;
-
   return (
     <div className="char-display">
-      <LetterSeal character={character} className="section-marker" letter={label} />
-      <h2 className="study-character" data-character={character} id={headingId} lang="zh-Hant">
+      {label ? <LetterSeal character={character} className="section-marker" letter={label} /> : null}
+      <h2 className="study-character" data-character={character} id={label ? `character-${label.toLowerCase()}` : undefined} lang="zh-Hant">
         <DisplayedCharacter character={character} />
       </h2>
       <p className="study-reading">{reading}</p>
@@ -89,6 +88,26 @@ type CharacterFormsProps = {
 /** Where a historical-form picture is served; a name without an extension means `.svg`. */
 export function formPictureUrl(name: string) {
   return `${import.meta.env.BASE_URL}forms/${/\.\w+$/.test(name) ? name : `${name}.svg`}`;
+}
+
+function formMaskStyle(name: string) {
+  return { "--inline-form-picture": `url("${formPictureUrl(name)}")` } as CSSProperties;
+}
+
+function FormOverlay({ character }: { character?: string }) {
+  return <>
+    {character && <span className="inline-form-text">{character}</span>}
+    <span className="inline-form-picture" aria-hidden="true" />
+  </>;
+}
+
+/** A historical glyph over real text, so selection, copying and speech retain the character. */
+export function InlineForm({ name, character }: { name: string; character: string }) {
+  return (
+    <span className="inline-form" lang="zh-Hant" style={formMaskStyle(name)}>
+      <FormOverlay character={character} />
+    </span>
+  );
 }
 
 /** A historical-form picture, linking to the page it was taken from. */
@@ -166,13 +185,14 @@ export function CharacterForms({ character, description, forms = 2, historical =
 
 type SectionBreakProps = PropsWithChildren<{
   ordinal: string;
+  marker?: string;
 }>;
 
 /** A numbered division of the lesson, under the solid rule that opens it. */
-export function SectionBreak({ children, ordinal }: SectionBreakProps) {
+export function SectionBreak({ children, ordinal, marker }: SectionBreakProps) {
   return (
     <>
-      <hr className="lesson-divider lesson-divider-solid" />
+      <hr className="lesson-divider lesson-divider-solid" data-progress-marker={marker} />
       <section className="category-break">
         <strong>{ordinal},</strong> {children}
       </section>
@@ -194,11 +214,39 @@ export function Commentary({ children }: PropsWithChildren) {
   );
 }
 
-/** One large character standing alone in the prose: shown, not linked. */
-export function CharacterFocus({ character }: { character: string }) {
+type FocusItemProps = { headword?: string } & (
+  | { character: string; name?: never; description?: never }
+  | { name: string; description: string; character?: string }
+);
+
+export function FocusItem({ name, description, character }: FocusItemProps) {
+  if (name === undefined) return <span className="focus-item">{character}</span>;
+  const source = formSources[name];
+  const picture = (
+    <span className="focus-item" role="img" aria-label={description} lang="en" style={formMaskStyle(name)}>
+      <FormOverlay character={character} />
+    </span>
+  );
+  return source ? (
+    <a className="focus-source" href={source.href} title={source.label} lang="en"
+      aria-label={`${description} Source: ${source.label}`} draggable={false}>
+      {picture}
+    </a>
+  ) : picture;
+}
+
+type CharacterFocusProps =
+  | { character: string; characters?: never; children?: never }
+  | { character?: never; characters: string; children?: never }
+  | { character?: never; characters?: never; children: ReactNode };
+
+/** Large characters in the prose, shown without links; `characters` is a space-separated row. */
+export function CharacterFocus({ character, characters, children }: CharacterFocusProps) {
   return (
-    <div className="character-focus" lang="zh-Hant">
-      {character}
+    <div className={`character-focus${characters !== undefined || children !== undefined ? " character-focus-group" : ""}`} lang="zh-Hant">
+      {characters !== undefined
+        ? characters.split(/\s+/).filter(Boolean).map((value, index) => <span key={index}>{value}</span>)
+        : character ?? children}
     </div>
   );
 }
@@ -225,7 +273,9 @@ export const lessonComponents = {
   p: LessonParagraph,
   CharDisplay,
   CharacterFocus,
+  FocusItem,
   CharacterForms,
+  InlineForm,
   ClosingLine,
   Commentary,
   FinishLesson,

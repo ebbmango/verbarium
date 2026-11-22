@@ -3,7 +3,7 @@ import { Children, isValidElement, type PropsWithChildren, type ReactElement, ty
 import { quotationById } from "../content/quotes";
 import type { QuotationFile } from "../quotation-file";
 import { HanMarkedText, lessonComponents } from "./lesson";
-import { ProvenanceName, type QuoteProps, QuoteView } from "./quote";
+import { ProvenanceName, type QuoteProps, QuoteView, SourceDetails } from "./quote";
 
 /** The blocks MDX gives a component, without the line breaks it leaves between them. */
 function blocksOf(children: ReactNode): ReactNode[] {
@@ -108,6 +108,7 @@ function QuotedExample({ id }: { id: string }) {
         </i>{" "}
         <cite className="dictionary-example-source">
           <ProvenanceName provenance={quotation.provenance} sourceLink={quotation.sourceLink} />
+          <SourceDetails sourceDetails={quotation.sourceDetails} />
         </cite>
       </span>
     </li>
@@ -125,6 +126,7 @@ export function DictionaryQuote({ id }: QuoteProps) {
     <div className="dictionary-source">
       <p className="dictionary-source-name">
         <ProvenanceName provenance={quotation.provenance} sourceLink={quotation.sourceLink} />:
+        <SourceDetails sourceDetails={quotation.sourceDetails} />
       </p>
       <QuoteView quote={quotation} />
     </div>

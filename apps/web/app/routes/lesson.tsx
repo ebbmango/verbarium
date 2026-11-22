@@ -39,7 +39,7 @@ export default function LessonPage() {
           <lesson.Content components={lessonComponents} />
         </article>
       </main>
-      <LessonProgress />
+      <LessonProgress key={lesson.number} />
     </>
   );
 }

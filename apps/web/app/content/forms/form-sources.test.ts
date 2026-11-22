@@ -18,7 +18,7 @@ const shownPictures = [
     lessonSources.flatMap((source) =>
       [...source.matchAll(/historical="([^"]*)"/g)].flatMap((match) =>
         match[1].split(/\s+/).filter((name) => name && !name.startsWith("glyph:")),
-      ),
+      ).concat([...source.matchAll(/<FocusItem\b[^>]*?\sname="([^"]+)"/g)].map(match => match[1])),
     ),
   ),
 ];
@@ -36,6 +36,11 @@ describe("historical-form pictures", () => {
   it.each(shownPictures.filter((name) => name.startsWith("sinica-")))(
     "%s links to its own character's page in 小學堂, not the site's front page",
     (name) => {
+      const fontcode = name.match(/^sinica-(\d+)-([A-F0-9]+)-/);
+      if (fontcode) {
+        expect(formSources[name].href).toBe(`https://xiaoxue.iis.sinica.edu.tw/char/?fontcode=${fontcode[1]}.${fontcode[2]}`);
+        return;
+      }
       const character = [...name].at(-1) as string;
       expect(formSources[name].href).toBe(`https://xiaoxue.iis.sinica.edu.tw/yanbian/?char=${encodeURIComponent(character)}`);
     },

@@ -18,6 +18,7 @@ import type {
 
 type QuoteViewProps = {
   provenance?: string;
+  sourceDetails?: string;
   quote: AttestationTranslationAlignment;
   sourceLink?: string;
 };
@@ -197,6 +198,7 @@ function TargetTokens({
 
 type QuoteFrameProps = PropsWithChildren<{
   provenance?: string;
+  sourceDetails?: string;
   quotationRef?: Ref<HTMLQuoteElement>;
   sourceLink?: string;
   sourcePending?: boolean;
@@ -213,12 +215,18 @@ export function ProvenanceName({ provenance, sourceLink }: { provenance?: string
   );
 }
 
-function QuoteFrame({ children, provenance, quotationRef, sourceLink, sourcePending = false }: QuoteFrameProps) {
+/** Optional locator text on its own, quieter line below the source title. */
+export function SourceDetails({ sourceDetails }: { sourceDetails?: string }) {
+  return sourceDetails?.trim() ? <span className="quote-source-details">{sourceDetails}</span> : null;
+}
+
+function QuoteFrame({ children, provenance, quotationRef, sourceDetails, sourceLink, sourcePending = false }: QuoteFrameProps) {
   return (
     <blockquote className="lesson-quote" ref={quotationRef}>
       {children}
       <footer className={sourcePending ? "quote-source quote-source-pending" : "quote-source"}>
         {sourcePending ? "Source pending" : <ProvenanceName provenance={provenance} sourceLink={sourceLink} />}
+        {!sourcePending && <SourceDetails sourceDetails={sourceDetails} />}
       </footer>
     </blockquote>
   );
@@ -232,11 +240,18 @@ export type QuoteProps = {
 /** A quotation in a lesson, by its Quote ID: `<Quote id="L001A-Q01" />`. */
 export function Quote({ id }: QuoteProps) {
   const quotation = quotationById(id);
-  return <QuoteView provenance={quotation.provenance} quote={quotation} sourceLink={quotation.sourceLink} />;
+  return (
+    <QuoteView
+      provenance={quotation.provenance}
+      quote={quotation}
+      sourceDetails={quotation.sourceDetails}
+      sourceLink={quotation.sourceLink}
+    />
+  );
 }
 
 /** The quotation itself: aligned source and translation, then the provenance. */
-export function QuoteView({ provenance, quote, sourceLink }: QuoteViewProps) {
+export function QuoteView({ provenance, quote, sourceDetails, sourceLink }: QuoteViewProps) {
   const [activeMappingId, setActiveMappingId] = useState<string | null>(null);
   const quotation = useRef<HTMLQuoteElement>(null);
   const pointerMapping = useRef<string | null>(null);
@@ -334,7 +349,7 @@ export function QuoteView({ provenance, quote, sourceLink }: QuoteViewProps) {
   const interaction = { activeMappingId, mappingIndexes, onTokenPointerEnter };
 
   return (
-    <QuoteFrame provenance={provenance} quotationRef={quotation} sourceLink={sourceLink}>
+    <QuoteFrame provenance={provenance} quotationRef={quotation} sourceDetails={sourceDetails} sourceLink={sourceLink}>
       <p lang="zh-Hant" onPointerLeave={() => onTokenPointerEnter(null)}>
         <SourceTokens
           breaks={quote.alignment.breaks.attestation}
@@ -355,13 +370,14 @@ export function QuoteView({ provenance, quote, sourceLink }: QuoteViewProps) {
 
 type LegacyQuoteProps = PropsWithChildren<{
   source?: string;
+  sourceDetails?: string;
   sourceHref?: string;
   sourcePending?: boolean;
 }>;
 
-export function LegacyQuote({ children, source, sourceHref, sourcePending = false }: LegacyQuoteProps) {
+export function LegacyQuote({ children, source, sourceDetails, sourceHref, sourcePending = false }: LegacyQuoteProps) {
   return (
-    <QuoteFrame provenance={source} sourceLink={sourceHref} sourcePending={sourcePending}>
+    <QuoteFrame provenance={source} sourceDetails={sourceDetails} sourceLink={sourceHref} sourcePending={sourcePending}>
       {children}
     </QuoteFrame>
   );

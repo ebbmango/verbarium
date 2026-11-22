@@ -26,16 +26,17 @@ A file is one JSON object with these keys:
 | --- | --- | --- |
 | `formatVersion` | integer | The version of this format. Currently `1`; the validator rejects any other value. |
 | `provenance` | string, non-empty | The Provenance (see `CONTEXT.md`), as the lesson shows it under the quotation: `"Shuowen Jiezi"`, `"The Analects 16.7"`. |
+| `sourceDetails` | string, optional | A locator or other detail shown below the provenance in smaller, muted text, e.g. `"Part II, Book VI, Ode VI, line 5"`. Omit when absent; never `null`, empty or whitespace-only. |
 | `sourceLink` | string, optional | The Source link: an absolute `http` or `https` URL. Omitted when there is none; never `null` or empty. |
 | `attestation` | object | `{ "tokens": SourceToken[] }`: the source text, tokenized. |
 | `translation` | object | `{ "tokens": TargetToken[] }`: the translation, tokenized. |
 | `alignment` | object | `{ "mappings": QuoteMapping[], "breaks": { "attestation": number[], "translation": number[] } }`. |
 
 No other keys are allowed, at any level: an unknown key is a mistake, not an
-extension. The next format version is the place for new keys. A lesson refers
-to a quotation by Quote ID, `<Quote id="L001A-Q01" />`, and the provenance and
-source link it shows come from the file; a Quote ID with no file fails the
-build.
+extension. `sourceDetails` is a backward-compatible optional addition to version 1;
+existing files need no changes. A lesson refers to a quotation by Quote ID,
+`<Quote id="L001A-Q01" />`, and the provenance, source details and source link
+it shows come from the file; a Quote ID with no file fails the build.
 
 A **SourceToken** is `{ "id": integer, "text": string, "type": "character" | "punctuation" | "number" | "symbol", "pinyin"?: string | null }`.
 A **TargetToken** is `{ "id": integer, "text": string, "type": "text" | "hanzi" | "punctuation" | "whitespace" }`.
@@ -179,9 +180,10 @@ the repository root; without a path it checks every committed file, including
 their names).
 
 1. the file parses as JSON and is an object with only the keys above,
-   `sourceLink` being the one that may be missing;
+   `sourceDetails` and `sourceLink` being optional;
 2. `formatVersion` is `1`;
-3. `provenance` is a non-empty string; `sourceLink`, if present, is an
+3. `provenance` is a non-blank string; `sourceDetails`, if present, is a
+   non-blank string; `sourceLink`, if present, is an
    absolute `http` or `https` URL;
 4. every token has an `id` that is a non-negative safe integer, unique on
    its side, a non-empty `text`, and a `type` from its side's list;
