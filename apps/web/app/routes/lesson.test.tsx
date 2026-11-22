@@ -31,7 +31,7 @@ describe("the lesson page", () => {
     renderLessonAt("/lessons/1");
 
     expect(screen.getByRole("heading", { level: 1, name: "Lesson 1" })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "Finish lesson" })).toHaveLength(1);
+    expect(screen.queryByRole("button", { name: "Finish lesson" })).toBeNull();
   });
 
   it("jumps to Lesson 2's section dividers and the labeled display within commentary", () => {
