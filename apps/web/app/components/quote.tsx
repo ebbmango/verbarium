@@ -204,14 +204,24 @@ type QuoteFrameProps = PropsWithChildren<{
   sourcePending?: boolean;
 }>;
 
-/** A quotation's provenance, linking to its source link when it has one. */
-export function ProvenanceName({ provenance, sourceLink }: { provenance?: string; sourceLink?: string }) {
+/** A quotation's provenance and optional details, linked together when a source link is available. */
+export function ProvenanceName({ provenance, sourceDetails, sourceLink }: {
+  provenance?: string;
+  sourceDetails?: string;
+  sourceLink?: string;
+}) {
+  const label = (
+    <>
+      {provenance}{provenance && sourceDetails?.trim() ? " " : null}
+      <SourceDetails sourceDetails={sourceDetails} />
+    </>
+  );
   return sourceLink ? (
     <a href={sourceLink} rel="noopener noreferrer" target="_blank">
-      {provenance}
+      {label}
     </a>
   ) : (
-    provenance
+    label
   );
 }
 
@@ -225,8 +235,9 @@ function QuoteFrame({ children, provenance, quotationRef, sourceDetails, sourceL
     <blockquote className="lesson-quote" ref={quotationRef}>
       {children}
       <footer className={sourcePending ? "quote-source quote-source-pending" : "quote-source"}>
-        {sourcePending ? "Source pending" : <ProvenanceName provenance={provenance} sourceLink={sourceLink} />}
-        {!sourcePending && <SourceDetails sourceDetails={sourceDetails} />}
+        {sourcePending ? "Source pending" : (
+          <ProvenanceName provenance={provenance} sourceDetails={sourceDetails} sourceLink={sourceLink} />
+        )}
       </footer>
     </blockquote>
   );

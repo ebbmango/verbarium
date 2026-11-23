@@ -101,10 +101,14 @@ describe("QuoteView", () => {
     const footer = container.querySelector(".quote-source") as HTMLElement;
     const details = footer.querySelector(".quote-source-details") as HTMLElement;
     expect(details).toHaveTextContent("Part II, Book VI, Ode VI, line 5");
-    expect(footer.lastElementChild).toBe(details);
-    expect(details.closest("a")).toBeNull();
-    if (sourceLink) expect(within(footer).getByRole("link", { name: "Book of Songs" })).toHaveAttribute("href", sourceLink);
-    else expect(within(footer).queryByRole("link")).toBeNull();
+    if (sourceLink) {
+      const link = within(footer).getByRole("link", { name: "Book of Songs Part II, Book VI, Ode VI, line 5" });
+      expect(link).toHaveAttribute("href", sourceLink);
+      expect(link).toContainElement(details);
+    } else {
+      expect(footer.lastElementChild).toBe(details);
+      expect(within(footer).queryByRole("link")).toBeNull();
+    }
   });
 
   it.each([undefined, "", "  "])("adds no details markup for %j", (sourceDetails) => {

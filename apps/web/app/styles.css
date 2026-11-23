@@ -590,8 +590,18 @@ button {
   text-decoration: none;
 }
 
-.quote-source a:hover {
+.quote-source a:has(> .quote-source-details) {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.quote-source a:hover,
+.quote-source a:focus-visible {
   color: var(--red);
+}
+
+.quote-source a:is(:hover, :focus-visible) > .quote-source-details {
+  color: inherit;
 }
 
 .quote-source-pending {
