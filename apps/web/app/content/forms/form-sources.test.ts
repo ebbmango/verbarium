@@ -12,18 +12,39 @@ const lessonSources = readdirSync(lessonsFolder)
   .filter((file) => file.endsWith(".mdx"))
   .map((file) => readFileSync(join(lessonsFolder, file), "utf8"));
 
-/** Every picture a lesson's form studies name; `glyph:X` entries are text, not pictures. */
-const shownPictures = [
-  ...new Set(
-    lessonSources.flatMap((source) =>
-      [...source.matchAll(/historical="([^"]*)"/g)].flatMap((match) =>
-        match[1].split(/\s+/).filter((name) => name && !name.startsWith("glyph:")),
-      ).concat([...source.matchAll(/<FocusItem\b[^>]*?\sname="([^"]+)"/g)].map(match => match[1])),
-    ),
-  ),
-];
+/** Every picture a lesson's form studies name; current and glyph:X are text. */
+function picturesInSource(source: string): string[] {
+  const formLists = [
+    ...source.matchAll(/historical="([^"]*)"/g),
+    ...source.matchAll(/<CharacterForms\b(?![^>]*\/>)[^>]*>([\s\S]*?)<\/CharacterForms>/g),
+  ];
+  return formLists.flatMap((match) => match[1].replace(/<\/?FormRow\s*>/g, " ").split(/\s+/)
+    .filter((name) => name && name !== "current" && !name.startsWith("glyph:")))
+    .concat([...source.matchAll(/<FocusItem\b[^>]*?\sname="([^"]+)"/g)].map(match => match[1]));
+}
+
+const shownPictures = [...new Set(lessonSources.flatMap(picturesInSource))];
 
 describe("historical-form pictures", () => {
+  it("checks pictures from both automatic and authored rows, excluding text forms", () => {
+    expect(picturesInSource(`<CharacterForms historical="old-雨 glyph:門" />
+Some prose between studies.
+<CharacterForms character="示" description="Forms">
+  old-示 another-示.png
+  glyph:門 current
+</CharacterForms>
+<CharacterForms character="示" description="Explicit rows">
+  <FormRow>
+    row-示
+    other-row-示.svg
+  </FormRow>
+  <FormRow>glyph:門 current</FormRow>
+</CharacterForms>
+<FocusItem name="focus-示.svg" description="Forms" />`)).toEqual([
+      "old-雨", "old-示", "another-示.png", "row-示", "other-row-示.svg", "focus-示.svg",
+    ]);
+  });
+
   it("are found in the lessons", () => {
     expect(shownPictures.length).toBeGreaterThan(0);
   });

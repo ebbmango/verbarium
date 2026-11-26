@@ -52,23 +52,50 @@ describe("remarkLessonCharacters", () => {
   });
 
   it("indexes illustrated items by declared headword or actual character", async () => {
-    expect(await displayed(`<CharacterFocus>
+    expect(await displayed(`<CharacterFocus size="small">
   <FocusItem name="2011F.svg" character="𠄟" description="Two strokes" />
   <FocusItem name="example" character="二" headword="下" description="Variant" />
   <FocusItem name="other" description="Unencoded" />
   <FocusItem name="another" headword="⾎" description="Unencoded variant" />
-  <FocusItem character="血" />
-</CharacterFocus>`)).toEqual(["𠄟", "下", "血"]);
+  <FocusItem character="血" caption="blood" subcaption="semantic" spine nudge="-0.03" />
+  <FocusItem character="二">
+    <Caption>*two*</Caption>
+    <Subcaption>Semantic</Subcaption>
+  </FocusItem>
+</CharacterFocus>`)).toEqual(["𠄟", "下", "血", "二"]);
   });
 
   it("rejects invalid focus items at compile time", async () => {
-    for (const props of ['name="example"', 'name="../example" description="Example"', 'character={"二"}', 'character="二上"']) {
+    for (const props of ['name="example"', 'name="../example" description="Example"', 'character={"二"}', 'character="二上"', 'character="二" caption=""', 'character="二" spine="yes"', 'name="example" description="Example" spine', 'character="二" nudge="right"', 'character="二" nudge="0.6"', 'name="example" description="Example" nudge="0.03"']) {
       await expect(displayed(`<CharacterFocus>
   <FocusItem ${props} />
 </CharacterFocus>`)).rejects.toThrow("002.mdx: <FocusItem>");
     }
+    await expect(displayed(`<CharacterFocus>
+  <FocusItem character="二" caption="Two">
+    <Subcaption>Semantic</Subcaption>
+  </FocusItem>
+</CharacterFocus>`)).rejects.toThrow("not both");
+    await expect(displayed(`<CharacterFocus>
+  <FocusItem character="二">
+    <Subcaption>Semantic</Subcaption>
+    <Caption>Two</Caption>
+  </FocusItem>
+</CharacterFocus>`)).rejects.toThrow("only <Caption> then <Subcaption>");
     await expect(displayed('<FocusItem character="二" />')).rejects.toThrow("directly inside");
     await expect(displayed('<CharacterFocus character="二">text</CharacterFocus>')).rejects.toThrow("takes no props");
+    await expect(displayed('<CharacterFocus character="二" size="large" />')).rejects.toThrow('takes size="small" or no size');
+    await expect(displayed('<CharacterFocus character="二" label="A" />')).rejects.toThrow("has no prop label");
+    expect(await displayed('<CharacterFocus character="蒜" caption="Garlic" nudge=".02" />')).toEqual(["蒜"]);
+    await expect(displayed('<CharacterFocus character="二" nudge="-1" />')).rejects.toThrow("between -0.5 and 0.5");
+    expect(await displayed('<CharacterFocus character="蒜" caption="Garlic" parts />')).toEqual(["蒜"]);
+    await expect(displayed('<CharacterFocus character="蒜" parts="yes" />')).rejects.toThrow("writes parts bare");
+    await expect(displayed('<CharacterFocus character="示" parts highlight="1" />')).rejects.toThrow("either parts or highlight");
+    await expect(displayed('<CharacterFocus characters="蒜 二" parts />')).rejects.toThrow("takes no captions");
+    expect(await displayed('<CharacterFocus character="蒜" parts />\n\nThe <PartWords part="艸">*vegetable*</PartWords> called <PartWords part="祘">*suàn*</PartWords>.')).toEqual(["蒜"]);
+    await expect(displayed('<CharacterFocus character="蒜" parts />\n\nThe <PartWords part="木">tree</PartWords>.')).rejects.toThrow("<PartWords> names 木; it must name one of 艸 祘");
+    await expect(displayed('The <PartWords part="艸">vegetable</PartWords>.')).rejects.toThrow("in this lesson");
+    await expect(displayed('<CharacterFocus size="small">\n  <FocusItem character="蒜" size="large" />\n</CharacterFocus>')).rejects.toThrow("unexpected or repeated attribute size");
   });
 
   it("leaves MDX outside the lessons alone", async () => {

@@ -361,10 +361,13 @@ button {
 }
 
 .lesson-manuscript > p {
-  width: min(100%, var(--measure-prose));
-  margin: 41px auto 0;
   font-size: 1.5rem;
   line-height: 41px;
+}
+
+.lesson-manuscript > p {
+  width: min(100%, var(--measure-prose));
+  margin: 41px auto 0;
 }
 
 /* Lesson heading */
@@ -415,7 +418,7 @@ button {
   color: var(--ink);
   font-size: 1.5rem;
   font-style: normal;
-  line-height: 62px;
+  line-height: 41px;
 }
 
 .lesson-title {
@@ -535,9 +538,11 @@ button {
   font-family: var(--font-han-quote);
 }
 
-/* Form studies and standalone characters keep their form font inside Commentary. */
+/* Form studies and focus characters keep their form font inside Commentary,
+   down to each item of a focus row. */
 .lesson-note .form-glyph,
-.lesson-note .character-focus {
+.lesson-note .character-focus,
+.lesson-note .character-focus :lang(zh-Hant) {
   font-family: var(--font-han-forms);
 }
 
@@ -629,6 +634,14 @@ button {
   /* Preserve the character's native inline metrics, including selection's
      full line-height. An inline-block creates notches in the highlight. */
   white-space: nowrap;
+}
+
+/* Unencoded forms have no underlying text to give the picture its dimensions. */
+.inline-form[role="img"] {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
 }
 
 /* Hide only the glyph fill: leave the browser's native selection colours
@@ -759,29 +772,161 @@ button {
   width: min(100%, 18rem);
   margin: 28px auto;
   place-items: center;
-  font-size: clamp(144px, 24vw, 192px);
+  /* The characters' full size; --focus-unit is one of the Figma design's px
+     beside a 144 px character, so captions keep the design's proportions. */
+  --focus-base: clamp(144px, 24vw, 192px);
+  --focus-unit: calc(var(--focus-base) / 144);
+  --focus-size: var(--focus-base);
+  font-size: var(--focus-size);
   line-height: 1;
+}
+
+/* <CharacterFocus size="small">: two-thirds size, as the design sets a
+   96 px character beside its 144 px ones. Captions keep their size. */
+.character-focus[data-size="small"] {
+  --focus-size: calc(var(--focus-base) * 2 / 3);
 }
 
 .lesson-note > .character-focus + p {
   margin-top: 0;
 }
 
+/* A character drawn from stroke outlines (app/content/strokes) over its transparent text, which stays copyable. */
+.stroke-glyph {
+  position: relative;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  cursor: default;
+}
+
+.stroke-glyph svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+  pointer-events: none;
+}
+
+/* A character drawn in parts (CharacterFocus parts, app/content/parts) over
+   its transparent text. Only the parts' ink takes the pointer. */
+.part-glyph {
+  position: relative;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  cursor: default;
+}
+
+.part-glyph svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+  pointer-events: none;
+}
+
+.part-glyph g {
+  pointer-events: visiblePainted;
+}
+
+/* A part and the words linked to it (see
+   lib/part-lighting.ts) rest grey, showing they respond to the pointer, and
+   come back to the ink around them together while either is pointed at, fading
+   like a quote's mappings. A solid grey, ink mixed with paper, as for the
+   strokes of a highlight. */
+[data-part-linked] {
+  cursor: default;
+  transition: color 280ms ease;
+}
+
+[data-part-linked]:not(.part-lit) {
+  color: color-mix(in srgb, currentColor 55%, var(--paper));
+}
+
+/* A highlight (CharacterFocus highlight="…") keeps the named strokes in ink and
+   shows the rest grey. A solid grey, ink mixed with paper: a see-through stroke
+   would show the start of the stroke tucked under it. */
+.stroke-glyph path:not(.stroke-highlight) {
+  fill: color-mix(in srgb, currentColor 40%, var(--paper));
+}
+
 .character-focus-group {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  /* Characters level along the top, whether or not an item has captions. */
+  align-items: flex-start;
   gap: 1rem clamp(1rem, 4vw, 3rem);
   width: 100%;
 }
 
 .focus-item {
   position: relative;
+  /* FocusItem nudge="…": a sideways shift, in the character's em. */
+  left: calc(var(--nudge, 0) * 1em);
   display: inline-grid;
   place-items: center;
   width: 1em;
   height: 1em;
   flex: none;
+}
+
+/* A focus item with captions (FocusItem caption="…" subcaption="…", or
+   <Caption> and <Subcaption> children): the item, then the lines under it. */
+.focus-captioned {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Set as the Figma design's component breakdown (Extra Templates), in its px
+   (--focus-unit), but in the lesson's prose font: 28 below the character's
+   box, a 14 px Medium caption in the character's ink, a 0.5 px rule 80 wide,
+   9 below it, and a 14 px Light subcaption, lighter (#a8a8a8 over the
+   Commentary's grey). Upright unless their Markdown says otherwise. Moved
+   together under the character's spine where useInkCentring finds one
+   (--ink-spine, in the character's em). */
+.focus-captions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: calc(28 * var(--focus-unit));
+  font-family: var(--font-manuscript);
+  font-size: calc(15 * var(--focus-unit));
+  font-style: normal;
+  line-height: normal;
+  translate: calc(var(--ink-spine, 0) * var(--focus-size)) 0;
+}
+
+/* Each line trimmed to its capitals and baseline (text-box), so the rule sits
+   as far below the caption's baseline as above the subcaption's capitals. */
+.focus-caption,
+.focus-subcaption {
+  text-box: trim-both cap alphabetic;
+}
+
+.focus-caption {
+  font-weight: 500;
+}
+
+/* A caption written over several lines in MDX comes wrapped in a paragraph;
+   it reads as if written on one line. */
+.focus-caption > p,
+.focus-subcaption > p {
+  display: contents;
+}
+
+.focus-subcaption {
+  box-sizing: border-box;
+  min-width: calc(80 * var(--focus-unit));
+  margin-top: calc(12 * var(--focus-unit));
+  padding: calc(12 * var(--focus-unit)) calc(12 * var(--focus-unit)) 0;
+  border-top: calc(0.5 * var(--focus-unit)) solid var(--faint);
+  color: color-mix(in srgb, currentColor 49%, transparent);
+  font-weight: 400;
 }
 
 .focus-source {

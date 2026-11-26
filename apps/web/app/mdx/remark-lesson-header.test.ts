@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import * as lessonOne from "../content/lessons/001.mdx";
 import type { MdastNode } from "./mdx-tree";
 import remarkLessonHeader from "./remark-lesson-header";
+import { compileDictionaryPage, dictionaryDirectory } from "../test/compile-dictionary-page";
 
 const lessonFile = "/repo/apps/web/app/content/lessons/002.mdx";
 
@@ -24,6 +25,17 @@ function run(path: string, ...children: MdastNode[]): MdastNode[] {
 }
 
 describe("remarkLessonHeader", () => {
+  it.each([
+    ['subtitle="About 三."', "About 三.", "uses either subtitle or body text"],
+    ["", "First paragraph.\n\nSecond paragraph.", "needs one paragraph of plain text"],
+    ["", '{"About 三."}', "needs one paragraph of plain text"],
+  ])("rejects ambiguous or non-text body content (%s, %s)", async (props, body, message) => {
+    await expect(compileDictionaryPage(
+      `<LessonHeader number={3} ${props}>\n${body}\n</LessonHeader>`,
+      `${dictionaryDirectory}/../lessons/003.mdx`,
+    )).rejects.toThrow(`003.mdx: <LessonHeader> ${message}`);
+  });
+
   it("exports the header's number and subtitle from the lesson", () => {
     const exported = run(lessonFile, goodHeader()).at(-1) as MdastNode;
     const program = (exported.data as { estree: { body: Array<{ declaration: { declarations: unknown[] } }> } }).estree;

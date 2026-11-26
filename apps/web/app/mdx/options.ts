@@ -5,9 +5,10 @@ import rehypeHanRuns from "./rehype-han-runs.ts";
 import remarkDictionaryPage from "./remark-dictionary-page.ts";
 import remarkLessonCharacters from "./remark-lesson-characters.ts";
 import remarkLessonHeader from "./remark-lesson-header.ts";
+import remarkCharacterForms from "./remark-character-forms.ts";
 
 /** How lessons and dictionary pages compile, for the app build and for the tests alike. */
 export const mdxOptions: Options = {
-  remarkPlugins: [remarkLessonHeader, remarkLessonCharacters, remarkDictionaryPage],
+  remarkPlugins: [remarkLessonHeader, remarkLessonCharacters, remarkDictionaryPage, remarkCharacterForms],
   rehypePlugins: [rehypeHanRuns],
 };

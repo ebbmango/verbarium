@@ -25,7 +25,8 @@ describe("dictionary source details", () => {
   });
 
   it.each([false, true])("adds no details markup when absent in a sense example: %s", (isExample) => {
-    const quote = <DictionaryQuote id="L001A-Q03" />;
+    vi.spyOn(quoteRegistry, "quotationById").mockReturnValue({ ...quotation, sourceDetails: undefined });
+    const quote = <DictionaryQuote id="L001A-Q02" />;
     const { container } = render(isExample ? <ol><Sense gloss="one">{quote}</Sense></ol> : quote);
     expect(container.querySelector(".quote-source-details")).toBeNull();
   });

@@ -1,9 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { createRoutesStub } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 
-import { CharacterFocus, CharacterForms, CharDisplay, FocusItem, formPictureUrl, InlineForm, LessonHeader, SectionBreak } from "./lesson";
+import { Caption, CharacterFocus, CharacterForms, CharDisplay, FocusItem, formPictureUrl, InlineForm, LessonHeader, PartWords, SectionBreak, Subcaption } from "./lesson";
+import { compileDictionaryPage, dictionaryDirectory } from "../test/compile-dictionary-page";
 
 // Only 血 has a dictionary page here.
 vi.mock("../content/dictionary/headwords", () => ({ hasDictionaryPage: (headword: string) => headword === "血" }));
@@ -25,7 +26,154 @@ describe("illustrated CharacterFocus", () => {
   });
 });
 
+describe("captioned FocusItem", () => {
+  it("sets an English caption under each character, in reading order", () => {
+    const { container } = render(
+      <CharacterFocus>
+        <FocusItem character="礻" caption="spirit" />
+        <FocusItem character="衤" caption="garments" />
+      </CharacterFocus>,
+    );
+    const captions = Array.from(container.querySelectorAll(".focus-caption"));
+    expect(captions.map((caption) => caption.textContent)).toEqual(["spirit", "garments"]);
+    expect(captions[0].closest("[lang]")).toHaveAttribute("lang", "en");
+    const range = document.createRange();
+    range.selectNodeContents(container);
+    expect(range.toString()).toBe("礻spirit衤garments");
+  });
+
+  it("sets a subcaption under the caption, from props or from Markdown children", async () => {
+    const { default: Content } = await compileDictionaryPage(`<CharacterFocus>
+  <FocusItem character="祘">
+    <Caption>*suàn*</Caption>
+    <Subcaption>Phonetic</Subcaption>
+  </FocusItem>
+  <FocusItem character="艸" caption="Vegetable" subcaption="Semantic" />
+</CharacterFocus>`, "/repo/subcaptions.mdx");
+    const { container } = render(<Content components={{ CharacterFocus, FocusItem, Caption, Subcaption }} />);
+    const blocks = Array.from(container.querySelectorAll(".focus-captions"));
+    expect(blocks.map((block) => Array.from(block.children, (line) => [line.className, line.textContent]))).toEqual([
+      [["focus-caption", "suàn"], ["focus-subcaption", "Phonetic"]],
+      [["focus-caption", "Vegetable"], ["focus-subcaption", "Semantic"]],
+    ]);
+    expect(blocks[0].querySelector(".focus-caption em")).not.toBeNull();
+    expect(container.querySelector(".focus-captions p")).toBeNull();
+  });
+});
+
+describe("captioned single CharacterFocus", () => {
+  it("sets its caption under the character, as a one-item row", () => {
+    const { container } = render(<CharacterFocus character="蒜" caption="Garlic" subcaption="compound" />);
+    expect(Array.from(container.querySelectorAll(".focus-captions > *"), (line) => line.textContent)).toEqual(["Garlic", "compound"]);
+    expect(container.querySelector(".focus-item")).toHaveTextContent("蒜");
+  });
+});
+
+describe("nudged focus character", () => {
+  it("shifts only the character, by its own size, leaving the captions in place", () => {
+    const { container } = render(<CharacterFocus character="艸" caption="vegetable" nudge="0.03" />);
+    expect((container.querySelector(".focus-item") as HTMLElement).style.getPropertyValue("--nudge")).toBe("0.03");
+    expect((container.querySelector(".focus-captions") as HTMLElement).getAttribute("style")).toBeNull();
+  });
+});
+
+describe("CharacterFocus in parts", () => {
+  function renderGarlic(wordsFirst = false) {
+    const words = <p key="words">The <PartWords part="艸"><em>vegetable</em></PartWords> called <PartWords part="祘"><em>suàn</em></PartWords>.</p>;
+    const focus = <CharacterFocus key="focus" character="蒜" caption="Garlic" parts />;
+    const { container } = render(
+      <div>
+        {wordsFirst ? [words, focus] : [focus, words]}
+        <CharacterFocus>
+          <FocusItem character="艸" caption="vegetable" />
+        </CharacterFocus>
+      </div>,
+    );
+    const part = (name: string) => container.querySelector(`[data-part="${name}"]`)!;
+    const words_ = (name: string) => container.querySelector(`.part-words[data-part-link="${name}"]`)!;
+    return { container, part, words: words_ };
+  }
+
+  it("draws the character from its parts over its copyable text", () => {
+    const { container, part } = renderGarlic();
+    expect(part("艸").querySelectorAll("path")).toHaveLength(2);
+    expect(part("祘").querySelectorAll("path")).toHaveLength(8);
+    expect(container.querySelector(".part-glyph")).toHaveTextContent("蒜");
+  });
+
+  it("lights words and the part they name together, from either side, and only that pair", () => {
+    const { part, words } = renderGarlic();
+    const lit = () => ["艸", "祘"].flatMap((name) => [part(name), words(name)]).filter((element) => element.classList.contains("part-lit"));
+    fireEvent.pointerEnter(words("艸"));
+    expect(lit()).toEqual([part("艸"), words("艸")]);
+    fireEvent.pointerLeave(words("艸"));
+    expect(lit()).toEqual([]);
+
+    fireEvent.pointerEnter(part("祘"));
+    expect(lit()).toEqual([part("祘"), words("祘")]);
+    fireEvent.pointerLeave(part("祘"));
+    expect(lit()).toEqual([]);
+  });
+
+  it("links words placed before the drawn character too", () => {
+    const { part, words } = renderGarlic(true);
+    fireEvent.pointerEnter(words("艸"));
+    expect(part("艸")).toHaveClass("part-lit");
+  });
+
+  it("leaves a focus item showing a part unlinked", () => {
+    const { container } = renderGarlic();
+    const item = [...container.querySelectorAll(".focus-item")].find((element) => element.textContent === "艸")!;
+    expect(item).not.toHaveAttribute("data-part-linked");
+  });
+});
+
+describe("CharacterFocus size", () => {
+  it("marks a small focus for the stylesheet, and leaves the full size unmarked", () => {
+    const { container } = render(
+      <>
+        <CharacterFocus character="二" size="small" />
+        <CharacterFocus characters="礻 衤" />
+      </>,
+    );
+    const [small, full] = Array.from(container.querySelectorAll(".character-focus"));
+    expect(small).toHaveAttribute("data-size", "small");
+    expect(full).not.toHaveAttribute("data-size");
+  });
+});
+
+describe("CharacterFocus with highlighted strokes", () => {
+  it("draws every stroke and marks the named ones, keeping the character as copyable text", () => {
+    const { container } = render(<CharacterFocus character="示" highlight="1 2" />);
+    const range = document.createRange();
+    range.selectNodeContents(container);
+    expect(range.toString()).toBe("示");
+
+    const strokes = Array.from(container.querySelectorAll("svg path"));
+    expect(container.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
+    // Painted last stroke first, so earlier strokes lie over later ones' starts.
+    expect(strokes.map((path) => path.getAttribute("data-stroke"))).toEqual(["5", "4", "3", "2", "1"]);
+    expect(strokes.filter((path) => path.classList.contains("stroke-highlight")).map((path) => path.getAttribute("data-stroke"))).toEqual(["2", "1"]);
+  });
+
+  it("refuses a stroke the character does not have", () => {
+    expect(() => render(<CharacterFocus character="示" highlight="6" />)).toThrow("示 has strokes 1–5");
+  });
+});
+
 describe("InlineForm", () => {
+  it("compiles an unencoded form without adding a character to copied text", async () => {
+    const { default: Content } = await compileDictionaryPage('三, straightened <InlineForm name="wieger-003d-three-strokes" description="Three vertical strokes" />, forms a part of:', "/repo/inline-form.mdx");
+    const { container } = render(<Content components={{ InlineForm }} />);
+    const picture = screen.getByRole("img", { name: "Three vertical strokes" });
+    expect(picture).toHaveAttribute("lang", "en");
+    expect(picture.querySelector(".inline-form-text")).toBeNull();
+    expect(picture.getAttribute("style")).toContain(formPictureUrl("wieger-003d-three-strokes"));
+    const range = document.createRange();
+    range.selectNodeContents(container);
+    expect(range.toString()).toBe("三, straightened , forms a part of:");
+  });
+
   it("keeps the equivalent character in a sentence's native text selection", () => {
     const { container } = render(<p>his <InlineForm name="口-oracle.svg" character="口" /> mouth and his <InlineForm name="又-bigseal.svg" character="又" /> hand</p>);
     const paragraph = container.querySelector("p")!;
@@ -44,6 +192,31 @@ describe("InlineForm", () => {
 });
 
 describe("LessonHeader", () => {
+  it.each([
+    ["\\\n", 1],
+    ["\\\r\n", 1],
+    ["\n", 0],
+  ])("compiles body text with separator %j and preserves subtitle styling", async (separator, breaks) => {
+    const lesson = await compileDictionaryPage(
+      `<LessonHeader number={3}>\nAbout 三,${separator}three strokes, and its derivatives.\n</LessonHeader>`,
+      `${dictionaryDirectory}/../lessons/003.mdx`,
+    );
+    expect((lesson as Record<string, unknown>).lessonHeader).toEqual({
+      number: 3, subtitle: "About 三, three strokes, and its derivatives.",
+    });
+    const Content = lesson.default;
+    const { container } = render(<Content components={{ LessonHeader }} />);
+    const subtitle = container.querySelector(".lesson-subtitle") as HTMLElement;
+    expect(screen.getByRole("heading", { level: 1, name: "Lesson 3" }).nextElementSibling).toBe(subtitle);
+    expect(container.querySelector("header")).toHaveClass("lesson-heading");
+    expect(subtitle.querySelectorAll("br")).toHaveLength(breaks);
+    expect(subtitle.querySelector("p")).toBeNull();
+    expect(subtitle.textContent?.replace(/\s+/g, " ")).toBe("About 三, three strokes, and its derivatives.");
+    expect(subtitle.querySelector('[lang="zh-Hant"]')).toHaveTextContent("三");
+    expect(subtitle.textContent).not.toContain("\\");
+    if (breaks) expect(subtitle.querySelector("br")?.previousSibling?.textContent).toBe(",");
+  });
+
   it("names the heading after the lesson, with its subtitle under it", () => {
     render(<LessonHeader number={1} subtitle="About the primitive 一, a single stroke." />);
 
@@ -69,6 +242,83 @@ describe("LessonHeader", () => {
 });
 
 describe("CharacterForms", () => {
+  it.each([
+    ["\n", false], ["\r\n", false],
+    [" ", true], ["\n\t", true], ["\r\n    ", true], ["\n\n", true],
+  ])("compiles centered 3/2/3 rows (separator %j, explicit rows %j)", async (separator, explicit) => {
+    const names = [
+      "sinica-05-oracle-bone-示", "sinica-07-oracle-bone-示", "sinica-06-oracle-bone-示",
+      "sinica-12-chu-slip-示", "sinica-15-small-seal-示",
+      "sinica-16-small-seal-示", "sinica-17-clerical-示",
+    ];
+    const source = [
+      '<CharacterForms character="示" description="Historical and current forms of 示">',
+      ...[names.slice(0, 3), names.slice(3, 5), [...names.slice(5), "current"]].map((entries) =>
+        explicit ? `  <FormRow>\n    ${entries.join(separator)}\n  </FormRow>` : `    ${entries.join(" ")}`,
+      ),
+      "</CharacterForms>",
+    ].join(explicit ? "\n" : separator);
+    const { default: Content } = await compileDictionaryPage(source, "/repo/forms.mdx");
+    const { container } = render(<Content components={{ CharacterForms }} />);
+    const rows = Array.from(container.querySelectorAll(".form-row"));
+    expect(rows.map((row) => row.querySelectorAll(".form-card").length)).toEqual([3, 2, 3]);
+    expect(Array.from(container.querySelectorAll<HTMLElement>(".form-picture"), (picture) => picture.style.getPropertyValue("--form-picture")))
+      .toEqual(names.map((name) => `url("/forms/${name}.svg")`));
+    expect(rows[2].lastElementChild?.querySelector(".form-glyph")).toHaveTextContent("示");
+    expect(container.querySelectorAll(".form-glyph")).toHaveLength(1);
+    expect(container.querySelector(".form-placeholder")).toBeNull();
+    expect(container.querySelector("figcaption")).toHaveTextContent("Historical and current forms of 示");
+    expect(container.querySelector("figure p")).toBeNull();
+  });
+
+  it("places current exactly where written and does not append an implicit current form", async () => {
+    const { default: Content } = await compileDictionaryPage(`<CharacterForms character="示" description="Forms">
+  current glyph:門
+
+  drawing-示.png
+</CharacterForms>
+
+<CharacterForms character="示" description="Historical only">
+  drawing-示
+</CharacterForms>`, "/repo/forms.mdx");
+    const { container } = render(<Content components={{ CharacterForms }} />);
+    const figures = container.querySelectorAll("figure");
+    expect(Array.from(figures[0].querySelectorAll(".form-row"), (row) => row.children.length)).toEqual([2, 1]);
+    expect(Array.from(figures[0].querySelectorAll(".form-glyph"), (glyph) => glyph.textContent)).toEqual(["示", "門"]);
+    expect(figures[0].querySelector<HTMLElement>(".form-picture")?.style.getPropertyValue("--form-picture"))
+      .toBe('url("/forms/drawing-示.png")');
+    expect(figures[1].querySelectorAll(".form-card")).toHaveLength(1);
+    expect(figures[1].querySelector(".form-glyph")).toBeNull();
+  });
+
+  it.each([
+    ['historical="old"', "old current", "uses either body rows"],
+    ['forms={8}', "old current", "uses either body rows"],
+    ["", "current current", "uses current at most once"],
+    ["", "**old** current", "body rows must be plain filenames"],
+    ["", '{"old"}', "body rows must be plain filenames"],
+    ["", "<FormRow>\ncurrent\n</FormRow>\nold", "cannot mix <FormRow>"],
+    ["", "<FormRow />", "<FormRow> must contain at least one entry"],
+    ["", '<FormRow count={3}>\nold\n</FormRow>', "<FormRow> takes no attributes"],
+    ["", '<FormRow>\n{"old"}\n</FormRow>', "body rows must be plain filenames"],
+    ["", '<FormRow>\ncurrent\n</FormRow>\n<FormRow>\ncurrent\n</FormRow>', "uses current at most once"],
+  ])("rejects ambiguous or non-text form rows (%s, %s)", async (props, body, message) => {
+    await expect(compileDictionaryPage(
+      `<CharacterForms character="示" description="Forms" ${props}>\n${body}\n</CharacterForms>`,
+      "/repo/forms.mdx",
+    )).rejects.toThrow(`forms.mdx: <CharacterForms> ${message}`);
+  });
+
+  it("requires a character when a body row names current", async () => {
+    await expect(compileDictionaryPage('<CharacterForms description="Forms">\ncurrent\n</CharacterForms>', "/repo/forms.mdx"))
+      .rejects.toThrow('forms.mdx: <CharacterForms> needs a quoted character for current');
+  });
+
+  it("rejects FormRow outside a CharacterForms", async () => {
+    await expect(compileDictionaryPage('<FormRow>\nold\n</FormRow>', "/repo/forms.mdx"))
+      .rejects.toThrow("forms.mdx: <FormRow> must be directly inside <CharacterForms>");
+  });
+
   it("draws one cell per form, the character in the last, with its words for assistive technology only", () => {
     const { container } = render(<CharacterForms character="雨" description="Old and new form" forms={3} />);
 

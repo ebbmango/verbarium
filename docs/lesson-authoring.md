@@ -72,30 +72,44 @@ and the display it belongs to.
 | `<SectionBreak ordinal="First">…</SectionBreak>` | One of the lesson's numbered divisions; its text is a paragraph that reads on from the ordinal ("First, when written…"), so it starts in lower case. |
 | `<Commentary>…</Commentary>` | An aside of paragraphs; may contain `<CharacterForms>`. |
 | `<CharacterFocus character="丂" />` | One large character standing alone in the prose; not linked. |
+| `<CharacterFocus character="示" highlight="1 2" />` | One large character with some strokes in ink and the rest grey, the ink ones named by their numbers in stroke order, separated by spaces. Needs the character's stroke outlines in `app/content/strokes/<character>.json` (see below); a number the character lacks stops the build. |
+| `<CharacterFocus character="丂" size="small" />` | Any `<CharacterFocus>` at two-thirds size, as the design sets a 96 px character beside its 144 px ones; captions keep their size. `size="small"` is the only size. |
 | `<CharacterFocus characters="二 上" />` | Multiple large characters side by side, separated by spaces in the prop; not linked. The row is centered and wraps on narrow screens. Use either `character` or `characters`. Each character is recorded for the dictionary's lesson references. |
 | `<LessonComplete>` with `<FinishLesson lesson={1} />` and `<ClosingLine>…</ClosingLine>` | The end of the lesson: the button that records the completion, then the vertical closing line. Lessons after Lesson 1 close with `盡人事　聽天命`: the full-width space (U+3000) is the gap between the words, as in Lesson 1's line ([#25](https://github.com/ebbmango/verbarium/issues/25)). |
 
 Props may contain Chinese (`character="一"`); the component marks it.
 Numbers go in braces (`lesson={1}`, `forms={3}`), text in quotes.
 
+`LessonHeader` also accepts one paragraph of plain body text instead of the
+`subtitle` prop. End a line with a backslash to force a line break in the
+subtitle; an ordinary source newline remains a space. For example:
+
+```mdx
+<LessonHeader number={3}>
+About 三,\
+three strokes, and its derivatives.
+</LessonHeader>
+```
+
+Use either body text or `subtitle`, not both. The lesson index and page
+description use the same text with line breaks replaced by spaces.
+
 ## Displayed source names
 
-Keep a quotation’s displayed provenance short: normally the work title alone,
-such as `Shuowen Jiezi Xizhuan`. Omit author names, juan, chapter, part and
-entry locators from that label. Put details readers need in the optional
-`sourceDetails` field of the quotation file, displayed below the title in
-smaller, muted text. Use `sourceLink` for the online textual witness, and
-keep full bibliographical details in research notes or MDX comments.
-A familiar compact reference such as `The Analects 16.7`, or an author name
-needed to identify whose commentary is quoted, may remain as in Lesson 1.
+On the first line, name the work where the reader can find the passage.
+On the second, use `sourceDetails` for the person who wrote the quoted
+words when known. If the linked work preserves a quotation from an earlier
+work, record the earlier attribution in research notes or an MDX comment.
+Keep chapter names, locators and bibliographical details in those notes.
+Use `sourceLink` for the online textual witness.
 
-For example, a quotation file can use `"provenance": "Book of Songs"` and
-`"sourceDetails": "Part II, Book VI, Ode VI, line 5"`. Add or edit these fields
+For example, a quotation file can use `"provenance": "Commentary on the Dao De Jing"` and
+`"sourceDetails": "Wang Bi"`. Add or edit these fields
 in the JSON file; remove `sourceDetails` entirely when there are no details.
 The file format and validator are described in [quotation-contract.md](quotation-contract.md).
 
 Inline quotations also accept details:
-`<LegacyQuote source="Book of Songs" sourceDetails="Part II, Book VI, Ode VI, line 5">…</LegacyQuote>`.
+`<LegacyQuote source="Rhapsody on the Western Capital" sourceDetails="Zhang Heng">…</LegacyQuote>`.
 Existing titles and quotations without details keep their current presentation.
 
 ## The seals
@@ -120,6 +134,39 @@ illustrated comparisons, put one `FocusItem` per position inside the focus:
 </CharacterFocus>
 ```
 
+Add `caption="…"` to any `<FocusItem>` to set a line of English under it,
+as in `<FocusItem character="艸" caption="Vegetable" />`. `subcaption="…"`
+adds a second, lighter line below it, past a thin rule. Both are set as the
+Figma design's component breakdown (Extra Templates), in the lesson's prose
+font: Medium for the caption and Light for the subcaption, upright, sized in proportion to
+the characters' full size. For Markdown in them, such as italics, write them as children
+instead of props (one or the other, not both), `<Caption>` first:
+
+```mdx
+<CharacterFocus>
+  <FocusItem character="祘">
+    <Caption>*suàn*</Caption>
+    <Subcaption>Phonetic</Subcaption>
+  </FocusItem>
+  <FocusItem character="艸" caption="Vegetable" subcaption="Semantic" />
+</CharacterFocus>
+```
+
+Add a bare `spine` to a text `<FocusItem>` that a font draws off centre, such
+as a radical form: `<FocusItem character="礻" caption="Spirit" spine />`. It
+centres the character's ink in its box and its captions under its spine, the
+column with the longest unbroken vertical run of ink, such as the upright
+stroke of 礻. A character with two uprights about as tall (艸, 祘) has no
+single spine, so its captions stay centred under its ink. Without `spine`, the
+character and its captions sit centred in the character's box.
+
+Add `nudge="…"` to a text `<FocusItem>`, or to a single
+`<CharacterFocus character="…">`, for a character that measures centred but
+looks off centre (艸 can look a little left). It moves the character sideways
+by that fraction of its size, positive to the right and negative to the left,
+as in `nudge="0.03"` or `nudge="-0.02"`; its captions stay where they are. The
+build accepts values between -0.5 and 0.5.
+
 A single illustrated child works too. Give each picture its local forms filename
 and a short English description. Register its source under that exact name in
 `formSources`. The picture links to its source and uses the surrounding ink.
@@ -142,6 +189,38 @@ the surrounding text. Use this for a single character; use `CharacterForms`
 for a standalone study. The `又-bigseal.svg` asset was supplied by the user.
 
 ### Standalone forms
+
+For a custom layout, put each row inside a `FormRow`. Rows keep their order
+and are centered independently. Within a row, spaces, tabs, and newlines
+separate entries, so each filename can sit on its own line:
+
+```mdx
+<CharacterForms character="示" description="Historical and current forms of 示">
+  <FormRow>
+    sinica-05-oracle-bone-示
+    sinica-07-oracle-bone-示
+    sinica-06-oracle-bone-示
+  </FormRow>
+  <FormRow>
+    sinica-12-chu-slip-示
+    sinica-15-small-seal-示
+  </FormRow>
+  <FormRow>
+    sinica-16-small-seal-示
+    sinica-17-clerical-示
+    current
+  </FormRow>
+</CharacterForms>
+```
+
+This makes rows of 3, 2, and 3. `current` places the `character` at that exact
+position; it may appear once and is not added automatically. Within a
+`FormRow`, blank lines and indentation are ignored. Filenames keep the usual extension rules, and
+`glyph:X` still displays a text form. Use body rows instead of `historical`
+and `forms`; the existing prop form keeps its automatic balanced layout.
+`FormRow` takes no attributes and must be directly inside `CharacterForms`.
+The original body shorthand (one row per source line, without `FormRow`)
+also works, but cannot be mixed with explicit rows in the same component.
 
 Candidate pictures for each character are collected, with their sources
 (`sources.tsv`) and a `report.md`, in the sibling research repository at
@@ -242,3 +321,43 @@ grep -nE '<[a-z]|className=|style=|^import ' apps/web/app/content/lessons/001.md
 
 No output means the lesson follows the rules: every tag starts with a
 capital letter, so it is a component.
+
+## Characters in parts
+
+`<CharacterFocus character="蒜" parts />` draws its character from
+`apps/web/app/content/parts/<character>.json`: the character's shapes, cut from
+TW-Kai like the stroke outlines below, grouped under each part's name. A part's
+name is a character, as a `<FocusItem>` shows it (蒜 has `艸` and `祘`).
+
+Words of the prose wrapped in `<PartWords part="艸">` link to that part, in
+the blocks before or after the drawn character, up to the next character drawn
+in parts. Linked words and parts rest grey, which shows they respond to the
+pointer. Pointing at the words or at the part's ink brings both back to ink, in
+and out over 280 ms like a quotation's mappings; the rest stays grey. A `<PartWords>`
+naming no part of a character drawn in parts in the lesson stops the build.
+`parts` is written bare, takes captions like any single character, and can't be
+combined with `highlight`.
+
+```mdx
+<CharacterFocus character="蒜" parts />
+
+The <PartWords part="艸">*vegetable*</PartWords> called <PartWords part="祘">*suàn*</PartWords>.
+```
+
+When the font draws two parts as separate shapes, as TW-Kai does for 蒜, the
+file only groups whole shapes. Where a shape crosses between parts it has to be
+cut by hand, as for the strokes of 示. Record how a file was made in its
+`notes`.
+
+## Stroke outlines
+
+`<CharacterFocus highlight>` draws its character from
+`apps/web/app/content/strokes/<character>.json`: the strokes as SVG paths, in
+stroke order, cut from TW-Kai, the font `<CharacterFocus>` uses. A font stores
+filled shapes, not strokes, and joins touching strokes into one shape, so each
+file is split by hand from the glyph's outlines: whole contours where a stroke
+stands alone, and a cut along the joined stroke's own edge where two strokes
+meet. Strokes are painted last first, so an earlier stroke lies over the start of
+a later one; a stroke that starts on another runs a little way under it, which
+keeps the join seamless. The outlines derive from TW-Kai and stay under its SIL
+Open Font License. Record how a file was split in its `notes`.

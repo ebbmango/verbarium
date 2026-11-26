@@ -49,6 +49,20 @@ function readNumber(node: MdastNode, fail: (problem: string) => never): number {
 
 function readSubtitle(node: MdastNode, fail: (problem: string) => never): string {
   const value = attributeValue(node, "subtitle");
+  if (node.children?.length) {
+    if (value !== undefined) fail("<LessonHeader> uses either subtitle or body text, not both");
+    const [paragraph] = node.children;
+    if (node.children.length !== 1 || paragraph.type !== "paragraph" ||
+        !paragraph.children?.every((child) => child.type === "text" || child.type === "break")) {
+      return fail("<LessonHeader> needs one paragraph of plain text, with optional line breaks");
+    }
+    const text = paragraph.children.map((child) => child.type === "break" ? " " : String(child.value)).join("")
+      .replace(/\s+/g, " ").trim();
+    if (!text) return fail("<LessonHeader> needs non-empty body text");
+    // Keep Markdown's breaks and Han marking, without nesting a paragraph in PageHeading's paragraph.
+    paragraph.data = { hName: "span" };
+    return text;
+  }
   return typeof value === "string" && value.trim() !== ""
     ? value
     : fail('<LessonHeader> needs a subtitle written in quotes, as in subtitle="…"');

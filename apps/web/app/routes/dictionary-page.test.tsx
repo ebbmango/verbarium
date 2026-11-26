@@ -94,10 +94,11 @@ describe("the dictionary page", () => {
     // The translation is its own line, with no dash a reader could take for 一.
     expect(example.querySelector(".dictionary-example-translation")).toHaveTextContent(/^At the time of youth/);
     expect(example.textContent).not.toContain("—");
-    expect(within(example).getByRole("link", { name: "The Analects 16.7" })).toHaveAttribute(
+    expect(within(example).getByRole("link", { name: "The Analects" })).toHaveAttribute(
       "href",
       expect.stringContaining("ctext.org/analects"),
     );
+    expect(example.querySelector(".quote-source-details")).toBeNull();
     // A sense with nothing to fold has no chevron.
     expect(senses[1].querySelector("details")).toBeNull();
   });

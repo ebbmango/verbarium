@@ -12,6 +12,28 @@ function declarationsFor(target: RegExp): string[] {
 }
 
 describe("the stylesheet", () => {
+  it("draws a small focus at two-thirds size, its captions at full size", () => {
+    expect(declarationsFor(/^\.character-focus\[data-size="small"\]$/).join(";")).toMatch(/--focus-size\s*:\s*calc\(var\(--focus-base\) \* 2 \/ 3\)/);
+    expect(declarationsFor(/^\.focus-captions$/).join(";")).toMatch(/font-size\s*:\s*calc\(15 \* var\(--focus-unit\)\)/);
+  });
+
+  it("reads a caption written over several lines as one line, without its paragraph's margins", () => {
+    expect(declarationsFor(/^\.focus-caption > p$/).join(";")).toMatch(/display\s*:\s*contents/);
+  });
+
+  it("keeps each item of a focus row in a Commentary in the forms font, not the quotation font every other Chinese text there gets", () => {
+    expect(declarationsFor(/^\.lesson-note \.character-focus :lang\(zh-Hant\)$/).join(";")).toMatch(/font-family\s*:\s*var\(--font-han-forms\)/);
+  });
+
+  it("uses the same line spacing for a lesson subtitle and ordinary prose at every breakpoint", () => {
+    const lineHeights = (target: RegExp) => declarationsFor(target).flatMap((declarations) =>
+      Array.from(declarations.matchAll(/(?:^|[\s;])line-height\s*:\s*([^;]+)/g), (match) => match[1].trim()),
+    );
+    expect(lineHeights(/^\.lesson-manuscript \.lesson-subtitle$/)).toEqual(
+      lineHeights(/^\.lesson-manuscript > p$/),
+    );
+  });
+
   it("keeps a displayed character in a Commentary in the display font, not the quotation font every other Chinese text there gets", () => {
     expect(declarationsFor(/^\.lesson-note \.study-character$/).join(";")).toMatch(/font-family\s*:\s*var\(--font-han-display\)/);
   });

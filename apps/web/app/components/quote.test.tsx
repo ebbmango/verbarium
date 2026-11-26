@@ -74,7 +74,7 @@ describe("Quote", () => {
 
     expect(quotation.children[0].textContent).toBe("一者，數之始也，物之極也。");
     const sourceLink = within(quotation.children[2] as HTMLElement).getByRole("link", {
-      name: "Wang Bi’s notes on the Dao De Jing",
+      name: "Commentary on the Dao De Jing Wang Bi",
     });
     expect(sourceLink).toHaveAttribute("href", expect.stringMatching(/^https:\/\/ctext\.org\/dao-de-zhen-jing-zhu#:~:text=/));
   });
